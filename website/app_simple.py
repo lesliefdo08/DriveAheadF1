@@ -822,6 +822,11 @@ def predictions():
     """Render predictions page"""
     return render_template('predictions.html')
 
+@app.route('/telemetry')
+def telemetry():
+    """Render telemetry page"""
+    return render_template('telemetry.html')
+
 @app.route('/standings')
 def standings():
     """Render standings page"""
@@ -1352,6 +1357,119 @@ def api_prediction_accuracy():
         return jsonify({
             "status": "error",
             "message": "Internal server error"
+        }), 500
+
+@app.route('/api/session-status')
+def api_session_status():
+    """Get current F1 session status for telemetry"""
+    try:
+        # Mock session data for telemetry display
+        session_data = {
+            "status": "success",
+            "data": {
+                "sessionType": "Practice 1",
+                "sessionTime": "35:42",
+                "timeRemaining": "24:18",
+                "weather": {
+                    "condition": "Cloudy",
+                    "temperature": 25,
+                    "humidity": 65,
+                    "windSpeed": 12,
+                    "windDirection": "NW"
+                },
+                "track": {
+                    "name": "Silverstone Circuit",
+                    "length": 5.891,
+                    "country": "United Kingdom",
+                    "corners": 18
+                },
+                "sessionStatus": "Active",
+                "flagStatus": "Green",
+                "totalLaps": 87,
+                "fastestLap": {
+                    "driver": "Max Verstappen",
+                    "time": "1:27.097",
+                    "lap": 23
+                }
+            }
+        }
+        
+        return jsonify(session_data)
+    except Exception as e:
+        logger.error(f"Error fetching session status: {str(e)}")
+        return jsonify({
+            "status": "error",
+            "message": "Failed to get session status"
+        }), 500
+
+@app.route('/api/telemetry')
+def api_telemetry():
+    """Get live telemetry data for drivers"""
+    try:
+        # Mock telemetry data for display
+        telemetry_data = {
+            "status": "success",
+            "data": {
+                "timestamp": datetime.now().isoformat(),
+                "drivers": [
+                    {
+                        "driverName": "Lewis Hamilton",
+                        "driverNumber": 44,
+                        "team": "Mercedes",
+                        "position": 1,
+                        "speed": 291,
+                        "rpm": 10450,
+                        "gear": 7,
+                        "throttle": 95,
+                        "brake": 0,
+                        "drs": False,
+                        "tyreCompound": "Medium",
+                        "tyreLaps": 12,
+                        "fuelLoad": 67.4,
+                        "lapTime": "1:27.543",
+                        "sector1": "26.890",
+                        "sector2": "31.234",
+                        "sector3": "29.419",
+                        "engineTemp": 98,
+                        "brakeTemp": {
+                            "front": 742,
+                            "rear": 689
+                        }
+                    },
+                    {
+                        "driverName": "Max Verstappen",
+                        "driverNumber": 33,
+                        "team": "Red Bull Racing",
+                        "position": 2,
+                        "speed": 287,
+                        "rpm": 10120,
+                        "gear": 6,
+                        "throttle": 89,
+                        "brake": 15,
+                        "drs": True,
+                        "tyreCompound": "Hard",
+                        "tyreLaps": 8,
+                        "fuelLoad": 71.2,
+                        "lapTime": "1:27.891",
+                        "sector1": "27.123",
+                        "sector2": "31.567",
+                        "sector3": "29.201",
+                        "engineTemp": 95,
+                        "brakeTemp": {
+                            "front": 698,
+                            "rear": 645
+                        }
+                    }
+                ]
+            }
+        }
+        
+        return jsonify(telemetry_data)
+    except Exception as e:
+        logger.error(f"Error fetching telemetry data: {str(e)}")
+        return jsonify({
+            "status": "error",
+            "message": "Failed to get telemetry data"
         }), 500
 
 @app.route('/api/health')
