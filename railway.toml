@@ -1,9 +1,0 @@
-[build]
-  builder = "NIXPACKS"
-  buildCommand = "pip install -r requirements.txt"
-
-[deploy]
-  startCommand = "cd website && gunicorn app_simple:app --bind 0.0.0.0:$PORT --workers 1 --timeout 120"
-  healthcheckPath = "/"
-  healthcheckTimeout = 100
-  restartPolicyType = "ON_FAILURE"
