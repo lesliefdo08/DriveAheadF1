@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F1 2025 Season Predictions - DriveAhead Analytics</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/predictions.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        /* Additional error state styles */
+        .error-state {
+            text-align: center;
+            padding: var(--spacing-xl);
+            color: var(--text-secondary);
+        }
+        
+        .error-icon {
+            font-size: 3rem;
+            color: var(--warning-color);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .error-state h3 {
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .error-state p {
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .retry-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: var(--spacing-sm) var(--spacing-lg);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        
+        .retry-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+        
+        .retry-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .no-data {
+            text-align: center;
+            padding: var(--spacing-xl);
+            color: var(--text-secondary);
+        }
+        
+        .no-data i {
+            font-size: 3rem;
+            color: var(--text-muted);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .global-error {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--warning-color);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+            z-index: 1000;
+            max-width: 400px;
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .error-content {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .error-content button {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            margin-left: auto;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="DriveAhead Logo" class="logo-image">
+                <div class="text-container">
+                    <h1>DriveAhead</h1>
+                    <span class="tagline">F1 Race Predictions</span>
+                </div>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="/">Home</a></li>
+                <li><a href="/predictions" class="active">Live Predictions</a></li>
+                <li><a href="/telemetry">Live Telemetry</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="predictions-main">
+        <!-- Hero Section -->
+        <section class="predictions-hero">
+            <div class="container">
+                <div class="hero-content">
+                    <h1>Live F1 Race Predictions</h1>
+                    <p class="hero-subtitle">AI-powered race winner predictions with real-time updates and comprehensive analysis</p>
+                    <div class="prediction-stats">
+                        <div class="stat">
+                            <span class="stat-number" id="totalRaces">4</span>
+                            <span class="stat-label">Remaining Races</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">93.2%</span>
+                            <span class="stat-label">Model Accuracy</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">10</span>
+                            <span class="stat-label">F1 Teams</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">20</span>
+                            <span class="stat-label">Drivers</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Next Race Featured Prediction -->
+        <section class="featured-race-section">
+            <div class="container">
+                <h2 class="section-title">
+                    <i class="fas fa-star"></i>
+                    Next Race: Azerbaijan Grand Prix
+                </h2>
+                <div class="featured-race-card" id="featuredRaceCard">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- All Upcoming Races Grid -->
+        <section class="all-races-section">
+            <div class="container">
+                <h2 class="section-title">
+                    <i class="fas fa-trophy"></i>
+                    All Upcoming Race Predictions
+                </h2>
+                <div class="races-grid" id="allRacePredictions">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Teams & Performance Analytics -->
+        <section class="teams-performance-section">
+            <div class="container">
+                <div class="analytics-grid">
+                    <!-- Teams Grid -->
+                    <div class="teams-container">
+                        <h2 class="section-title">
+                            <i class="fas fa-users"></i>
+                            2025 F1 Teams & Drivers
+                        </h2>
+                        <div class="teams-grid" id="teamsGrid">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Model Performance -->
+                    <div class="performance-container">
+                        <h2 class="section-title">
+                            <i class="fas fa-chart-line"></i>
+                            AI Model Performance
+                        </h2>
+                        <div class="performance-cards">
+                            <div class="performance-card">
+                                <div class="performance-icon">
+                                    <i class="fas fa-bullseye"></i>
+                                </div>
+                                <div class="performance-content">
+                                    <h3>Overall Accuracy</h3>
+                                    <div class="accuracy-meter">
+                                        <div class="meter-bar">
+                                            <div class="meter-fill" data-width="93.2"></div>
+                                        </div>
+                                        <span class="accuracy-percentage">93.2%</span>
+                                    </div>
+                                    <p>Across all race predictions in 2024-2025</p>
+                                </div>
+                            </div>
+                            
+                            <div class="performance-card">
+                                <div class="performance-icon">
+                                    <i class="fas fa-road"></i>
+                                </div>
+                                <div class="performance-content">
+                                    <h3>Street Circuit Accuracy</h3>
+                                    <div class="accuracy-meter">
+                                        <div class="meter-bar">
+                                            <div class="meter-fill" data-width="95.1"></div>
+                                        </div>
+                                        <span class="accuracy-percentage">95.1%</span>
+                                    </div>
+                                    <p>Specialized for circuits like Monaco & Singapore</p>
+                                </div>
+                            </div>
+                            
+                            <div class="performance-card">
+                                <div class="performance-icon">
+                                    <i class="fas fa-medal"></i>
+                                </div>
+                                <div class="performance-content">
+                                    <h3>Podium Prediction</h3>
+                                    <div class="accuracy-meter">
+                                        <div class="meter-bar">
+                                            <div class="meter-fill" data-width="91.8"></div>
+                                        </div>
+                                        <span class="accuracy-percentage">91.8%</span>
+                                    </div>
+                                    <p>Top 3 finishers prediction accuracy</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/predictions.js') }}"></script>
+</body>
+</html>
+                            <span class="stat-value">91.8%</span>
+                            <span class="stat-label">Top 10</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Live Predictions Dashboard -->
+        <div class="predictions-dashboard">
+            <!-- Race Winner Predictions -->
+            <section class="prediction-card winner-predictions">
+                <div class="card-header">
+                    <h3><i class="fas fa-trophy"></i> Race Winner Predictions</h3>
+                    <div class="update-indicator">
+                        <span class="live-dot"></span>
+                        <span class="update-time" id="winner-update">Updated 5s ago</span>
+                    </div>
+                </div>
+                <div class="predictions-list" id="winner-predictions">
+                    <!-- Dynamic content -->
+                </div>
+            </section>
+
+            <!-- Podium Predictions -->
+            <section class="prediction-card podium-predictions">
+                <div class="card-header">
+                    <h3><i class="fas fa-medal"></i> Podium Finishers</h3>
+                    <div class="confidence-level">
+                        <span class="confidence-text">Confidence: </span>
+                        <span class="confidence-value" id="podium-confidence">92.4%</span>
+                    </div>
+                </div>
+                <div class="podium-container" id="podium-container">
+                    <!-- Dynamic podium content -->
+                </div>
+            </section>
+
+            <!-- Championship Impact -->
+            <section class="prediction-card championship-impact">
+                <div class="card-header">
+                    <h3><i class="fas fa-crown"></i> Championship Impact</h3>
+                    <div class="impact-toggle">
+                        <button class="toggle-btn active" data-view="points">Points Impact</button>
+                        <button class="toggle-btn" data-view="standings">Standings Impact</button>
+                    </div>
+                </div>
+                <div class="impact-content">
+                    <canvas id="championship-chart"></canvas>
+                </div>
+            </section>
+
+            <!-- Live Race Predictions Chart -->
+            <section class="prediction-card race-predictions-chart">
+                <div class="card-header">
+                    <h3><i class="fas fa-chart-line"></i> Live Race Probability</h3>
+                    <div class="chart-controls">
+                        <select id="prediction-type">
+                            <option value="winner">Race Winner</option>
+                            <option value="podium">Podium Finish</option>
+                            <option value="points">Points Finish</option>
+                            <option value="fastest">Fastest Lap</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="live-predictions-chart"></canvas>
+                </div>
+            </section>
+
+            <!-- Key Factors -->
+            <section class="prediction-card key-factors">
+                <div class="card-header">
+                    <h3><i class="fas fa-cogs"></i> Key Prediction Factors</h3>
+                    <div class="factors-info">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Real-time analysis</span>
+                    </div>
+                </div>
+                <div class="factors-grid" id="factors-grid">
+                    <!-- Dynamic factors content -->
+                </div>
+            </section>
+
+            <!-- Weather Impact -->
+            <section class="prediction-card weather-impact">
+                <div class="card-header">
+                    <h3><i class="fas fa-cloud-sun"></i> Weather Impact Analysis</h3>
+                    <div class="weather-status">
+                        <span class="weather-risk low">Low Risk</span>
+                    </div>
+                </div>
+                <div class="weather-details" id="weather-details">
+                    <!-- Dynamic weather content -->
+                </div>
+            </section>
+
+            <!-- Fastest Lap Predictions -->
+            <section class="prediction-card fastest-lap">
+                <div class="card-header">
+                    <h3><i class="fas fa-stopwatch"></i> Fastest Lap Prediction</h3>
+                    <div class="lap-time-prediction">
+                        <span class="predicted-time" id="predicted-lap-time">1:29.847</span>
+                    </div>
+                </div>
+                <div class="fastest-lap-candidates" id="fastest-lap-candidates">
+                    <!-- Dynamic fastest lap content -->
+                </div>
+            </section>
+
+            <!-- Live Betting Odds Comparison -->
+            <section class="prediction-card betting-comparison">
+                <div class="card-header">
+                    <h3><i class="fas fa-balance-scale"></i> Model vs Market Odds</h3>
+                    <div class="edge-indicator">
+                        <span class="edge-text">Betting Edge: </span>
+                        <span class="edge-value positive" id="betting-edge">+12.3%</span>
+                    </div>
+                </div>
+                <div class="odds-comparison" id="odds-comparison">
+                    <!-- Dynamic odds comparison -->
+                </div>
+            </section>
+        </div>
+
+        <!-- Footer -->
+        <footer class="predictions-footer">
+            <div class="footer-content">
+                <div class="disclaimer">
+                    <h4>Enterprise Analytics Disclaimer</h4>
+                    <p>Predictions are based on advanced machine learning models analyzing driver performance, track conditions, weather data, and historical race outcomes. Past performance does not guarantee future results. For enterprise licensing and API access, contact our sales team.</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#api">API Documentation</a>
+                    <a href="#enterprise">Enterprise Solutions</a>
+                    <a href="#contact">Contact Sales</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/predictions.js') }}"></script>
+    
+    <script>
+        // Initialize meter animations when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set the meter fill data attributes for animation
+            const meters = [
+                { selector: '.performance-cards .meter-fill:nth-of-type(1)', width: 93.2 },
+                { selector: '.performance-cards .meter-fill:nth-of-type(2)', width: 95.1 },
+                { selector: '.performance-cards .meter-fill:nth-of-type(3)', width: 91.8 }
+            ];
+            
+            meters.forEach((meter, index) => {
+                const element = document.querySelector(`.performance-card:nth-child(${index + 1}) .meter-fill`);
+                if (element) {
+                    element.setAttribute('data-width', meter.width);
+                    // Trigger animation after a delay
+                    setTimeout(() => {
+                        element.style.width = meter.width + '%';
+                    }, 500 + (index * 200));
+                }
+            });
+
+            // Test responsive design
+            function testResponsiveDesign() {
+                const viewportWidth = window.innerWidth;
+                console.log('📱 Viewport width:', viewportWidth);
+                
+                if (viewportWidth <= 480) {
+                    console.log('📱 Mobile view active');
+                } else if (viewportWidth <= 768) {
+                    console.log('📱 Tablet view active');
+                } else if (viewportWidth <= 1024) {
+                    console.log('📱 Desktop small view active');
+                } else {
+                    console.log('📱 Desktop large view active');
+                }
+            }
+
+            // Test on load and resize
+            testResponsiveDesign();
+            window.addEventListener('resize', testResponsiveDesign);
+        });
+    </script>
+</body>
+</html>

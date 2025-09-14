@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DriveAhead - Live F1 Telemetry Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/telemetry.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="telemetry-container">
+        <!-- Header -->
+        <div class="telemetry-header">
+            <div class="session-info">
+                <span class="session-type">PRACTICE 1</span>
+                <span class="session-time">30:53</span>
+                <span class="weather">Cloudy 25°C</span>
+            </div>
+            <div class="track-info">
+                <span class="track-name">SILVERSTONE CIRCUIT</span>
+                <span class="track-length">5.891 KM</span>
+            </div>
+        </div>
+
+        <!-- Main Dashboard -->
+        <div class="telemetry-main">
+            <!-- Left Driver Panel -->
+            <div class="driver-panel left-panel">
+                <div class="driver-header">
+                    <div class="driver-name">LEWIS HAMILTON</div>
+                    <div class="driver-number">44</div>
+                    <div class="team-name">MERCEDES</div>
+                </div>
+                
+                <div class="car-visual">
+                    <img src="{{ url_for('static', filename='images/mercedes.png') }}" alt="Mercedes Car" class="car-image">
+                </div>
+
+                <div class="telemetry-data">
+                    <div class="data-row">
+                        <span class="label">SPEED</span>
+                        <span class="value" id="ham-speed">291</span>
+                        <span class="unit">KM/H</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="label">RPM</span>
+                        <span class="value" id="ham-rpm">10,450</span>
+                        <span class="unit">RPM</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="label">GEAR</span>
+                        <span class="value gear" id="ham-gear">6</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="label">THROTTLE</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill throttle" id="ham-throttle" style="width: 85%"></div>
+                        </div>
+                        <span class="percentage">85%</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="label">BRAKE</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill brake" id="ham-brake" style="width: 0%"></div>
+                        </div>
+                        <span class="percentage">0%</span>
+                    </div>
+                </div>
+
+                <!-- Lap Information -->
+                <div class="lap-info">
+                    <div class="current-lap">
+                        <span class="lap-label">LAP</span>
+                        <span class="lap-number" id="ham-lap">8</span>
+                    </div>
+                    <div class="lap-time">
+                        <span class="time-label">CURRENT</span>
+                        <span class="time-value" id="ham-current-time">1:24.052</span>
+                    </div>
+                    <div class="best-time">
+                        <span class="time-label">BEST</span>
+                        <span class="time-value best" id="ham-best-time">1:23.781</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Center Track -->
+            <div class="track-center">
+                <div class="track-layout">
+                    <svg viewBox="0 0 400 300" class="track-svg">
+                        <!-- Track outline -->
+                        <path d="M50,150 Q50,50 150,50 L250,50 Q350,50 350,150 Q350,250 250,250 L150,250 Q50,250 50,150 Z" 
+                              fill="none" stroke="#333" stroke-width="20" class="track-outline"/>
+                        <path d="M50,150 Q50,50 150,50 L250,50 Q350,50 350,150 Q350,250 250,250 L150,250 Q50,250 50,150 Z" 
+                              fill="none" stroke="#1a1a1a" stroke-width="16" class="track-surface"/>
+                        
+                        <!-- DRS Zones -->
+                        <rect x="240" y="42" width="60" height="16" fill="#00ff00" opacity="0.3" class="drs-zone"/>
+                        
+                        <!-- Sector markers -->
+                        <circle cx="100" cy="70" r="5" fill="#ff6b00" class="sector-marker"/>
+                        <circle cx="300" cy="100" r="5" fill="#ff6b00" class="sector-marker"/>
+                        <circle cx="200" cy="230" r="5" fill="#ff6b00" class="sector-marker"/>
+                        
+                        <!-- Car positions -->
+                        <circle cx="120" cy="65" r="8" fill="#00d2be" class="car-position hamilton"/>
+                        <circle cx="140" cy="68" r="8" fill="#dc143c" class="car-position verstappen"/>
+                    </svg>
+                </div>
+                
+                <div class="sector-times">
+                    <div class="sector">
+                        <span class="sector-label">S1</span>
+                        <span class="sector-time personal-best">23.156</span>
+                    </div>
+                    <div class="sector">
+                        <span class="sector-label">S2</span>
+                        <span class="sector-time fastest">35.891</span>
+                    </div>
+                    <div class="sector">
+                        <span class="sector-label">S3</span>
+                        <span class="sector-time current">24.734</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Driver Panel -->
+            <div class="driver-panel right-panel">
+                <div class="driver-header">
+                    <div class="driver-name">MAX VERSTAPPEN</div>
+                    <div class="driver-number">1</div>
+                    <div class="team-name">RED BULL RACING</div>
+                </div>
+                
+                <div class="car-visual">
+                    <img src="{{ url_for('static', filename='images/redbull.png') }}" alt="Red Bull Car" class="car-image">
+                </div>
+
+                <div class="telemetry-data">
+                    <div class="data-row">
+                        <span class="label">SPEED</span>
+                        <span class="value" id="ver-speed">287</span>
+                        <span class="unit">KM/H</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="label">RPM</span>
+                        <span class="value" id="ver-rpm">10,200</span>
+                        <span class="unit">RPM</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="label">GEAR</span>
+                        <span class="value gear" id="ver-gear">6</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="label">THROTTLE</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill throttle" id="ver-throttle" style="width: 92%"></div>
+                        </div>
+                        <span class="percentage">92%</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="label">BRAKE</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill brake" id="ver-brake" style="width: 0%"></div>
+                        </div>
+                        <span class="percentage">0%</span>
+                    </div>
+                </div>
+
+                <!-- Lap Information -->
+                <div class="lap-info">
+                    <div class="current-lap">
+                        <span class="lap-label">LAP</span>
+                        <span class="lap-number" id="ver-lap">8</span>
+                    </div>
+                    <div class="lap-time">
+                        <span class="time-label">CURRENT</span>
+                        <span class="time-value" id="ver-current-time">1:23.052</span>
+                    </div>
+                    <div class="best-time">
+                        <span class="time-label">BEST</span>
+                        <span class="time-value best" id="ver-best-time">1:22.565</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Data Panels -->
+        <div class="data-panels">
+            <!-- Tire Data -->
+            <div class="data-panel tire-panel">
+                <h3>TIRE PRESSURE AND LAPS</h3>
+                <div class="tire-grid">
+                    <div class="tire-data left-tires">
+                        <div class="tire-info">
+                            <span class="tire-label">FL</span>
+                            <div class="tire-stats">
+                                <span class="pressure">23.8 PSI</span>
+                                <span class="laps">8 LAPS</span>
+                            </div>
+                        </div>
+                        <div class="tire-info">
+                            <span class="tire-label">RL</span>
+                            <div class="tire-stats">
+                                <span class="pressure">24.1 PSI</span>
+                                <span class="laps">8 LAPS</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tire-compound">
+                        <span class="compound-badge medium">MEDIUM</span>
+                        <span class="next-window">NEXT PIT WINDOW: LAP 15-20</span>
+                    </div>
+                    <div class="tire-data right-tires">
+                        <div class="tire-info">
+                            <span class="tire-label">FR</span>
+                            <div class="tire-stats">
+                                <span class="pressure">23.9 PSI</span>
+                                <span class="laps">8 LAPS</span>
+                            </div>
+                        </div>
+                        <div class="tire-info">
+                            <span class="tire-label">RR</span>
+                            <div class="tire-stats">
+                                <span class="pressure">24.0 PSI</span>
+                                <span class="laps">8 LAPS</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Telemetry Charts -->
+            <div class="data-panel charts-panel">
+                <h3>LIVE TELEMETRY DATA</h3>
+                <div class="charts-grid">
+                    <div class="chart-container">
+                        <canvas id="speedChart" width="300" height="100"></canvas>
+                        <span class="chart-label">SPEED</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="throttleChart" width="300" height="100"></canvas>
+                        <span class="chart-label">THROTTLE</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="brakeChart" width="300" height="100"></canvas>
+                        <span class="chart-label">BRAKE</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Race Information -->
+            <div class="data-panel race-panel">
+                <h3>SESSION INFORMATION</h3>
+                <div class="race-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">AIR TEMP</span>
+                        <span class="stat-value">25°C</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">TRACK TEMP</span>
+                        <span class="stat-value">45°C</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">HUMIDITY</span>
+                        <span class="stat-value">68%</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">WIND SPEED</span>
+                        <span class="stat-value">12 KM/H</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">DRS</span>
+                        <span class="stat-value available">AVAILABLE</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">SAFETY CAR</span>
+                        <span class="stat-value clear">CLEAR</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer style="background: #0a0a0a; border-top: 1px solid rgba(255,255,255,0.1); padding: 40px 0; text-align: center; margin-top: 60px;">
+        <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+            <p style="color: #666; margin-bottom: 10px;">&copy; 2025 DriveAhead. Advanced F1 Analytics Platform.</p>
+            <p style="color: #888; font-size: 0.9rem;">Developed by <strong style="color: #dc143c;">Leslie Fernando, Glenn Fernando, Kenneth Fernandes & Verena Fernandes</strong></p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', filename='js/telemetry.js') }}"></script>
+</body>
+</html>

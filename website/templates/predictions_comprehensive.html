@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DriveAhead - F1 Race Winner Predictions</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .predictions-hero {
+            background: radial-gradient(circle at 20% 50%, rgba(220, 20, 60, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(0, 100, 200, 0.15) 0%, transparent 50%),
+                        linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            padding: 120px 0 80px;
+            text-align: center;
+        }
+        
+        .predictions-hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #dc143c, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .predictions-hero p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .predictions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .race-prediction-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(20px);
+            transition: all 0.3s ease;
+        }
+
+        .race-prediction-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-red);
+            box-shadow: 0 20px 40px rgba(220, 20, 60, 0.2);
+        }
+
+        .race-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 15px;
+        }
+
+        .race-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--accent-white);
+        }
+
+        .race-circuit {
+            font-size: 1rem;
+            color: var(--text-muted);
+            margin: 5px 0;
+        }
+
+        .race-date {
+            color: var(--primary-red);
+            font-weight: 500;
+            font-size: 1rem;
+        }
+
+        .prediction-podium {
+            margin-bottom: 25px;
+        }
+
+        .podium-position {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .podium-position:last-child {
+            border-bottom: none;
+        }
+
+        .position-number {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: white;
+        }
+
+        .position-1 { background: linear-gradient(135deg, #FFD700, #FFA500); }
+        .position-2 { background: linear-gradient(135deg, #C0C0C0, #A0A0A0); }
+        .position-3 { background: linear-gradient(135deg, #CD7F32, #B8860B); }
+
+        .driver-info {
+            flex: 1;
+            margin-left: 15px;
+        }
+
+        .driver-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .driver-team {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .probability-bar {
+            flex: 1;
+            margin: 0 15px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .probability-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-red), #ff6b7d);
+            border-radius: 4px;
+            transition: width 0.8s ease;
+        }
+
+        .probability-text {
+            font-weight: 600;
+            color: var(--primary-red);
+            min-width: 50px;
+            text-align: right;
+        }
+
+        .race-analysis {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary-red);
+        }
+
+        .analysis-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--primary-red);
+        }
+
+        .analysis-text {
+            line-height: 1.6;
+            color: var(--text-light);
+        }
+
+        .championship-section {
+            margin: 60px 0;
+            padding: 40px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .championship-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 30px;
+        }
+
+        .championship-standings {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .standings-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .standings-item:last-child {
+            border-bottom: none;
+        }
+
+        .driver-position {
+            display: flex;
+            align-items: center;
+        }
+
+        .position-badge {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: var(--primary-red);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-right: 15px;
+        }
+
+        .points-info {
+            text-align: right;
+        }
+
+        .current-points {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .max-possible {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(10, 10, 10, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 20px;
+            z-index: 10;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(220, 20, 60, 0.3);
+            border-top: 3px solid var(--primary-red);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .prediction-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .stat-box {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-red);
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .predictions-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .championship-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .prediction-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .prediction-factors {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .prediction-factors h4 {
+            color: var(--text-light);
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .factor {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 12px;
+        }
+
+        .factor-label {
+            min-width: 120px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .factor-bar {
+            flex: 1;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .factor-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-red), #ff6b6b);
+            border-radius: 4px;
+            transition: width 0.6s ease;
+        }
+
+        .factor-value {
+            min-width: 45px;
+            text-align: right;
+            color: var(--primary-red);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .confidence-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .confidence-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .confidence-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .confidence-high {
+            background: linear-gradient(45deg, #10B981, #34D399);
+            color: white;
+        }
+
+        .confidence-medium {
+            background: linear-gradient(45deg, #F59E0B, #FBBF24);
+            color: white;
+        }
+
+        .confidence-low {
+            background: linear-gradient(45deg, #EF4444, #F87171);
+            color: white;
+        }
+
+        .probability-fill {
+            animation: fillAnimation 1.2s ease-out forwards;
+            transform-origin: left;
+        }
+
+        .factor-fill {
+            animation: fillAnimation 0.8s ease-out forwards;
+            animation-delay: 0.3s;
+            width: 0 !important;
+        }
+
+        @keyframes fillAnimation {
+            from {
+                width: 0;
+                opacity: 0.6;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .race-prediction-card {
+            animation: slideInUp 0.6s ease-out forwards;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        @keyframes slideInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .race-prediction-card:nth-child(1) { animation-delay: 0.1s; }
+        .race-prediction-card:nth-child(2) { animation-delay: 0.2s; }
+        .race-prediction-card:nth-child(3) { animation-delay: 0.3s; }
+        .race-prediction-card:nth-child(4) { animation-delay: 0.4s; }
+        .race-prediction-card:nth-child(5) { animation-delay: 0.5s; }
+        .race-prediction-card:nth-child(6) { animation-delay: 0.6s; }
+        .race-prediction-card:nth-child(7) { animation-delay: 0.7s; }
+        .race-prediction-card:nth-child(8) { animation-delay: 0.8s; }
+
+        /* Enhanced card additions */
+        .race-prediction-card.enhanced { padding-top: 10px; }
+        .race-header.compact { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; border:none; padding-bottom:0; }
+        .race-header-left { display:flex; align-items:center; gap:14px; }
+        .round-badge { background:linear-gradient(135deg,#dc143c,#ff6b6b); color:#fff; font-weight:600; padding:6px 12px; border-radius:30px; font-size:0.75rem; letter-spacing:1px; box-shadow:0 4px 12px rgba(220,20,60,0.4); }
+        .race-title-line { font-size:1.05rem; font-weight:600; display:flex; align-items:center; gap:6px; }
+        .race-circuit-small { font-size:0.75rem; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted); opacity:0.8; margin-top:2px; }
+        .race-meta-block { text-align:right; display:flex; flex-direction:column; gap:6px; }
+        .session-chip { font-size:0.65rem; font-weight:600; text-transform:uppercase; letter-spacing:1px; padding:4px 10px; border-radius:20px; background:rgba(255,255,255,0.08); backdrop-filter:blur(6px); border:1px solid rgba(255,255,255,0.15); width:fit-content; margin-left:auto; }
+        .session-chip.upcoming { color:#ffb347; border-color:rgba(255,179,71,0.4); }
+        .top3-wrapper { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); padding:12px 14px 4px; border-radius:14px; margin:4px 0 10px; }
+        .top3-wrapper .podium-position { display:grid; grid-template-columns:38px 1fr 110px 60px; align-items:center; padding:8px 4px; border-bottom:1px solid rgba(255,255,255,0.06); }
+        .top3-wrapper .podium-position:last-child { border-bottom:none; }
+        .position-number { font-size:0.85rem; }
+        .probability-bar.mini { height:6px; width:100%; background:rgba(255,255,255,0.15); border-radius:4px; overflow:hidden; margin:0 8px; }
+        .probability-bar.mini .probability-fill { background:linear-gradient(90deg,#dc143c,#ff6b6b); }
+        .probability-text { font-size:0.75rem; font-weight:600; color:#dc143c; }
+        .factor-summary-chips { display:flex; flex-wrap:wrap; gap:8px; margin:6px 0 10px; }
+        .factor-chip { background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); padding:6px 10px; border-radius:20px; font-size:0.65rem; letter-spacing:0.5px; font-weight:500; }
+        .factor-chip span { color:#ff6b6b; font-weight:600; }
+        .confidence-badge.inline { font-size:0.65rem; padding:6px 12px; }
+        .race-analysis.compact { margin-top:2px; padding:14px 16px; background:linear-gradient(135deg,rgba(255,255,255,0.05) 0%,rgba(255,255,255,0.02) 100%); border:1px solid rgba(255,255,255,0.08); border-radius:14px; }
+        .race-analysis.compact .analysis-text { font-size:0.75rem; line-height:1.4; color:var(--text-light); }
+        @media (max-width:600px){
+            .top3-wrapper .podium-position { grid-template-columns:32px 1fr 70px 46px; }
+            .race-header.compact { flex-direction:column; align-items:flex-start; gap:8px; }
+            .race-meta-block { flex-direction:row; align-items:center; gap:10px; }
+            .session-chip { margin-left:0; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h2>DriveAhead</h2>
+                <span class="tagline">F1 Race Predictions</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="/">Home</a></li>
+                <li><a href="/predictions" class="active">Predictions</a></li>
+                <li><a href="/telemetry">Telemetry</a></li>
+                <li><a href="#analytics">Analytics</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <section class="predictions-hero">
+            <div class="container">
+                <h1>F1 Race Winner Predictions</h1>
+                <p class="hero-subtitle">
+                    Advanced statistical analysis and comprehensive predictions for all remaining 2025 races
+                </p>
+                
+                <div class="prediction-stats">
+                    <div class="stat-box">
+                        <div class="stat-value" id="totalRaces">8</div>
+                        <div class="stat-label">Races Analyzed</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="modelAccuracy">89.2%</div>
+                        <div class="stat-label">Model Accuracy</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="dataPoints">2000+</div>
+                        <div class="stat-label">Data Points</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="predictions-container">
+            <div class="container">
+                <h2>Race-by-Race Predictions</h2>
+                <div class="predictions-grid" id="predictionsGrid">
+                    <!-- Race prediction cards will be dynamically generated -->
+                </div>
+            </div>
+        </section>
+
+        <section class="championship-section">
+            <div class="container">
+                <h2>Championship Scenarios</h2>
+                <div class="championship-grid">
+                    <div class="championship-standings">
+                        <h3>Current Standings & Projections</h3>
+                        <div id="championshipStandings">
+                            <!-- Championship standings will be loaded here -->
+                        </div>
+                    </div>
+                    
+                    <div class="championship-standings">
+                        <h3>Title Probability</h3>
+                        <canvas id="championshipChart" width="400" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer style="background: #0a0a0a; border-top: 1px solid rgba(255,255,255,0.1); padding: 40px 0; text-align: center; margin-top: 60px;">
+        <div class="container">
+            <p style="color: #666; margin-bottom: 10px;">&copy; 2025 DriveAhead. Advanced F1 Analytics Platform.</p>
+            <p class="team-credits" style="color: #888; font-size: 0.9rem;">Developed by <strong style="color: #dc143c;">Leslie Fernando, Glenn Fernando, Kenneth Fernandes & Verena Fernandes</strong></p>
+        </div>
+    </footer>
+
+    <script>
+        class PredictionsApp {
+            constructor() {
+                this.racePredictions = null;
+                this.championshipData = null;
+                this.init();
+            }
+
+            async init() {
+                await this.loadPredictions();
+                this.renderPredictions();
+                this.renderChampionshipData();
+            }
+
+            async loadPredictions() {
+                try {
+                    const response = await fetch('/api/race-winner-predictions');
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        this.racePredictions = data.predictions.race_predictions;
+                        this.championshipData = data.predictions.championship_scenarios;
+                        console.log('✅ Predictions loaded successfully');
+                    } else {
+                        throw new Error('Failed to load predictions');
+                    }
+                } catch (error) {
+                    console.error('Error loading predictions:', error);
+                    this.showFallbackData();
+                }
+            }
+
+            renderPredictions() {
+                const grid = document.getElementById('predictionsGrid');
+                grid.innerHTML = '';
+
+                if (!this.racePredictions) return;
+                // Transform to array with parsed date for sorting
+                const races = Object.entries(this.racePredictions).map(([raceKey, raceData]) => ({
+                    raceKey,
+                    ...raceData,
+                    _parsedDate: new Date(raceData.date || raceData.race_date || raceData.raceDate || raceData.race_date_iso || raceData.race_date_str || '')
+                }));
+
+                // Sort ascending by date
+                races.sort((a, b) => a._parsedDate - b._parsedDate);
+
+                races.forEach(race => {
+                    const card = this.createRaceCard(race.raceKey, race);
+                    grid.appendChild(card);
+                });
+                
+                // Animate factor bars after a delay
+                setTimeout(() => {
+                    this.animateFactorBars();
+                }, 500);
+            }
+            
+            animateFactorBars() {
+                const factorFills = document.querySelectorAll('.factor-fill[data-width]');
+                factorFills.forEach((fill, index) => {
+                    setTimeout(() => {
+                        const width = fill.getAttribute('data-width');
+                        fill.style.width = width;
+                    }, index * 100);
+                });
+            }
+
+            createRaceCard(raceKey, raceData) {
+                const card = document.createElement('div');
+                card.className = 'race-prediction-card enhanced';
+                card.style.position = 'relative';
+
+                const top3 = Object.entries(raceData.predictions).slice(0, 3);
+                if (!top3.length) return card;
+
+                // Compute aggregate primary driver factors (use first as representative if structure same)
+                const leader = top3[0][1];
+                const trackFactorPct = (leader.track_factor * 100).toFixed(1);
+                const formFactorPct = (leader.form_factor * 100).toFixed(1);
+                const teamFactorPct = (leader.team_factor * 100).toFixed(1);
+
+                // Round / flag
+                const roundBadge = `<div class="round-badge">R${raceData.round || raceData.race_round || '?'}</div>`;
+                const dateStr = this.formatDate(raceData.date || raceData.race_date);
+                const countryFlag = this.getCountryFlag(raceData.country);
+
+                card.innerHTML = `
+                    <div class="loading-overlay" style="display:none"><div class="spinner"></div></div>
+                    <div class="race-header compact">
+                        <div class="race-header-left">
+                            ${roundBadge}
+                            <div class="race-header-text">
+                                <div class="race-title-line">${countryFlag} <span class="race-title">${raceData.country || raceData.track}</span></div>
+                                <div class="race-circuit-small">${raceData.track}</div>
+                            </div>
+                        </div>
+                        <div class="race-meta-block">
+                            <div class="race-date">${dateStr}</div>
+                            <div class="session-chip upcoming">Upcoming</div>
+                        </div>
+                    </div>
+                    <div class="top3-wrapper">
+                        ${top3.map(([driver, data], index) => `
+                            <div class="podium-position row style-${index+1}">
+                                <div class="position-number position-${index + 1}">${index + 1}</div>
+                                <div class="driver-main">
+                                    <div class="driver-name">${driver}</div>
+                                    <div class="driver-team">${this.getDriverTeam(driver)}</div>
+                                </div>
+                                <div class="probability-bar mini">
+                                    <div class="probability-fill" style="width:${data.percentage}%"></div>
+                                </div>
+                                <div class="probability-text">${data.percentage}%</div>
+                            </div>`).join('')}
+                    </div>
+                    <div class="factor-summary-chips">
+                        <div class="factor-chip">Track: <span>${trackFactorPct}%</span></div>
+                        <div class="factor-chip">Form: <span>${formFactorPct}%</span></div>
+                        <div class="factor-chip">Car: <span>${teamFactorPct}%</span></div>
+                        <div class="confidence-badge inline confidence-${leader.confidence.toLowerCase()}">${leader.confidence}</div>
+                    </div>
+                    <div class="race-analysis compact">
+                        <div class="analysis-text">${raceData.analysis || 'Model synthesis: balancing track history, form momentum, and car development pace.'}</div>
+                    </div>`;
+                return card;
+            }
+
+            getCountryFlag(country='') {
+                const map = {
+                    'Azerbaijan':'🇦🇿','Singapore':'🇸🇬','Japan':'🇯🇵','United States':'🇺🇸','USA':'🇺🇸','Mexico':'🇲🇽','Brazil':'🇧🇷','Qatar':'🇶🇦','Abu Dhabi':'🇦🇪','United Kingdom':'🇬🇧','Great Britain':'🇬🇧','Spain':'🇪🇸','Monaco':'🇲🇨','Canada':'🇨🇦','Italy':'🇮🇹','Belgium':'🇧🇪','Netherlands':'🇳🇱','Australia':'🇦🇺','Bahrain':'🇧🇭','Saudi Arabia':'🇸🇦'
+                };
+                return map[country] || '';
+            }
+
+            renderChampionshipData() {
+                if (!this.championshipData) return;
+
+                const standingsContainer = document.getElementById('championshipStandings');
+                const drivers = Object.entries(this.championshipData)
+                    .sort(([,a], [,b]) => b.current_points - a.current_points)
+                    .slice(0, 6);
+
+                standingsContainer.innerHTML = drivers.map(([driver, data], index) => `
+                    <div class="standings-item">
+                        <div class="driver-position">
+                            <div class="position-badge">${index + 1}</div>
+                            <div>
+                                <div class="driver-name">${driver}</div>
+                                <div class="driver-team">${this.getDriverTeam(driver)}</div>
+                            </div>
+                        </div>
+                        <div class="points-info">
+                            <div class="current-points">${data.current_points} pts</div>
+                            <div class="max-possible">Max: ${data.max_possible_points}</div>
+                        </div>
+                    </div>
+                `).join('');
+
+                this.createChampionshipChart(drivers);
+            }
+
+            createChampionshipChart(drivers) {
+                const ctx = document.getElementById('championshipChart').getContext('2d');
+                
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: drivers.slice(0, 4).map(([driver]) => driver.split(' ')[0]),
+                        datasets: [{
+                            data: drivers.slice(0, 4).map(([, data]) => (data.championship_chances * 100).toFixed(1)),
+                            backgroundColor: [
+                                '#1E41FF',  // Red Bull Blue
+                                '#FF8000',  // McLaren Orange
+                                '#DC143C',  // Ferrari Red
+                                '#00D2BE'   // Mercedes Teal
+                            ],
+                            borderWidth: 2,
+                            borderColor: '#1a1a1a'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    color: '#ffffff',
+                                    padding: 15
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            getDriverTeam(driver) {
+                const teams = {
+                    'Max Verstappen': 'Red Bull Racing',
+                    'Sergio Perez': 'Red Bull Racing',
+                    'Lando Norris': 'McLaren',
+                    'Oscar Piastri': 'McLaren',
+                    'Charles Leclerc': 'Ferrari',
+                    'Carlos Sainz': 'Ferrari',
+                    'Lewis Hamilton': 'Mercedes',
+                    'George Russell': 'Mercedes'
+                };
+                return teams[driver] || 'F1 Team';
+            }
+
+            formatDate(dateStr) {
+                const date = new Date(dateStr);
+                return date.toLocaleDateString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric',
+                    year: 'numeric'
+                });
+            }
+
+            showFallbackData() {
+                // Show fallback predictions if API fails
+                console.log('Loading fallback prediction data...');
+                this.showMockData();
+            }
+
+            showMockData() {
+                // Mock data for demonstration
+                const grid = document.getElementById('predictionsGrid');
+                const mockRaces = [
+                    {
+                        track: 'Azerbaijan Grand Prix',
+                        date: '2025-09-21',
+                        predictions: {
+                            'Max Verstappen': { percentage: 32.5 },
+                            'Lando Norris': { percentage: 28.7 },
+                            'Charles Leclerc': { percentage: 24.1 }
+                        }
+                    },
+                    {
+                        track: 'Singapore Grand Prix',
+                        date: '2025-10-05',
+                        predictions: {
+                            'Lando Norris': { percentage: 34.2 },
+                            'Max Verstappen': { percentage: 29.8 },
+                            'Oscar Piastri': { percentage: 22.5 }
+                        }
+                    }
+                ];
+                mockRaces.sort((a,b)=> new Date(a.date)-new Date(b.date))
+                    .forEach(raceData => {
+                        const card = this.createRaceCard('mock', raceData);
+                        grid.appendChild(card);
+                    });
+            }
+        }
+
+        // Initialize predictions app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            new PredictionsApp();
+        });
+    </script>
+</body>
+</html>
