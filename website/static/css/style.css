@@ -1,7 +1,7 @@
 /* CSS Custom Properties - Configuration Variables */
 :root {
     /* Layout and Container Variables */
-    --container-max-width: 1400px;
+    --container-max-width: 1200px;
     --mobile-padding: 20px;
     --desktop-padding: 40px;
     --insights-grid-gap: 40px;
@@ -964,7 +964,7 @@ main {
 .container {
     max-width: var(--container-max-width);
     margin: 0 auto;
-    padding: 0 var(--spacing-xl);
+    padding: 0 max(var(--spacing-xl), 5vw);
     position: relative;
     z-index: 1;
     width: 100%;
@@ -1859,7 +1859,8 @@ main {
 .data-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 40px;
+    gap: 30px;
+    max-width: 100%;
 }
 
 .data-card {
@@ -2256,6 +2257,11 @@ main {
 }
 
 @media (max-width: 768px) {
+    /* Container responsive adjustments */
+    .container {
+        padding: 0 max(var(--mobile-padding), 4vw);
+    }
+    
     /* Logo responsive adjustments */
     .nav-logo .logo-image {
         height: 30px;
