@@ -235,7 +235,7 @@ class DriveAheadApp {
                             <div class="race-stats">
                                 <span class="stat">Round ${race.round}</span>
                                 <span class="stat">${dayOfWeek}, ${month} ${day}</span>
-                                <span class="stat">${race.race_time_ist || race.time} IST</span>
+                                <span class="stat">${race.race_time_ist || this.convertToIST(race.time) || '17:00'} IST</span>
                             </div>
                         </div>
                         <div class="race-actions">
@@ -270,6 +270,17 @@ class DriveAheadApp {
             
             if (result.status === 'success' && result.data) {
                 this.allRaces = result.data.races; // Set the allRaces property
+                
+                // Debug: Log first race to check IST conversion
+                if (result.data.races.length > 0) {
+                    console.log('📊 First race time data:', {
+                        name: result.data.races[0].name,
+                        time: result.data.races[0].time,
+                        race_time_ist: result.data.races[0].race_time_ist,
+                        date: result.data.races[0].date
+                    });
+                }
+                
                 await this.updateUpcomingRaces(result.data.races);
                 console.log(`📊 Loaded ${result.data.total_races} races for season ${result.data.season}`);
             }
@@ -1301,6 +1312,45 @@ class DriveAheadApp {
             day: 'numeric'
         };
         return date.toLocaleDateString('en-US', options);
+    }
+
+    convertToIST(utcTimeString) {
+        try {
+            if (!utcTimeString) return '17:00';
+            
+            // Handle different time formats
+            let timeString = utcTimeString;
+            if (timeString.includes('Z')) {
+                timeString = timeString.replace('Z', '+00:00');
+            }
+            
+            // Create a date object for today with the given UTC time
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            
+            // Handle time format (HH:mm:ss or HH:mm)
+            let time = timeString.split('T')[1] || timeString;
+            if (time.includes('+') || time.includes('-')) {
+                time = time.split(/[+-]/)[0];
+            }
+            
+            const dateTimeString = `${year}-${month}-${day}T${time}Z`;
+            const utcDate = new Date(dateTimeString);
+            
+            // Add 5 hours and 30 minutes for IST
+            const istDate = new Date(utcDate.getTime() + (5.5 * 60 * 60 * 1000));
+            
+            // Format as HH:MM
+            const hours = String(istDate.getHours()).padStart(2, '0');
+            const minutes = String(istDate.getMinutes()).padStart(2, '0');
+            
+            return `${hours}:${minutes}`;
+        } catch (error) {
+            console.error('Error converting time to IST:', error);
+            return '17:00';
+        }
     }
 
     async loadMiniPredictions() {

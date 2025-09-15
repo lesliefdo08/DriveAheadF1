@@ -127,19 +127,19 @@
                     <p class="hero-subtitle">AI-powered race winner predictions with real-time updates and comprehensive analysis</p>
                     <div class="prediction-stats">
                         <div class="stat">
-                            <span class="stat-number" id="totalRaces">4</span>
+                            <span class="stat-number" id="remainingRaces">4</span>
                             <span class="stat-label">Remaining Races</span>
                         </div>
                         <div class="stat">
-                            <span class="stat-number">93.2%</span>
+                            <span class="stat-number" id="modelAccuracy">93.2%</span>
                             <span class="stat-label">Model Accuracy</span>
                         </div>
                         <div class="stat">
-                            <span class="stat-number">10</span>
+                            <span class="stat-number" id="totalTeams">10</span>
                             <span class="stat-label">F1 Teams</span>
                         </div>
                         <div class="stat">
-                            <span class="stat-number">20</span>
+                            <span class="stat-number" id="totalDrivers">20</span>
                             <span class="stat-label">Drivers</span>
                         </div>
                     </div>
@@ -150,10 +150,26 @@
         <!-- Next Race Featured Prediction -->
         <section class="featured-race-section">
             <div class="container">
-                <h2 class="section-title">
-                    <i class="fas fa-star"></i>
-                    Next Race: Azerbaijan Grand Prix
-                </h2>
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-star"></i>
+                        <span>Next Race: </span><span id="nextRaceTitle" class="race-name-highlight">Loading...</span>
+                    </h2>
+                    <div class="race-countdown" id="raceCountdown">
+                        <div class="countdown-item">
+                            <span class="countdown-number" id="days">--</span>
+                            <span class="countdown-label">Days</span>
+                        </div>
+                        <div class="countdown-item">
+                            <span class="countdown-number" id="hours">--</span>
+                            <span class="countdown-label">Hours</span>
+                        </div>
+                        <div class="countdown-item">
+                            <span class="countdown-number" id="minutes">--</span>
+                            <span class="countdown-label">Minutes</span>
+                        </div>
+                    </div>
+                </div>
                 <div class="featured-race-card" id="featuredRaceCard">
                     <!-- Populated by JavaScript -->
                 </div>
@@ -247,39 +263,29 @@
                 </div>
             </div>
         </section>
-    </main>
-
-    <script src="{{ url_for('static', filename='js/predictions.js') }}"></script>
-</body>
-</html>
-                            <span class="stat-value">91.8%</span>
-                            <span class="stat-label">Top 10</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
 
         <!-- Live Predictions Dashboard -->
-        <div class="predictions-dashboard">
-            <!-- Race Winner Predictions -->
-            <section class="prediction-card winner-predictions">
-                <div class="card-header">
-                    <h3><i class="fas fa-trophy"></i> Race Winner Predictions</h3>
-                    <div class="update-indicator">
-                        <span class="live-dot"></span>
-                        <span class="update-time" id="winner-update">Updated 5s ago</span>
-                    </div>
-                </div>
-                <div class="predictions-list" id="winner-predictions">
-                    <!-- Dynamic content -->
-                </div>
-            </section>
+        <section class="predictions-dashboard-section">
+            <div class="container">
+                <div class="predictions-dashboard">
+                    <!-- Race Winner Predictions -->
+                    <section class="prediction-card winner-predictions">
+                        <div class="card-header">
+                            <h3><i class="fas fa-trophy"></i> Race Winner Predictions</h3>
+                            <div class="update-indicator">
+                                <span class="live-dot"></span>
+                                <span class="update-time" id="winner-update">Updated 5s ago</span>
+                            </div>
+                        </div>
+                        <div class="predictions-list" id="winner-predictions">
+                            <!-- Dynamic content -->
+                        </div>
+                    </section>
 
-            <!-- Podium Predictions -->
-            <section class="prediction-card podium-predictions">
-                <div class="card-header">
-                    <h3><i class="fas fa-medal"></i> Podium Finishers</h3>
+                    <!-- Podium Predictions -->
+                    <section class="prediction-card podium-predictions">
+                        <div class="card-header">
+                            <h3><i class="fas fa-medal"></i> Podium Finishers</h3>
                     <div class="confidence-level">
                         <span class="confidence-text">Confidence: </span>
                         <span class="confidence-value" id="podium-confidence">92.4%</span>
@@ -300,7 +306,34 @@
                     </div>
                 </div>
                 <div class="impact-content">
-                    <canvas id="championship-chart"></canvas>
+                    <div class="championship-stats">
+                        <div class="stat-box driver-gap">
+                            <div class="stat-icon">
+                                <i class="fas fa-trophy"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h4 id="championship-leader">Max Verstappen</h4>
+                                <p>Championship Leader</p>
+                                <span class="points-lead" id="points-lead">+86 points</span>
+                            </div>
+                        </div>
+                        <div class="stat-box race-impact">
+                            <div class="stat-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h4 id="race-impact-points">+25</h4>
+                                <p>Potential Points Gain</p>
+                                <span class="impact-change" id="standings-change">+2 positions</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="championship-visualization">
+                        <canvas id="championship-chart"></canvas>
+                    </div>
+                    <div class="title-probabilities" id="title-probabilities">
+                        <!-- Dynamic title probability content -->
+                    </div>
                 </div>
             </section>
 
@@ -315,6 +348,33 @@
                             <option value="points">Points Finish</option>
                             <option value="fastest">Fastest Lap</option>
                         </select>
+                        <div class="confidence-indicator">
+                            <span class="confidence-label">Model Confidence:</span>
+                            <span class="confidence-value" id="model-confidence">87%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="probability-overview">
+                    <div class="prob-card favorite">
+                        <div class="driver-info">
+                            <span class="position">1st</span>
+                            <span class="driver-name" id="p1-driver">Max Verstappen</span>
+                        </div>
+                        <div class="probability" id="p1-probability">34%</div>
+                    </div>
+                    <div class="prob-card">
+                        <div class="driver-info">
+                            <span class="position">2nd</span>
+                            <span class="driver-name" id="p2-driver">Lando Norris</span>
+                        </div>
+                        <div class="probability" id="p2-probability">28%</div>
+                    </div>
+                    <div class="prob-card">
+                        <div class="driver-info">
+                            <span class="position">3rd</span>
+                            <span class="driver-name" id="p3-driver">Charles Leclerc</span>
+                        </div>
+                        <div class="probability" id="p3-probability">22%</div>
                     </div>
                 </div>
                 <div class="chart-container">
@@ -331,8 +391,77 @@
                         <span>Real-time analysis</span>
                     </div>
                 </div>
+                <div class="factors-overview">
+                    <div class="factor-summary">
+                        <div class="summary-stat">
+                            <span class="stat-label">Track Advantage</span>
+                            <span class="stat-value" id="track-advantage">Red Bull</span>
+                        </div>
+                        <div class="summary-stat">
+                            <span class="stat-label">Weather Influence</span>
+                            <span class="stat-value" id="weather-influence">Medium</span>
+                        </div>
+                    </div>
+                </div>
                 <div class="factors-grid" id="factors-grid">
-                    <!-- Dynamic factors content -->
+                    <div class="factor-item driver-form">
+                        <div class="factor-header">
+                            <i class="fas fa-user-check"></i>
+                            <h4>Driver Form</h4>
+                            <span class="factor-weight">25%</span>
+                        </div>
+                        <div class="factor-details">
+                            <div class="form-indicator">
+                                <span class="form-driver">Verstappen</span>
+                                <div class="form-bar">
+                                    <div class="form-fill" style="width: 92%"></div>
+                                </div>
+                                <span class="form-score">92%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="factor-item track-data">
+                        <div class="factor-header">
+                            <i class="fas fa-road"></i>
+                            <h4>Track Performance</h4>
+                            <span class="factor-weight">20%</span>
+                        </div>
+                        <div class="factor-details">
+                            <div class="track-stats">
+                                <span class="track-stat">Lap Record: 1:20.827</span>
+                                <span class="track-stat">DRS Zones: 3</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="factor-item car-performance">
+                        <div class="factor-header">
+                            <i class="fas fa-car"></i>
+                            <h4>Car Setup</h4>
+                            <span class="factor-weight">18%</span>
+                        </div>
+                        <div class="factor-details">
+                            <div class="setup-info">
+                                <span class="setup-item">Aerodynamics: High</span>
+                                <span class="setup-item">Tire Strategy: Medium</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="factor-item strategy">
+                        <div class="factor-header">
+                            <i class="fas fa-chess"></i>
+                            <h4>Race Strategy</h4>
+                            <span class="factor-weight">15%</span>
+                        </div>
+                        <div class="factor-details">
+                            <div class="strategy-info">
+                                <span class="strategy-item">Pit Windows: 2</span>
+                                <span class="strategy-item">Undercuts: High Risk</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -341,11 +470,76 @@
                 <div class="card-header">
                     <h3><i class="fas fa-cloud-sun"></i> Weather Impact Analysis</h3>
                     <div class="weather-status">
-                        <span class="weather-risk low">Low Risk</span>
+                        <span class="weather-risk low" id="weather-risk">Low Risk</span>
+                        <span class="weather-temp" id="current-temp">24°C</span>
                     </div>
                 </div>
-                <div class="weather-details" id="weather-details">
-                    <!-- Dynamic weather content -->
+                <div class="weather-overview">
+                    <div class="weather-cards">
+                        <div class="weather-card current">
+                            <div class="weather-icon">
+                                <i class="fas fa-sun" id="weather-icon"></i>
+                            </div>
+                            <div class="weather-info">
+                                <span class="condition" id="weather-condition">Clear Sky</span>
+                                <span class="details" id="weather-details-text">15% humidity, 5 km/h wind</span>
+                            </div>
+                        </div>
+                        <div class="weather-card forecast">
+                            <div class="forecast-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="forecast-info">
+                                <span class="forecast-time">Race Start +2h</span>
+                                <span class="forecast-change" id="forecast-change">No change expected</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="weather-details" id="weather-impact-details">
+                    <div class="impact-factors">
+                        <div class="impact-factor">
+                            <div class="factor-header">
+                                <i class="fas fa-thermometer-half"></i>
+                                <span class="factor-name">Track Temperature</span>
+                            </div>
+                            <div class="factor-impact">
+                                <span class="impact-level medium">Medium Impact</span>
+                                <span class="impact-description">Affects tire degradation</span>
+                            </div>
+                        </div>
+                        
+                        <div class="impact-factor">
+                            <div class="factor-header">
+                                <i class="fas fa-wind"></i>
+                                <span class="factor-name">Wind Speed</span>
+                            </div>
+                            <div class="factor-impact">
+                                <span class="impact-level low">Low Impact</span>
+                                <span class="impact-description">Minimal aerodynamic effect</span>
+                            </div>
+                        </div>
+                        
+                        <div class="impact-factor">
+                            <div class="factor-header">
+                                <i class="fas fa-tint"></i>
+                                <span class="factor-name">Rain Probability</span>
+                            </div>
+                            <div class="factor-impact">
+                                <span class="impact-level low">5% chance</span>
+                                <span class="impact-description">Strategy unchanged</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="weather-recommendations">
+                        <h4><i class="fas fa-lightbulb"></i> Strategy Recommendations</h4>
+                        <ul class="recommendations-list">
+                            <li>Optimal tire strategy: Hard-Medium-Soft</li>
+                            <li>DRS effectiveness: Enhanced</li>
+                            <li>Pit window: Laps 15-18, 35-40</li>
+                        </ul>
+                    </div>
                 </div>
             </section>
 
@@ -355,39 +549,124 @@
                     <h3><i class="fas fa-stopwatch"></i> Fastest Lap Prediction</h3>
                     <div class="lap-time-prediction">
                         <span class="predicted-time" id="predicted-lap-time">1:29.847</span>
+                        <span class="lap-comparison" id="lap-comparison">-0.23s vs record</span>
+                    </div>
+                </div>
+                <div class="lap-overview">
+                    <div class="lap-stats">
+                        <div class="lap-stat">
+                            <i class="fas fa-trophy"></i>
+                            <span class="stat-label">Current Record</span>
+                            <span class="stat-value">1:20.827</span>
+                            <span class="record-holder">Charles Leclerc (2023)</span>
+                        </div>
+                        <div class="lap-stat">
+                            <i class="fas fa-chart-line"></i>
+                            <span class="stat-label">Average Lap</span>
+                            <span class="stat-value">1:23.145</span>
+                            <span class="lap-context">Race pace estimate</span>
+                        </div>
                     </div>
                 </div>
                 <div class="fastest-lap-candidates" id="fastest-lap-candidates">
-                    <!-- Dynamic fastest lap content -->
-                </div>
-            </section>
-
-            <!-- Live Betting Odds Comparison -->
-            <section class="prediction-card betting-comparison">
-                <div class="card-header">
-                    <h3><i class="fas fa-balance-scale"></i> Model vs Market Odds</h3>
-                    <div class="edge-indicator">
-                        <span class="edge-text">Betting Edge: </span>
-                        <span class="edge-value positive" id="betting-edge">+12.3%</span>
+                    <h4>Top Candidates</h4>
+                    <div class="candidates-list">
+                        <div class="candidate favorite">
+                            <div class="candidate-info">
+                                <div class="driver-details">
+                                    <span class="driver-name">Max Verstappen</span>
+                                    <span class="team-name">Red Bull Racing</span>
+                                </div>
+                                <div class="candidate-stats">
+                                    <span class="probability">34%</span>
+                                    <span class="predicted-time">1:20.654</span>
+                                </div>
+                            </div>
+                            <div class="form-indicators">
+                                <div class="form-factor">
+                                    <span class="factor-name">Sector 1</span>
+                                    <div class="sector-bar">
+                                        <div class="sector-fill" style="width: 95%"></div>
+                                    </div>
+                                </div>
+                                <div class="form-factor">
+                                    <span class="factor-name">Sector 2</span>
+                                    <div class="sector-bar">
+                                        <div class="sector-fill" style="width: 88%"></div>
+                                    </div>
+                                </div>
+                                <div class="form-factor">
+                                    <span class="factor-name">Sector 3</span>
+                                    <div class="sector-bar">
+                                        <div class="sector-fill" style="width: 92%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="candidate">
+                            <div class="candidate-info">
+                                <div class="driver-details">
+                                    <span class="driver-name">Lando Norris</span>
+                                    <span class="team-name">McLaren</span>
+                                </div>
+                                <div class="candidate-stats">
+                                    <span class="probability">28%</span>
+                                    <span class="predicted-time">1:20.789</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="candidate">
+                            <div class="candidate-info">
+                                <div class="driver-details">
+                                    <span class="driver-name">Charles Leclerc</span>
+                                    <span class="team-name">Ferrari</span>
+                                </div>
+                                <div class="candidate-stats">
+                                    <span class="probability">22%</span>
+                                    <span class="predicted-time">1:20.912</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="odds-comparison" id="odds-comparison">
-                    <!-- Dynamic odds comparison -->
+                    
+                    <div class="lap-analysis">
+                        <h5>Historical Analysis</h5>
+                        <div class="analysis-points">
+                            <div class="analysis-point">
+                                <i class="fas fa-clock"></i>
+                                <span>Best qualifying laps average 0.8s faster than fastest race laps</span>
+                            </div>
+                            <div class="analysis-point">
+                                <i class="fas fa-tire"></i>
+                                <span>Fresh soft tires provide 1.2-1.5s advantage for fastest lap attempts</span>
+                            </div>
+                            <div class="analysis-point">
+                                <i class="fas fa-fuel-pump"></i>
+                                <span>Low fuel load in final stint optimal for fastest lap attempts</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
         </div>
+    </div>
+</section>
 
         <!-- Footer -->
         <footer class="predictions-footer">
-            <div class="footer-content">
-                <div class="disclaimer">
-                    <h4>Enterprise Analytics Disclaimer</h4>
-                    <p>Predictions are based on advanced machine learning models analyzing driver performance, track conditions, weather data, and historical race outcomes. Past performance does not guarantee future results. For enterprise licensing and API access, contact our sales team.</p>
-                </div>
-                <div class="footer-links">
-                    <a href="#api">API Documentation</a>
-                    <a href="#enterprise">Enterprise Solutions</a>
-                    <a href="#contact">Contact Sales</a>
+            <div class="container">
+                <div class="footer-content">
+                    <div class="disclaimer">
+                        <h4>Enterprise Analytics Disclaimer</h4>
+                        <p>Predictions are based on advanced machine learning models analyzing driver performance, track conditions, weather data, and historical race outcomes. Past performance does not guarantee future results. For enterprise licensing and API access, contact our sales team.</p>
+                    </div>
+                    <div class="footer-links">
+                        <a href="#api">API Documentation</a>
+                        <a href="#enterprise">Enterprise Solutions</a>
+                        <a href="#contact">Contact Sales</a>
+                    </div>
                 </div>
             </div>
         </footer>
