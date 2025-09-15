@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: driveahead-f1-analytics
+    env: python
+    plan: free
+    rootDir: website
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --bind 0.0.0.0:$PORT app:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.7
+      - key: LOG_LEVEL
+        value: INFO
+      - key: FLASK_ENV
+        value: production
