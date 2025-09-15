@@ -1,31 +1,25 @@
-# Build tools (must be first)
-setuptools>=68.0.0
-wheel>=0.41.0
+# Python 3.13 compatible requirements - pre-built wheels only
+flask==3.0.3
+flask-cors==4.0.1
+requests==2.32.3
+python-dotenv==1.0.1
+gunicorn==23.0.0
 
-# Web framework
-flask==2.3.3
-flask-cors==4.0.0
+# Use latest versions with Python 3.13 wheels
+pandas>=2.2.0
+numpy>=1.26.0
+matplotlib>=3.8.0
+seaborn>=0.13.0
+plotly>=5.20.0
 
-# F1 data and analytics
-fastf1==3.4.0
-pandas==2.0.3
-numpy==1.24.3
+# Machine learning - use latest compatible versions
+xgboost>=2.0.0
+scikit-learn>=1.4.0
 
-# Visualization
-matplotlib==3.7.2
-seaborn==0.12.2
-plotly==5.17.0
+# F1 data - may need to build from source but should work
+fastf1>=3.3.0
 
-# HTTP and utilities
-requests==2.31.0
-python-dotenv==1.0.0
-
-# Machine learning
-xgboost==1.7.6
-scikit-learn==1.3.0
-
-# Production server
-gunicorn==21.2.0
-Werkzeug==2.3.7
-itsdangerous==2.1.2
-click==8.1.7
+# Production dependencies
+Werkzeug>=3.0.0
+itsdangerous>=2.2.0
+click>=8.1.0
