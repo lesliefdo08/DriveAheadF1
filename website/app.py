@@ -3,7 +3,7 @@ DriveAhead - Advanced F1 Analytics Platform
 Comprehensive Backend with Jolpica API Integration, OpenF1 API, and FastF1 Support
 """
 
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, send_from_directory
 from flask_cors import CORS
 import pandas as pd
 import numpy as np
@@ -2364,6 +2364,12 @@ def api_health():
             'cache': 'active'
         }
     })
+
+# Static file serving for production (gunicorn doesn't serve static files by default)
+@app.route('/static/<path:filename>')
+def serve_static_files(filename):
+    """Serve static files in production"""
+    return send_from_directory(app.static_folder, filename)
 
 # Error handlers
 @app.errorhandler(404)
