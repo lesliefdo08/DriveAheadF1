@@ -4,11 +4,11 @@ services:
     env: python
     plan: free
     rootDir: website
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn --bind 0.0.0.0:$PORT app:app
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
+    startCommand: python -m gunicorn --bind 0.0.0.0:$PORT app:app
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11.7
+        value: "3.11"
       - key: LOG_LEVEL
         value: INFO
       - key: FLASK_ENV
