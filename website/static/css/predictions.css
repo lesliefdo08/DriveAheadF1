@@ -398,663 +398,221 @@
 }
 
 /* =============================================================================
-   FEATURED RACE SECTION - HORIZONTAL LAYOUT
+   RACE HEADER SECTION - MATCHES SCREENSHOT DESIGN
    ============================================================================= */
 
-.featured-race-section {
-    padding: var(--spacing-xxl) 0;
+.race-header-section {
+    padding: var(--spacing-xl) 0;
+    background: var(--bg-primary);
 }
 
-.section-header {
-    display: flex;
-    justify-content: space-between;
+.race-header-container {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: var(--spacing-xxl);
     align-items: center;
-    margin-bottom: var(--spacing-xl);
-}
-
-.race-name-highlight {
-    color: var(--primary-color);
-    font-weight: 700;
-}
-
-.race-countdown {
-    display: flex;
-    gap: var(--spacing-lg);
-}
-
-.countdown-item {
-    text-align: center;
-    padding: var(--spacing-sm);
-    background: rgba(229, 62, 62, 0.1);
-    border-radius: var(--border-radius);
-    min-width: 60px;
-}
-
-.countdown-number {
-    display: block;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #ffffff;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-.countdown-label {
-    font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.9);
-    text-transform: uppercase;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-}
-
-@media (max-width: 768px) {
-    .section-header {
-        flex-direction: column;
-        gap: var(--spacing-md);
-        text-align: center;
-    }
-    
-    .race-countdown {
-        gap: var(--spacing-sm);
-    }
-    
-    .countdown-item {
-        min-width: 50px;
-    }
-    
-    .countdown-number {
-        font-size: 1.2rem;
-    }
-}
-
-.featured-race-card {
-    background: linear-gradient(135deg, rgba(26, 29, 36, 0.95) 0%, rgba(16, 18, 22, 0.95) 100%);
-    backdrop-filter: blur(20px);
-    border: 2px solid rgba(229, 62, 62, 0.2);
-    border-radius: var(--border-radius-lg);
     padding: var(--spacing-xl);
-    box-shadow: 
-        var(--shadow-xl),
-        0 0 40px rgba(229, 62, 62, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    background: linear-gradient(135deg, 
+        rgba(15, 15, 15, 0.95) 0%, 
+        rgba(25, 25, 25, 0.95) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--border-radius-lg);
+    backdrop-filter: blur(20px);
+    box-shadow: var(--shadow-xl);
     position: relative;
     overflow: hidden;
-    transform: perspective(1000px) rotateX(0deg);
-    transition: var(--transition);
 }
 
-.featured-race-card:hover {
-    transform: perspective(1000px) rotateX(-2deg) translateY(-8px);
-    box-shadow: 
-        0 25px 50px rgba(0, 0, 0, 0.4),
-        0 0 60px rgba(229, 62, 62, 0.2),
-        inset 0 1px 0 rgba(255, 255, 255, 0.15);
-    border-color: rgba(229, 62, 62, 0.4);
-}
-
-.featured-race-card::before {
+.race-header-container::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    height: 5px;
+    height: 4px;
     background: linear-gradient(90deg, 
         var(--primary-color) 0%, 
         var(--accent-color) 50%,
         var(--primary-color) 100%);
-    box-shadow: 0 2px 10px rgba(229, 62, 62, 0.4);
     animation: shimmer 3s ease-in-out infinite;
 }
 
-@keyframes shimmer {
-    0%, 100% { opacity: 0.8; }
-    50% { opacity: 1; }
-}
-
-.featured-race-card::after {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: conic-gradient(
-        from 0deg at 50% 50%,
-        transparent 0deg,
-        rgba(229, 62, 62, 0.1) 60deg,
-        transparent 120deg,
-        rgba(255, 215, 0, 0.1) 180deg,
-        transparent 240deg,
-        rgba(229, 62, 62, 0.1) 300deg,
-        transparent 360deg
-    );
-    animation: rotate 20s linear infinite;
-    z-index: -1;
-}
-
-@keyframes rotate {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* Featured Race Content */
-.featured-race-content {
-    display: grid;
-    grid-template-columns: 320px 1fr 280px;
-    gap: var(--spacing-xl);
-    align-items: start;
-    min-height: 400px;
-}
-
-.race-header {
+/* Race Information */
+.race-info {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-md);
-    padding: var(--spacing-lg);
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: var(--border-radius);
-    min-width: 300px;
 }
 
-.race-info h3 {
-    color: var(--text-primary);
-    font-size: 1.4rem;
-    font-weight: 700;
-    margin-bottom: var(--spacing-sm);
-    line-height: 1.2;
-    text-align: center;
-    padding-bottom: var(--spacing-sm);
-    border-bottom: 2px solid rgba(229, 62, 62, 0.3);
-}
-
-.race-details {
-    color: var(--primary-color);
-    font-weight: 600;
-    font-size: 1rem;
-    text-align: center;
-    background: rgba(229, 62, 62, 0.1);
-    padding: var(--spacing-sm);
-    border-radius: 6px;
-    border: 1px solid rgba(229, 62, 62, 0.2);
-}
-
-.circuit-name {
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-    text-align: center;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-top: var(--spacing-sm);
-}
-
-.featured-predictions {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-lg);
-    padding: var(--spacing-lg);
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: var(--border-radius);
-}
-
-.featured-predictions h4 {
-    color: var(--text-primary);
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin: 0 0 var(--spacing-md) 0;
-    text-align: center;
-    padding-bottom: var(--spacing-sm);
-    border-bottom: 1px solid rgba(229, 62, 62, 0.3);
-}
-
-.driver-card.favorite {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    gap: var(--spacing-lg);
-    align-items: center;
-    background: linear-gradient(135deg, rgba(229, 62, 62, 0.15) 0%, rgba(229, 62, 62, 0.08) 100%);
-    border: 2px solid rgba(229, 62, 62, 0.4);
-    border-radius: 12px;
-    padding: var(--spacing-lg);
-    margin-bottom: var(--spacing-lg);
-    position: relative;
-    overflow: hidden;
-}
-
-.driver-card.favorite::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
-}
-
-.position {
-    font-size: 1.5rem;
-    font-weight: 800;
-    color: #ffffff;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    padding: 0.5rem 0.8rem;
-    border-radius: 8px;
-    min-width: 50px;
-    text-align: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.driver-info {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-xs);
-    text-align: center;
-}
-
-.driver-name {
-    font-weight: 700;
-    color: var(--text-primary);
-    font-size: 1.2rem;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-}
-
-.team-name {
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    font-weight: 600;
-}
-
-.win-probability {
-    font-size: 2rem;
-    font-weight: 800;
-    color: var(--accent-color);
-    text-shadow: 0 2px 4px rgba(255, 215, 0, 0.3);
-}
-
-.contenders-list {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-sm);
-}
-
-.contender {
-    display: grid;
-    grid-template-columns: 40px 1fr 1fr 60px;
-    gap: var(--spacing-md);
-    align-items: center;
-    padding: var(--spacing-md) var(--spacing-lg);
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    font-size: 0.9rem;
-    transition: var(--transition);
-}
-
-.contender:hover {
-    background: linear-gradient(135deg, rgba(229, 62, 62, 0.08) 0%, rgba(229, 62, 62, 0.02) 100%);
-    border-color: rgba(229, 62, 62, 0.2);
-    transform: translateX(4px);
-}
-
-.contender .pos {
-    font-weight: 700;
-    color: var(--text-primary);
-    text-align: center;
-    background: rgba(229, 62, 62, 0.15);
-    padding: 0.3rem;
-    border-radius: 4px;
-    min-width: 30px;
-}
-
-.contender .driver {
-    color: var(--text-primary);
-    font-weight: 600;
-    font-size: 0.95rem;
-}
-
-.contender .team {
-    color: var(--text-secondary);
-    font-size: 0.85rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-}
-
-.contender .prob {
-    color: var(--accent-color);
-    font-weight: 700;
-    font-size: 1rem;
-    text-align: right;
-}
-
-.race-stats {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-md);
-    padding: var(--spacing-lg);
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: var(--border-radius);
-    min-width: 260px;
-}
-
-.race-stats h4 {
-    color: var(--text-primary);
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin: 0 0 var(--spacing-md) 0;
-    text-align: center;
-    padding-bottom: var(--spacing-sm);
-    border-bottom: 1px solid rgba(229, 62, 62, 0.3);
-}
-
-.stats-grid {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-sm);
-}
-
-.stat-item {
-    background: linear-gradient(135deg, rgba(229, 62, 62, 0.08) 0%, rgba(229, 62, 62, 0.03) 100%);
-    border: 1px solid rgba(229, 62, 62, 0.2);
-    border-radius: 8px;
-    padding: var(--spacing-md);
-    text-align: center;
-    transition: var(--transition);
-}
-
-.stat-item:hover {
-    background: linear-gradient(135deg, rgba(229, 62, 62, 0.12) 0%, rgba(229, 62, 62, 0.05) 100%);
-    border-color: rgba(229, 62, 62, 0.3);
-    transform: translateY(-2px);
-}
-
-.stat-label {
-    display: block;
-    font-size: 0.75rem;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    margin-bottom: var(--spacing-xs);
-    font-weight: 500;
-}
-
-.stat-value {
-    display: block;
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin-bottom: var(--spacing-xs);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-}
-
-.stat-detail {
-    display: block;
-    font-size: 0.65rem;
-    color: var(--text-secondary);
-}
-
-.race-countdown {
-    background: linear-gradient(145deg, 
-        rgba(229, 62, 62, 0.15) 0%,
-        rgba(229, 62, 62, 0.05) 100%);
-    border: 2px solid rgba(229, 62, 62, 0.3);
-    padding: var(--spacing-lg);
-    border-radius: var(--border-radius-lg);
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-    backdrop-filter: blur(10px);
-    box-shadow: 
-        inset 0 2px 4px rgba(255, 255, 255, 0.1),
-        0 8px 20px rgba(229, 62, 62, 0.2);
-    transition: var(--transition);
-}
-
-.race-countdown::before {
-    content: '';
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    background: linear-gradient(45deg, 
-        rgba(229, 62, 62, 0.6),
-        rgba(255, 215, 0, 0.6),
-        rgba(229, 62, 62, 0.6));
-    border-radius: var(--border-radius-lg);
-    z-index: -1;
-    animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { opacity: 0.5; }
-    50% { opacity: 0.8; }
-}
-
-.race-countdown:hover {
-    transform: scale(1.02);
-    box-shadow: 
-        inset 0 2px 4px rgba(255, 255, 255, 0.15),
-        0 12px 25px rgba(229, 62, 62, 0.3);
-}
-
-.countdown-label {
-    display: block;
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 0.8rem;
-    margin-bottom: var(--spacing-xs);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-}
-
-.countdown-time {
-    color: #ffffff;
-    font-weight: 600;
-    font-size: 1.1rem;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-.featured-predictions h4 {
-    color: var(--text-primary);
-    font-size: 1.2rem;
-    margin-bottom: var(--spacing-md);
-}
-
-.winner-prediction {
-    background: linear-gradient(145deg, 
-        rgba(229, 62, 62, 0.12) 0%,
-        rgba(255, 215, 0, 0.05) 50%,
-        rgba(229, 62, 62, 0.08) 100%);
-    border: 2px solid rgba(229, 62, 62, 0.25);
-    padding: var(--spacing-xl);
-    border-radius: var(--border-radius-lg);
-    margin-bottom: var(--spacing-lg);
-    text-align: center;
-    position: relative;
-    backdrop-filter: blur(15px);
-    box-shadow: 
-        0 8px 32px rgba(229, 62, 62, 0.15),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    transition: var(--transition);
-    overflow: hidden;
-}
-
-.winner-prediction::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 100px;
-    height: 100px;
-    background: radial-gradient(circle, 
-        rgba(255, 215, 0, 0.2) 0%,
-        transparent 70%);
-    transform: translate(-50%, -50%);
-    border-radius: 50%;
-    animation: glow 3s ease-in-out infinite;
-}
-
-@keyframes glow {
-    0%, 100% { 
-        opacity: 0.3;
-        transform: translate(-50%, -50%) scale(1);
-    }
-    50% { 
-        opacity: 0.6;
-        transform: translate(-50%, -50%) scale(1.2);
-    }
-}
-
-.winner-prediction:hover {
-    transform: translateY(-5px);
-    box-shadow: 
-        0 15px 40px rgba(229, 62, 62, 0.25),
-        inset 0 1px 0 rgba(255, 255, 255, 0.15);
-    border-color: rgba(229, 62, 62, 0.4);
-}
-
-.driver-card .driver-name {
-    font-size: 1.4rem;
-    font-weight: 800;
-    color: var(--text-primary);
-    margin-bottom: var(--spacing-xs);
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-    letter-spacing: 0.5px;
-    position: relative;
-    z-index: 2;
-}
-
-.driver-card .team-name {
-    color: var(--accent-color);
-    font-size: 1rem;
-    font-weight: 600;
-    margin-bottom: var(--spacing-sm);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    position: relative;
-    z-index: 2;
-}
-
-.win-probability {
-    font-size: 2rem;
+.race-title {
+    font-size: 3rem;
     font-weight: 900;
-    background: linear-gradient(45deg, 
-        var(--primary-color) 0%,
-        var(--accent-color) 50%,
-        var(--primary-color) 100%);
+    background: linear-gradient(135deg, 
+        var(--primary-color) 0%, 
+        #ff6b6b 50%,
+        var(--accent-color) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    text-shadow: 0 4px 8px rgba(229, 62, 62, 0.4);
-    position: relative;
-    z-index: 2;
-    animation: textPulse 2s ease-in-out infinite;
+    line-height: 1.1;
+    margin: 0;
+    text-shadow: 0 4px 8px rgba(229, 62, 62, 0.3);
+    animation: titleGlow 4s ease-in-out infinite;
 }
 
-@keyframes textPulse {
+@keyframes titleGlow {
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(1.2); }
+}
+
+.race-details {
+    display: flex;
+    gap: var(--spacing-lg);
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.race-date {
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.race-status {
+    background: linear-gradient(135deg, 
+        var(--primary-color) 0%, 
+        #e53e3e 100%);
+    color: white;
+    padding: var(--spacing-xs) var(--spacing-md);
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 2px 8px rgba(229, 62, 62, 0.3);
+    animation: statusPulse 2s ease-in-out infinite;
+}
+
+@keyframes statusPulse {
     0%, 100% { 
         transform: scale(1);
-        filter: brightness(1);
+        box-shadow: 0 2px 8px rgba(229, 62, 62, 0.3);
     }
     50% { 
-        transform: scale(1.05);
-        filter: brightness(1.2);
+        transform: scale(1.02);
+        box-shadow: 0 4px 12px rgba(229, 62, 62, 0.5);
     }
 }
 
-.top-contenders h5 {
-    color: var(--text-primary);
+.race-weather {
+    color: var(--text-secondary);
     font-size: 1rem;
-    margin-bottom: var(--spacing-sm);
-}
-
-.contenders-list {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-xs);
-}
-
-.contender {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    padding: var(--spacing-sm) var(--spacing-md);
-    background: linear-gradient(135deg, 
-        rgba(255, 255, 255, 0.08) 0%,
-        rgba(255, 255, 255, 0.02) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: var(--border-radius);
-    transition: var(--transition);
-    position: relative;
-    backdrop-filter: blur(10px);
-}
-
-.contender::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 3px;
-    background: linear-gradient(
-        to bottom,
-        rgba(229, 62, 62, 0.6),
-        rgba(255, 215, 0, 0.6)
-    );
-    border-radius: 0 3px 3px 0;
-    opacity: 0;
-    transition: var(--transition);
-}
-
-.contender:hover {
-    background: linear-gradient(135deg, 
-        rgba(255, 255, 255, 0.12) 0%,
-        rgba(229, 62, 62, 0.05) 100%);
-    border-color: rgba(229, 62, 62, 0.2);
-    transform: translateX(5px);
-}
-
-.contender:hover::before {
-    opacity: 1;
-}
-
-.contender.favorite {
-    background: linear-gradient(135deg, 
-        rgba(229, 62, 62, 0.15) 0%,
-        rgba(255, 215, 0, 0.05) 100%);
-    border: 2px solid rgba(229, 62, 62, 0.3);
-    box-shadow: 0 4px 15px rgba(229, 62, 62, 0.2);
-}
-
-.contender.favorite::before {
-    opacity: 1;
-    width: 4px;
-}
-
-.contender .pos {
-    width: 20px;
-    font-weight: 600;
-    color: var(--primary-color);
-}
-
-.contender .driver {
-    flex: 1;
-    color: var(--text-primary);
     font-weight: 500;
 }
 
-.contender .prob {
-    color: var(--primary-color);
+/* Model Accuracy Display */
+.model-accuracy {
+    text-align: center;
+    padding: var(--spacing-lg);
+    background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.03) 0%, 
+        rgba(255, 255, 255, 0.01) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--border-radius-lg);
+    backdrop-filter: blur(10px);
+}
+
+.model-accuracy h3 {
+    color: var(--text-primary);
+    font-size: 1.2rem;
     font-weight: 600;
+    margin-bottom: var(--spacing-lg);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.accuracy-metrics {
+    display: flex;
+    gap: var(--spacing-xl);
+    justify-content: center;
+}
+
+.accuracy-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.accuracy-percentage {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: #00ff88;
+    text-shadow: 
+        0 0 10px rgba(0, 255, 136, 0.5),
+        0 2px 4px rgba(0, 0, 0, 0.3);
+    animation: accuracyGlow 3s ease-in-out infinite;
+    line-height: 1;
+}
+
+@keyframes accuracyGlow {
+    0%, 100% { 
+        color: #00ff88;
+        text-shadow: 
+            0 0 10px rgba(0, 255, 136, 0.5),
+            0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    50% { 
+        color: #00ffaa;
+        text-shadow: 
+            0 0 15px rgba(0, 255, 136, 0.8),
+            0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+}
+
+.accuracy-label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .race-header-container {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-xl);
+        text-align: center;
+    }
+    
+    .race-title {
+        font-size: 2.5rem;
+    }
+    
+    .accuracy-metrics {
+        gap: var(--spacing-lg);
+    }
 }
 
 @media (max-width: 768px) {
-    .featured-race-content {
-        grid-template-columns: 1fr;
-        gap: var(--spacing-lg);
+    .race-title {
+        font-size: 2rem;
+    }
+    
+    .race-details {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+        align-items: center;
+    }
+    
+    .accuracy-metrics {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+    
+    .accuracy-percentage {
+        font-size: 2rem;
     }
 }
 
@@ -1773,6 +1331,142 @@
 /* =============================================================================
    LIVE PREDICTIONS DASHBOARD
    ============================================================================= */
+
+/* Race Header Card */
+.race-header-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-lg) var(--spacing-xl);
+    margin-bottom: var(--spacing-lg);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.race-info {
+    flex: 1;
+}
+
+.race-title {
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    margin: 0 0 var(--spacing-sm) 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(135deg, var(--primary-color) 0%, #ff4444 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.race-details {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+}
+
+.race-date {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.race-status {
+    background: linear-gradient(45deg, #ff4444, #ff6666);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    animation: pulse 2s infinite;
+    box-shadow: 0 4px 8px rgba(255, 68, 68, 0.3);
+}
+
+.race-weather {
+    color: var(--text-muted);
+    font-size: 1rem;
+}
+
+.model-accuracy {
+    text-align: right;
+}
+
+.model-accuracy h3 {
+    color: var(--text-primary);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0 0 var(--spacing-md) 0;
+}
+
+.accuracy-metrics {
+    display: flex;
+    gap: var(--spacing-lg);
+}
+
+.accuracy-item {
+    text-align: center;
+    min-width: 100px;
+}
+
+.accuracy-percentage {
+    display: block;
+    font-size: 2.5rem;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.accuracy-percentage.race-winner {
+    color: #00ff88;  /* Bright green like in screenshot */
+}
+
+.accuracy-percentage.podium {
+    color: #00ff88;  /* Bright green like in screenshot */
+}
+
+.accuracy-percentage.top-10 {
+    color: #00ff88;  /* Bright green like in screenshot */
+}
+
+.accuracy-label {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .race-header-card {
+        flex-direction: column;
+        gap: var(--spacing-lg);
+        text-align: center;
+    }
+    
+    .race-title {
+        font-size: 2rem;
+    }
+    
+    .accuracy-metrics {
+        justify-content: center;
+    }
+    
+    .model-accuracy {
+        text-align: center;
+    }
+}
 
 /* Predictions Dashboard Section */
 .predictions-dashboard-section {

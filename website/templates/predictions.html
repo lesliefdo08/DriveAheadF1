@@ -127,19 +127,19 @@
                     <p class="hero-subtitle">AI-powered race winner predictions with real-time updates and comprehensive analysis</p>
                     <div class="prediction-stats">
                         <div class="stat">
-                            <span class="stat-number" id="remainingRaces">4</span>
+                            <span class="stat-number" id="remainingRaces">--</span>
                             <span class="stat-label">Remaining Races</span>
                         </div>
                         <div class="stat">
-                            <span class="stat-number" id="modelAccuracy">93.2%</span>
+                            <span class="stat-number" id="modelAccuracy">--.-%</span>
                             <span class="stat-label">Model Accuracy</span>
                         </div>
                         <div class="stat">
-                            <span class="stat-number" id="totalTeams">10</span>
+                            <span class="stat-number" id="totalTeams">--</span>
                             <span class="stat-label">F1 Teams</span>
                         </div>
                         <div class="stat">
-                            <span class="stat-number" id="totalDrivers">20</span>
+                            <span class="stat-number" id="totalDrivers">--</span>
                             <span class="stat-label">Drivers</span>
                         </div>
                     </div>
@@ -147,31 +147,38 @@
             </div>
         </section>
 
-        <!-- Next Race Featured Prediction -->
-        <section class="featured-race-section">
+        <!-- Race Header with Model Accuracy (matches screenshot design) -->
+        <section class="race-header-section">
             <div class="container">
-                <div class="section-header">
-                    <h2 class="section-title">
-                        <i class="fas fa-star"></i>
-                        <span>Next Race: </span><span id="nextRaceTitle" class="race-name-highlight">Loading...</span>
-                    </h2>
-                    <div class="race-countdown" id="raceCountdown">
-                        <div class="countdown-item">
-                            <span class="countdown-number" id="days">--</span>
-                            <span class="countdown-label">Days</span>
-                        </div>
-                        <div class="countdown-item">
-                            <span class="countdown-number" id="hours">--</span>
-                            <span class="countdown-label">Hours</span>
-                        </div>
-                        <div class="countdown-item">
-                            <span class="countdown-number" id="minutes">--</span>
-                            <span class="countdown-label">Minutes</span>
+                <div class="race-header-container">
+                    <!-- Race Information -->
+                    <div class="race-info">
+                        <h1 class="race-title" id="raceTitle">Loading...</h1>
+                        <div class="race-details">
+                            <span class="race-date" id="raceDate">Loading...</span>
+                            <span class="race-status" id="raceStatus">LIVE PREDICTIONS</span>
+                            <span class="race-weather" id="raceWeather">Loading...</span>
                         </div>
                     </div>
-                </div>
-                <div class="featured-race-card" id="featuredRaceCard">
-                    <!-- Populated by JavaScript -->
+                    
+                    <!-- Model Accuracy Display -->
+                    <div class="model-accuracy">
+                        <h3>Model Accuracy</h3>
+                        <div class="accuracy-metrics">
+                            <div class="accuracy-item">
+                                <span class="accuracy-percentage" id="winnerAccuracy">--.--%</span>
+                                <span class="accuracy-label">Race Winner</span>
+                            </div>
+                            <div class="accuracy-item">
+                                <span class="accuracy-percentage" id="podiumAccuracy">--.--%</span>
+                                <span class="accuracy-label">Podium</span>
+                            </div>
+                            <div class="accuracy-item">
+                                <span class="accuracy-percentage" id="top10Accuracy">--.--%</span>
+                                <span class="accuracy-label">Top 10</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -219,9 +226,9 @@
                                     <h3>Overall Accuracy</h3>
                                     <div class="accuracy-meter">
                                         <div class="meter-bar">
-                                            <div class="meter-fill" data-width="93.2"></div>
+                                            <div class="meter-fill" id="overall-accuracy-bar" data-width="0"></div>
                                         </div>
-                                        <span class="accuracy-percentage">93.2%</span>
+                                        <span class="accuracy-percentage" id="overall-accuracy">--.-%</span>
                                     </div>
                                     <p>Across all race predictions in 2024-2025</p>
                                 </div>
@@ -235,9 +242,9 @@
                                     <h3>Street Circuit Accuracy</h3>
                                     <div class="accuracy-meter">
                                         <div class="meter-bar">
-                                            <div class="meter-fill" data-width="95.1"></div>
+                                            <div class="meter-fill" id="street-circuit-bar" data-width="0"></div>
                                         </div>
-                                        <span class="accuracy-percentage">95.1%</span>
+                                        <span class="accuracy-percentage" id="street-circuit-accuracy">--.-%</span>
                                     </div>
                                     <p>Specialized for circuits like Monaco & Singapore</p>
                                 </div>
@@ -251,9 +258,9 @@
                                     <h3>Podium Prediction</h3>
                                     <div class="accuracy-meter">
                                         <div class="meter-bar">
-                                            <div class="meter-fill" data-width="91.8"></div>
+                                            <div class="meter-fill" id="podium-prediction-bar" data-width="0"></div>
                                         </div>
-                                        <span class="accuracy-percentage">91.8%</span>
+                                        <span class="accuracy-percentage" id="podium-prediction-accuracy">--.-%</span>
                                     </div>
                                     <p>Top 3 finishers prediction accuracy</p>
                                 </div>
@@ -312,9 +319,9 @@
                                 <i class="fas fa-trophy"></i>
                             </div>
                             <div class="stat-info">
-                                <h4 id="championship-leader">Max Verstappen</h4>
+                                <h4 id="championship-leader">Loading...</h4>
                                 <p>Championship Leader</p>
-                                <span class="points-lead" id="points-lead">+86 points</span>
+                                <span class="points-lead" id="points-lead">-- points</span>
                             </div>
                         </div>
                         <div class="stat-box race-impact">
@@ -322,9 +329,9 @@
                                 <i class="fas fa-chart-line"></i>
                             </div>
                             <div class="stat-info">
-                                <h4 id="race-impact-points">+25</h4>
+                                <h4 id="race-impact-points">--</h4>
                                 <p>Potential Points Gain</p>
-                                <span class="impact-change" id="standings-change">+2 positions</span>
+                                <span class="impact-change" id="standings-change">-- positions</span>
                             </div>
                         </div>
                     </div>
@@ -350,7 +357,7 @@
                         </select>
                         <div class="confidence-indicator">
                             <span class="confidence-label">Model Confidence:</span>
-                            <span class="confidence-value" id="model-confidence">87%</span>
+                            <span class="confidence-value" id="model-confidence">--%</span>
                         </div>
                     </div>
                 </div>
@@ -358,23 +365,23 @@
                     <div class="prob-card favorite">
                         <div class="driver-info">
                             <span class="position">1st</span>
-                            <span class="driver-name" id="p1-driver">Max Verstappen</span>
+                            <span class="driver-name" id="p1-driver">Loading...</span>
                         </div>
-                        <div class="probability" id="p1-probability">34%</div>
+                        <div class="probability" id="p1-probability">--%</div>
                     </div>
                     <div class="prob-card">
                         <div class="driver-info">
                             <span class="position">2nd</span>
-                            <span class="driver-name" id="p2-driver">Lando Norris</span>
+                            <span class="driver-name" id="p2-driver">Loading...</span>
                         </div>
-                        <div class="probability" id="p2-probability">28%</div>
+                        <div class="probability" id="p2-probability">--%</div>
                     </div>
                     <div class="prob-card">
                         <div class="driver-info">
                             <span class="position">3rd</span>
-                            <span class="driver-name" id="p3-driver">Charles Leclerc</span>
+                            <span class="driver-name" id="p3-driver">Loading...</span>
                         </div>
-                        <div class="probability" id="p3-probability">22%</div>
+                        <div class="probability" id="p3-probability">--%</div>
                     </div>
                 </div>
                 <div class="chart-container">
@@ -395,11 +402,11 @@
                     <div class="factor-summary">
                         <div class="summary-stat">
                             <span class="stat-label">Track Advantage</span>
-                            <span class="stat-value" id="track-advantage">Red Bull</span>
+                            <span class="stat-value" id="track-advantage">Loading...</span>
                         </div>
                         <div class="summary-stat">
                             <span class="stat-label">Weather Influence</span>
-                            <span class="stat-value" id="weather-influence">Medium</span>
+                            <span class="stat-value" id="weather-influence">Loading...</span>
                         </div>
                     </div>
                 </div>
@@ -570,65 +577,8 @@
                 </div>
                 <div class="fastest-lap-candidates" id="fastest-lap-candidates">
                     <h4>Top Candidates</h4>
-                    <div class="candidates-list">
-                        <div class="candidate favorite">
-                            <div class="candidate-info">
-                                <div class="driver-details">
-                                    <span class="driver-name">Max Verstappen</span>
-                                    <span class="team-name">Red Bull Racing</span>
-                                </div>
-                                <div class="candidate-stats">
-                                    <span class="probability">34%</span>
-                                    <span class="predicted-time">1:20.654</span>
-                                </div>
-                            </div>
-                            <div class="form-indicators">
-                                <div class="form-factor">
-                                    <span class="factor-name">Sector 1</span>
-                                    <div class="sector-bar">
-                                        <div class="sector-fill" style="width: 95%"></div>
-                                    </div>
-                                </div>
-                                <div class="form-factor">
-                                    <span class="factor-name">Sector 2</span>
-                                    <div class="sector-bar">
-                                        <div class="sector-fill" style="width: 88%"></div>
-                                    </div>
-                                </div>
-                                <div class="form-factor">
-                                    <span class="factor-name">Sector 3</span>
-                                    <div class="sector-bar">
-                                        <div class="sector-fill" style="width: 92%"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="candidate">
-                            <div class="candidate-info">
-                                <div class="driver-details">
-                                    <span class="driver-name">Lando Norris</span>
-                                    <span class="team-name">McLaren</span>
-                                </div>
-                                <div class="candidate-stats">
-                                    <span class="probability">28%</span>
-                                    <span class="predicted-time">1:20.789</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="candidate">
-                            <div class="candidate-info">
-                                <div class="driver-details">
-                                    <span class="driver-name">Charles Leclerc</span>
-                                    <span class="team-name">Ferrari</span>
-                                </div>
-                                <div class="candidate-stats">
-                                    <span class="probability">22%</span>
-                                    <span class="predicted-time">1:20.912</span>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="candidates-list" id="fastest-lap-candidates-list">
+                        <!-- Populated by JavaScript from API -->
                     </div>
                     
                     <div class="lap-analysis">
@@ -673,48 +623,5 @@
     </div>
 
     <script src="{{ url_for('static', filename='js/predictions.js') }}"></script>
-    
-    <script>
-        // Initialize meter animations when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            // Set the meter fill data attributes for animation
-            const meters = [
-                { selector: '.performance-cards .meter-fill:nth-of-type(1)', width: 93.2 },
-                { selector: '.performance-cards .meter-fill:nth-of-type(2)', width: 95.1 },
-                { selector: '.performance-cards .meter-fill:nth-of-type(3)', width: 91.8 }
-            ];
-            
-            meters.forEach((meter, index) => {
-                const element = document.querySelector(`.performance-card:nth-child(${index + 1}) .meter-fill`);
-                if (element) {
-                    element.setAttribute('data-width', meter.width);
-                    // Trigger animation after a delay
-                    setTimeout(() => {
-                        element.style.width = meter.width + '%';
-                    }, 500 + (index * 200));
-                }
-            });
-
-            // Test responsive design
-            function testResponsiveDesign() {
-                const viewportWidth = window.innerWidth;
-                console.log('📱 Viewport width:', viewportWidth);
-                
-                if (viewportWidth <= 480) {
-                    console.log('📱 Mobile view active');
-                } else if (viewportWidth <= 768) {
-                    console.log('📱 Tablet view active');
-                } else if (viewportWidth <= 1024) {
-                    console.log('📱 Desktop small view active');
-                } else {
-                    console.log('📱 Desktop large view active');
-                }
-            }
-
-            // Test on load and resize
-            testResponsiveDesign();
-            window.addEventListener('resize', testResponsiveDesign);
-        });
-    </script>
 </body>
 </html>
