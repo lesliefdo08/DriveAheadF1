@@ -1,9 +1,8 @@
-// DriveAhead Live Predictions App - Modern JavaScript
 class PredictionsApp {
     constructor() {
         this.apiBaseUrl = '/api';
         this.cache = new Map();
-        this.cacheTimeout = 5 * 60 * 1000; // 5 minutes
+        this.cacheTimeout = 5 * 60 * 1000; 
         this.init();
     }
 

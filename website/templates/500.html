@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Error - DriveAhead F1 Analytics</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .error-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--gradient-dark);
+            padding: 2rem;
+        }
+        
+        .error-content {
+            text-align: center;
+            max-width: 700px;
+            background: var(--secondary-gray);
+            padding: 3rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-soft);
+        }
+        
+        .error-code {
+            font-size: 5rem;
+            font-weight: bold;
+            color: var(--primary-red);
+            margin-bottom: 1rem;
+            text-shadow: 0 4px 8px rgba(220, 20, 60, 0.3);
+        }
+        
+        .error-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+        }
+        
+        .error-message {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+        
+        .error-id {
+            font-family: monospace;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            background: var(--primary-black);
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-sm);
+            margin-bottom: 2rem;
+            display: inline-block;
+        }
+        
+        .error-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+        
+        .btn-error {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--radius-md);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all var(--transition-smooth);
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-light);
+            border: 1px solid var(--border-color);
+        }
+        
+        .btn-error:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .f1-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.6;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: rgba(220, 20, 60, 0.1);
+            border-radius: var(--radius-md);
+        }
+        
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            background: var(--primary-red);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .troubleshoot-steps {
+            text-align: left;
+            background: var(--primary-black);
+            padding: 1.5rem;
+            border-radius: var(--radius-md);
+            margin-top: 2rem;
+        }
+        
+        .troubleshoot-steps h3 {
+            color: var(--text-light);
+            margin-bottom: 1rem;
+        }
+        
+        .troubleshoot-steps ol {
+            color: var(--text-muted);
+            line-height: 1.8;
+            padding-left: 1.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .error-content {
+                padding: 2rem 1.5rem;
+            }
+            
+            .error-code {
+                font-size: 4rem;
+            }
+            
+            .error-title {
+                font-size: 1.5rem;
+            }
+            
+            .error-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn-error {
+                width: 100%;
+                max-width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-content">
+            <div class="f1-icon">⚠️</div>
+            <div class="error-code">500</div>
+            <h1 class="error-title">Service Temporarily Unavailable</h1>
+            
+            <div class="status-indicator">
+                <div class="status-dot"></div>
+                <span>Systems are experiencing technical difficulties</span>
+            </div>
+            
+            <p class="error-message">
+                Our F1 analytics platform is currently experiencing technical difficulties. 
+                Our engineering team has been notified and is working to restore full service.
+                Please try again in a few minutes.
+            </p>
+            
+            {% if error_id %}
+            <div class="error-id">
+                Error ID: {{ error_id }}
+            </div>
+            {% endif %}
+            
+            <div class="error-actions">
+                <a href="{{ url_for('index') }}" class="btn-error btn-primary">
+                    🏠 Back to Home
+                </a>
+                <button onclick="location.reload()" class="btn-error btn-secondary">
+                    🔄 Retry
+                </button>
+                <a href="mailto:support@driveahead.com?subject=Error%20Report&body=Error%20ID:%20{{ error_id or 'N/A' }}" 
+                   class="btn-error btn-secondary">
+                    📧 Report Issue
+                </a>
+            </div>
+            
+            <div class="troubleshoot-steps">
+                <h3>🔧 Quick Troubleshooting</h3>
+                <ol>
+                    <li>Wait 2-3 minutes and refresh the page</li>
+                    <li>Clear your browser cache and cookies</li>
+                    <li>Try using a different browser or incognito/private mode</li>
+                    <li>Check our status page for known issues</li>
+                    <li>Contact support if the problem persists</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add animation and auto-retry functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const errorContent = document.querySelector('.error-content');
+            errorContent.style.opacity = '0';
+            errorContent.style.transform = 'translateY(30px)';
+            
+            setTimeout(() => {
+                errorContent.style.transition = 'all 0.6s ease-out';
+                errorContent.style.opacity = '1';
+                errorContent.style.transform = 'translateY(0)';
+            }, 100);
+            
+            // Auto-retry after 30 seconds
+            setTimeout(() => {
+                const retryBtn = document.querySelector('.btn-error[onclick="location.reload()"]');
+                if (retryBtn) {
+                    retryBtn.textContent = '🔄 Auto-retrying...';
+                    retryBtn.style.opacity = '0.7';
+                    location.reload();
+                }
+            }, 30000);
+        });
+    </script>
+</body>
+</html>

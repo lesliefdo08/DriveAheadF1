@@ -2,6 +2,8 @@
 class PredictionsApp {
     constructor() {
         this.apiUrl = '/api';
+        this.refreshInterval = null;
+        this.lastRaceUpdate = null;
         this.init();
     }
 
@@ -22,10 +24,99 @@ class PredictionsApp {
             await this.loadFastestLapCandidates();
             await this.loadLivePredictions();
             
+            // Set up auto-refresh for race transitions
+            this.setupAutoRefresh();
+            
             console.log('✅ All prediction data loaded successfully');
         } catch (error) {
             console.error('❌ Failed to initialize predictions:', error);
         }
+    }
+    
+    setupAutoRefresh() {
+        // Refresh every 30 minutes to catch race transitions
+        this.refreshInterval = setInterval(async () => {
+            console.log('🔄 Checking for race updates...');
+            await this.checkForRaceUpdates();
+        }, 30 * 60 * 1000); // 30 minutes
+        
+        // More frequent checks on weekends (every 10 minutes)
+        const now = new Date();
+        if (now.getDay() >= 5) { // Friday, Saturday, Sunday
+            clearInterval(this.refreshInterval);
+            this.refreshInterval = setInterval(async () => {
+                console.log('🏁 Weekend race update check...');
+                await this.checkForRaceUpdates();
+            }, 10 * 60 * 1000); // 10 minutes
+        }
+    }
+    
+    async checkForRaceUpdates() {
+        try {
+            const response = await fetch(`${this.apiUrl}/live-predictions`);
+            const data = await response.json();
+            
+            if (data.race_info) {
+                const currentRace = `${data.race_info.name}_${data.race_info.date}`;
+                
+                // Check if race has changed
+                if (this.lastRaceUpdate && this.lastRaceUpdate !== currentRace) {
+                    console.log('🏎️ Race transition detected! Refreshing all data...');
+                    await this.refreshAllData();
+                }
+                
+                this.lastRaceUpdate = currentRace;
+            }
+        } catch (error) {
+            console.error('Error checking for race updates:', error);
+        }
+    }
+    
+    async refreshAllData() {
+        try {
+            // Force refresh race data on server
+            await fetch(`${this.apiUrl}/refresh-race-data`);
+            
+            // Reload all components
+            await this.loadRaceHeader();
+            await this.loadNextRace();
+            await this.loadNextRacePredictions();
+            await this.loadLivePredictions();
+            
+            console.log('✅ All data refreshed after race transition');
+            
+            // Show user notification
+            this.showNotification('🏁 Race data updated! New predictions available.');
+        } catch (error) {
+            console.error('Error refreshing data:', error);
+        }
+    }
+    
+    showNotification(message) {
+        // Simple notification system
+        const notification = document.createElement('div');
+        notification.className = 'race-update-notification';
+        notification.innerHTML = message;
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #dc143c, #ff4757);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            z-index: 10000;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            animation: slideIn 0.3s ease-out;
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            notification.style.animation = 'slideOut 0.3s ease-out';
+            setTimeout(() => document.body.removeChild(notification), 300);
+        }, 5000);
     }
 
     async loadStatsData() {
