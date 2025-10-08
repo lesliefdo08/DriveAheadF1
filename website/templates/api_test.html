@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DriveAhead API Test</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0d0d0d;
+            color: #e8e8e8;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 { color: #e10600; }
+        h2 { color: #1e90ff; margin-top: 30px; }
+        pre {
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 8px;
+            padding: 15px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .status.ok { background: #10b981; color: #fff; }
+        .status.error { background: #ef4444; color: #fff; }
+    </style>
+</head>
+<body>
+    <h1>🏎️ DriveAhead API Test</h1>
+    <p>Testing all API endpoints to verify data is loading correctly...</p>
+
+    <h2>1. Stats API <span class="status" id="statsStatus">Testing...</span></h2>
+    <pre id="statsData">Loading...</pre>
+
+    <h2>2. Race Winner Predictions <span class="status" id="predictionsStatus">Testing...</span></h2>
+    <pre id="predictionsData">Loading...</pre>
+
+    <h2>3. Drivers Standings <span class="status" id="driversStatus">Testing...</span></h2>
+    <pre id="driversData">Loading...</pre>
+
+    <h2>4. Next Race Info <span class="status" id="raceStatus">Testing...</span></h2>
+    <pre id="raceData">Loading...</pre>
+
+    <script>
+        async function testAPI(endpoint, statusId, dataId) {
+            try {
+                const response = await fetch(endpoint);
+                const data = await response.json();
+                
+                document.getElementById(statusId).textContent = 'OK';
+                document.getElementById(statusId).className = 'status ok';
+                document.getElementById(dataId).textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById(statusId).textContent = 'ERROR';
+                document.getElementById(statusId).className = 'status error';
+                document.getElementById(dataId).textContent = error.message;
+            }
+        }
+
+        // Run all tests
+        testAPI('/api/stats', 'statsStatus', 'statsData');
+        testAPI('/api/race-winner-predictions', 'predictionsStatus', 'predictionsData');
+        testAPI('/api/drivers', 'driversStatus', 'driversData');
+        testAPI('/api/next-race', 'raceStatus', 'raceData');
+    </script>
+</body>
+</html>

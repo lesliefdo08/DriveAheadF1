@@ -1,0 +1,15 @@
+{
+  "timestamp": "20250923_165218",
+  "models": [
+    "position_predictor",
+    "podium_predictor",
+    "winner_predictor"
+  ],
+  "scores": {
+    "position_predictor": 0.30824504526229124,
+    "podium_predictor": 0.765,
+    "winner_predictor": 0.935
+  },
+  "training_date": "2025-09-23T16:52:18.124297",
+  "model_type": "robust_f1_models"
+}

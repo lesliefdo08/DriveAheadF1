@@ -3,447 +3,640 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DriveAhead - F1 Live Telemetry</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/telemetry.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/telemetry_enhancements.css') }}">
+    <title>DriveAhead F1 - Live Telemetry</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'f1': ['Orbitron', 'monospace'],
+                        'body': ['Inter', 'sans-serif']
+                    },
+                    colors: {
+                        'f1-red': '#FF1E1E',
+                        'f1-blue': '#0090FF',
+                        'f1-green': '#00FF41',
+                        'f1-yellow': '#FFD700',
+                        'f1-purple': '#A855F7',
+                        'f1-orange': '#FF8700'
+                    },
+                    animation: {
+                        'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'slide-up': 'slideUp 0.3s ease-out',
+                        'glow': 'glow 2s ease-in-out infinite alternate'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        @keyframes glow {
+            from { box-shadow: 0 0 5px rgba(255, 30, 30, 0.5); }
+            to { box-shadow: 0 0 20px rgba(255, 30, 30, 0.8), 0 0 30px rgba(255, 30, 30, 0.4); }
+        }
+        
+        .f1-gradient {
+            background: linear-gradient(135deg, #000 0%, #1a1a1a 50%, #000 100%);
+        }
+        
+        .f1-border {
+            border-image: linear-gradient(45deg, #FF1E1E, #0090FF, #00FF41) 1;
+        }
+        
+        .driver-row {
+            background: linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(26,26,26,0.8) 100%);
+            border-left: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .driver-row:hover {
+            background: linear-gradient(90deg, rgba(255,30,30,0.1) 0%, rgba(26,26,26,0.9) 100%);
+            border-left-color: #FF1E1E;
+            transform: translateX(5px);
+        }
+        
+        .position-1 { border-left-color: #FFD700 !important; }
+        .position-2 { border-left-color: #C0C0C0 !important; }
+        .position-3 { border-left-color: #CD7F32 !important; }
+        
+        .sector-fastest { color: #A855F7; font-weight: bold; }
+        .sector-personal { color: #00FF41; font-weight: bold; }
+        .sector-slower { color: #FFD700; }
+        
+        .live-indicator {
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        .data-grid {
+            background: linear-gradient(135deg, rgba(0,0,0,0.95) 0%, rgba(26,26,26,0.9) 100%);
+            backdrop-filter: blur(10px);
+        }
+        
+        .glass-panel {
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+    </style>
 </head>
-<body>
-    <div class="f1-telemetry-dashboard">
-        <!-- Top Header with Timer and Weather -->
-        <div class="header-bar">
-            <div class="team-logo left">RED BULL RACING</div>
-            <div class="session-center">
-                <div class="session-timer">29:24</div>
-                <div class="weather-section">
-                    <span class="weather-condition">CLOUDY</span>
-                    <span class="ambient-temp">25°C</span>
-                    <span class="track-temp">45°C</span>
-                </div>
-            </div>
-            <div class="team-logo right">MERCEDES-AMG PETRONAS</div>
-        </div>
-
-        <!-- Main Content Grid -->
-        <div class="main-content">
-            <!-- Left Driver Card - Max Verstappen -->
-            <div class="driver-card driver-left">
-                <div class="driver-header">
-                    <div class="driver-name">MAX VERSTAPPEN</div>
-                    <div class="driver-number-circle">
-                        <span class="driver-number">1</span>
+<body class="bg-black text-white font-body overflow-x-hidden">
+    <!-- F1 Style Header -->
+    <header class="f1-gradient border-b-2 border-f1-red relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-f1-red/10 to-transparent animate-pulse-fast"></div>
+        <div class="container mx-auto px-6 py-4 relative z-10">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="live-indicator bg-f1-red w-4 h-4 rounded-full"></div>
+                    <h1 class="font-f1 text-3xl font-bold tracking-wider">
+                        <span class="text-f1-red">DRIVE</span><span class="text-white">AHEAD</span>
+                        <span class="text-f1-blue ml-2">F1</span>
+                    </h1>
+                    <div class="text-f1-green font-f1 text-sm font-bold">
+                        <i class="fas fa-broadcast-tower mr-2"></i>LIVE TELEMETRY
                     </div>
                 </div>
                 
-                <div class="position-display">
-                    <div class="position-large">1</div>
-                </div>
-                
-                <div class="gap-display">
-                    <div class="gap-time">+0.000</div>
-                </div>
-                
-                <!-- Car Status Indicators -->
-                <div class="car-status">
-                    <div class="status-bar">
-                        <div class="status-indicator"></div>
+                <div class="flex items-center space-x-6">
+                    <div class="glass-panel px-4 py-2 rounded-lg">
+                        <div class="text-xs text-gray-400">SESSION</div>
+                        <div class="font-f1 text-f1-green" id="session-type">QUALIFYING</div>
                     </div>
-                </div>
-
-                <!-- Verstappen Timing Data -->
-                <div class="timing-data">
-                    <div class="last-lap">1:23.456</div>
-                    <div class="best-lap">1:22.891</div>
-                    <div class="top-speed">315 <span class="unit">KM/H</span></div>
-                </div>
-                
-                <div class="engine-data">
-                    <div class="gear-display">6</div>
-                    <div class="engine-mode">M</div>
-                    <div class="throttle-brake-bars">
-                        <div class="throttle-bar">
-                            <div class="bar-fill throttle-fill" style="height: 75%"></div>
-                        </div>
-                        <div class="brake-bar">
-                            <div class="bar-fill brake-fill" style="height: 0%"></div>
-                        </div>
+                    <div class="glass-panel px-4 py-2 rounded-lg">
+                        <div class="text-xs text-gray-400">TIME</div>
+                        <div class="font-f1 text-f1-yellow" id="session-time">00:00</div>
                     </div>
-                </div>
-                
-                <div class="status-indicators">
-                    <div class="drs-status">DRS ON</div>
-                    <div class="pit-status">IN THE ZONE</div>
-                </div>
-            </div>
-
-            <!-- Center Track Visualization -->
-            <div class="track-center">
-                <div class="track-layout">
-                    <svg class="track-svg" viewBox="0 0 400 300">
-                        <!-- Silverstone Track Path -->
-                        <path d="M50 150 Q80 50 150 60 Q220 70 280 90 Q320 110 350 150 Q340 200 300 230 Q250 250 200 240 Q150 230 120 200 Q90 180 50 150" 
-                              fill="none" stroke="#FF0000" stroke-width="3" class="track-outline"/>
-                        
-                        <!-- Track Sectors -->
-                        <text x="100" y="100" class="sector-label">S1</text>
-                        <text x="250" y="80" class="sector-label">S2</text>
-                        <text x="300" y="180" class="sector-label">S3</text>
-                        
-                        <!-- Driver Positions -->
-                        <circle cx="200" cy="120" r="8" fill="#FF0000" class="driver-pos driver-verstappen" data-driver="verstappen"/>
-                        <text x="200" y="125" class="driver-number" text-anchor="middle" fill="white" font-size="10">1</text>
-                        
-                        <circle cx="180" cy="125" r="8" fill="#00D2BE" class="driver-pos driver-hamilton" data-driver="hamilton"/>
-                        <text x="180" y="130" class="driver-number" text-anchor="middle" fill="white" font-size="10">44</text>
-                        
-                        <!-- Track Info -->
-                        <text x="200" y="280" class="track-name" text-anchor="middle">SILVERSTONE</text>
-                    </svg>
-                </div>
-            </div>
-
-            <!-- Right Driver Card - Lewis Hamilton -->
-            <div class="driver-card driver-right">
-                <div class="driver-header">
-                    <div class="driver-name">LEWIS HAMILTON</div>
-                    <div class="driver-number-circle">
-                        <span class="driver-number">44</span>
+                    <div class="glass-panel px-4 py-2 rounded-lg">
+                        <div class="text-xs text-gray-400">WEATHER</div>
+                        <div class="font-f1 text-f1-blue" id="weather-info">22°C</div>
                     </div>
-                </div>
-                
-                <div class="position-display">
-                    <div class="position-large">2</div>
-                </div>
-                
-                <div class="gap-display">
-                    <div class="gap-time">+1.075</div>
-                </div>
-                
-                <!-- Car Status Indicators -->
-                <div class="car-status">
-                    <div class="status-bar hamilton-bar">
-                        <div class="status-indicator hamilton-indicator"></div>
-                    </div>
-                </div>
-
-                <!-- Hamilton Timing Data -->
-                <div class="timing-data">
-                    <div class="last-lap">1:24.052</div>
-                    <div class="best-lap">1:23.781</div>
-                    <div class="top-speed">291 <span class="unit">KM/H</span></div>
-                </div>
-                
-                <div class="engine-data">
-                    <div class="gear-display">N</div>
-                    <div class="engine-mode">⚠</div>
-                    <div class="throttle-brake-bars">
-                        <div class="throttle-bar">
-                            <div class="bar-fill throttle-fill" style="height: 45%"></div>
-                        </div>
-                        <div class="brake-bar">
-                            <div class="bar-fill brake-fill" style="height: 80%"></div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="status-indicators">
-                    <div class="drs-status">DO NOT PIT</div>
-                    <div class="pit-status">END</div>
                 </div>
             </div>
         </div>
+    </header>
 
-        <!-- Bottom Predictive Timeline -->
-        <div class="predictive-timeline">
-            <div class="timeline-header">
-                <span class="timeline-title">PREDICTIVE TIMELINE</span>
-                <span class="powered-by">POWERED BY <span class="xgboost-logo">XGBOOST</span></span>
-            </div>
-            <div class="timeline-content">
-                <div class="timeline-bar">
-                    <div class="prediction-segments"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Enhanced Track Visualization & Professional Telemetry Section -->
-        <div class="track-visualization-section">
-            <!-- Live Track Map with Car Positions -->
-            <div class="track-map-container">
-                <div class="track-header">
-                    <div class="track-info">
-                        <h3 class="track-name">SILVERSTONE CIRCUIT</h3>
-                        <div class="track-conditions">
-                            <span class="condition-item">DRY</span>
-                            <span class="condition-item">GRIP: HIGH</span>
-                            <span class="condition-item">EVOLUTION: +1.2s</span>
+    <!-- Main Telemetry Grid -->
+    <div class="container mx-auto px-6 py-6">
+        <div class="grid grid-cols-1 2xl:grid-cols-4 gap-6">
+            
+            <!-- Driver Leaderboard - Takes 3 columns -->
+            <div class="2xl:col-span-3">
+                <div class="data-grid rounded-xl p-6 border border-gray-800">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="font-f1 text-2xl font-bold text-f1-red flex items-center">
+                            <i class="fas fa-tachometer-alt mr-3"></i>LIVE TIMING
+                        </h2>
+                        <div class="flex items-center space-x-4">
+                            <div class="text-sm text-gray-400">Updates every second</div>
+                            <div class="bg-f1-green w-2 h-2 rounded-full animate-pulse-fast"></div>
                         </div>
                     </div>
-                    <div class="lap-counter">
-                        <span class="current-lap">LAP 32</span>
-                        <span class="total-laps">/ 52</span>
+                    
+                    <!-- Enhanced Table Headers -->
+                    <div class="grid grid-cols-12 gap-4 p-4 bg-gradient-to-r from-gray-900 to-gray-800 rounded-lg mb-2 text-xs font-bold text-gray-300 uppercase tracking-wider">
+                        <div class="col-span-1 text-center">POS</div>
+                        <div class="col-span-2">DRIVER</div>
+                        <div class="col-span-1 text-center">DRS</div>
+                        <div class="col-span-1 text-center">TIRE</div>
+                        <div class="col-span-1 text-center">STATUS</div>
+                        <div class="col-span-2">LAP TIME</div>
+                        <div class="col-span-3">SECTORS</div>
+                        <div class="col-span-1 text-center">GAP</div>
+                    </div>
+                    
+                    <!-- Driver Rows Container -->
+                    <div id="driver-list" class="space-y-1">
+                        <!-- Loading animation -->
+                        <div class="text-center py-8">
+                            <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-f1-red"></div>
+                            <div class="text-gray-400 mt-2">Loading live telemetry...</div>
+                        </div>
                     </div>
                 </div>
-
-                <div class="track-svg-container">
-                    <svg viewBox="0 0 800 600" class="track-circuit">
-                        <!-- Silverstone Circuit Path -->
-                        <defs>
-                            <linearGradient id="trackGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                <stop offset="0%" style="stop-color:#1a1a1a;stop-opacity:1" />
-                                <stop offset="50%" style="stop-color:#2a2a2a;stop-opacity:1" />
-                                <stop offset="100%" style="stop-color:#1a1a1a;stop-opacity:1" />
-                            </linearGradient>
-                            <filter id="glow">
-                                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-                                <feMerge> 
-                                    <feMergeNode in="coloredBlur"/>
-                                    <feMergeNode in="SourceGraphic"/>
-                                </feMerge>
-                            </filter>
-                        </defs>
-                        
-                        <!-- Track Surface -->
-                        <path class="track-surface" d="M100,300 Q150,250 200,280 Q250,320 320,300 Q400,280 480,320 Q550,350 600,300 Q650,250 700,280 Q750,300 700,350 Q650,400 600,380 Q550,360 480,400 Q400,440 320,400 Q250,380 200,420 Q150,450 100,400 Q50,350 100,300 Z"/>
-                        
-                        <!-- Track Center Line -->
-                        <path class="track-center-line" d="M100,300 Q150,250 200,280 Q250,320 320,300 Q400,280 480,320 Q550,350 600,300 Q650,250 700,280 Q750,300 700,350 Q650,400 600,380 Q550,360 480,400 Q400,440 320,400 Q250,380 200,420 Q150,450 100,400 Q50,350 100,300 Z"/>
-                        
-                        <!-- Sector Dividers -->
-                        <circle class="sector-marker sector-1" cx="200" cy="280" r="8">
-                            <animate attributeName="r" values="6;10;6" dur="2s" repeatCount="indefinite"/>
-                        </circle>
-                        <circle class="sector-marker sector-2" cx="480" cy="320" r="8">
-                            <animate attributeName="r" values="6;10;6" dur="2s" begin="0.7s" repeatCount="indefinite"/>
-                        </circle>
-                        <circle class="sector-marker sector-3" cx="320" cy="400" r="8">
-                            <animate attributeName="r" values="6;10;6" dur="2s" begin="1.4s" repeatCount="indefinite"/>
-                        </circle>
-                        
-                        <!-- Car Positions -->
-                        <g class="car-position verstappen-car" transform="translate(250,300)">
-                            <circle class="car-indicator" cx="0" cy="0" r="12" fill="#FF0000"/>
-                            <text class="car-number" x="0" y="5" text-anchor="middle" fill="white" font-size="10" font-weight="bold">1</text>
-                            <circle class="position-glow" cx="0" cy="0" r="20" fill="none" stroke="#FF0000" stroke-width="2" opacity="0.6">
-                                <animate attributeName="r" values="15;25;15" dur="1.5s" repeatCount="indefinite"/>
-                                <animate attributeName="opacity" values="0.8;0.2;0.8" dur="1.5s" repeatCount="indefinite"/>
-                            </circle>
-                        </g>
-                        
-                        <g class="car-position hamilton-car" transform="translate(200,320)">
-                            <circle class="car-indicator" cx="0" cy="0" r="12" fill="#00D2BE"/>
-                            <text class="car-number" x="0" y="5" text-anchor="middle" fill="white" font-size="10" font-weight="bold">44</text>
-                            <circle class="position-glow" cx="0" cy="0" r="20" fill="none" stroke="#00D2BE" stroke-width="2" opacity="0.6">
-                                <animate attributeName="r" values="15;25;15" dur="1.5s" begin="0.5s" repeatCount="indefinite"/>
-                                <animate attributeName="opacity" values="0.8;0.2;0.8" dur="1.5s" begin="0.5s" repeatCount="indefinite"/>
-                            </circle>
-                        </g>
-                        
-                        <!-- DRS Zones -->
-                        <rect class="drs-zone" x="450" y="310" width="150" height="20" rx="10" opacity="0.3"/>
-                        <text class="drs-label" x="525" y="324" text-anchor="middle" fill="#FFD700" font-size="12" font-weight="bold">DRS</text>
-                    </svg>
+            </div>
+            
+            <!-- Side Panel - Track Info & Race Control -->
+            <div class="2xl:col-span-1 space-y-6">
+                
+                <!-- Track Status -->
+                <div class="glass-panel rounded-xl p-4">
+                    <h3 class="font-f1 text-lg font-bold text-f1-yellow mb-4 flex items-center">
+                        <i class="fas fa-flag mr-2"></i>TRACK STATUS
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Status</span>
+                            <span class="text-f1-green font-bold" id="track-status">GREEN</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">DRS</span>
+                            <span class="text-f1-blue font-bold">ENABLED</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Safety Car</span>
+                            <span class="text-gray-300">NO</span>
+                        </div>
+                    </div>
                 </div>
+                
+                <!-- Weather Info -->
+                <div class="glass-panel rounded-xl p-4">
+                    <h3 class="font-f1 text-lg font-bold text-f1-blue mb-4 flex items-center">
+                        <i class="fas fa-cloud-sun mr-2"></i>WEATHER
+                    </h3>
+                    <div class="space-y-3" id="weather-details">
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Air Temp</span>
+                            <span class="text-white font-bold">22°C</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Track Temp</span>
+                            <span class="text-white font-bold">35°C</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Humidity</span>
+                            <span class="text-white font-bold">65%</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Wind</span>
+                            <span class="text-white font-bold">8 km/h</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Race Control -->
+                <div class="glass-panel rounded-xl p-4">
+                    <h3 class="font-f1 text-lg font-bold text-f1-orange mb-4 flex items-center">
+                        <i class="fas fa-microphone mr-2"></i>RACE CONTROL
+                    </h3>
+                    <div id="race-control-messages" class="space-y-2 max-h-64 overflow-y-auto">
+                        <!-- Messages will be populated here -->
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        
+        <!-- Bottom Panel - Team Radios & Violations -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+            
+            <!-- Team Radios -->
+            <div class="glass-panel rounded-xl p-6">
+                <h3 class="font-f1 text-xl font-bold text-f1-purple mb-4 flex items-center">
+                    <i class="fas fa-headphones mr-2"></i>TEAM RADIO
+                </h3>
+                <div id="team-radios" class="space-y-3 max-h-80 overflow-y-auto">
+                    <!-- Radio messages will be populated here -->
+                </div>
+            </div>
+            
+            <!-- Track Violations -->
+            <div class="glass-panel rounded-xl p-6">
+                <h3 class="font-f1 text-xl font-bold text-f1-yellow mb-4 flex items-center">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>PENALTIES
+                </h3>
+                <div id="track-violations" class="space-y-3 max-h-80 overflow-y-auto">
+                    <!-- Violations will be populated here -->
+                </div>
+            </div>
+            
+        </div>
+    </div>
 
-                <!-- Live Sector Times -->
-                <div class="sector-times-panel">
-                    <div class="sector-time-card verstappen-sectors">
-                        <div class="driver-mini-name">VER</div>
-                        <div class="sector-times">
-                            <div class="sector-time sector-1-time">
-                                <span class="sector-label">S1</span>
-                                <span class="time-value fastest">23.891</span>
+    <script>
+        // Professional F1 Telemetry System
+        let drivers = null;
+        let timingData = null;
+        let currentSession = {
+            type: 'qualifying',
+            startTime: new Date(),
+            weather: {}
+        };
+
+        // Team color mapping for F1 2025
+        const teamColors = {
+            'Mercedes': '#00D2BE',
+            'Red Bull': '#FF0000', 
+            'Ferrari': '#DC143C',
+            'McLaren': '#FF8700',
+            'Aston Martin': '#006F62',
+            'Alpine': '#0090FF',
+            'Williams': '#005AFF',
+            'Sauber': '#52C41A',
+            'Haas': '#FFFFFF',
+            'RB F1 Team': '#6667AB'
+        };
+
+        // Create stunning driver row with F1 broadcast styling
+        function createDriverRow(driver, timingDriver, position) {
+            const teamColor = teamColors[driver.team_name] || '#FFFFFF';
+            const positionClass = position <= 3 ? `position-${position}` : '';
+            
+            // Determine tire color
+            const tireColor = getTireColor(timingDriver.tire_compound);
+            const tireAge = timingDriver.tire_age || 0;
+            
+            // DRS status with visual indicator
+            const drsStatus = timingDriver.drs_enabled;
+            const drsClass = drsStatus ? 'text-f1-green' : 'text-gray-500';
+            const drsIcon = drsStatus ? 'fas fa-wind' : 'fas fa-times';
+            
+            // Pit status
+            const pitStatus = timingDriver.in_pit ? 'PIT' : timingDriver.pit_out ? 'OUT' : 'TRACK';
+            const pitClass = timingDriver.in_pit ? 'text-f1-red' : timingDriver.pit_out ? 'text-f1-yellow' : 'text-f1-green';
+            
+            const driverRow = document.createElement('div');
+            driverRow.className = `driver-row ${positionClass} rounded-lg p-4 animate-slide-up`;
+            driverRow.style.borderLeftColor = teamColor;
+            
+            driverRow.innerHTML = `
+                <div class="grid grid-cols-12 gap-4 items-center">
+                    <!-- Position -->
+                    <div class="col-span-1 text-center">
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center font-f1 text-lg font-bold" 
+                             style="background: linear-gradient(135deg, ${teamColor}33, ${teamColor}66); border: 2px solid ${teamColor};">
+                            ${position}
+                        </div>
+                    </div>
+                    
+                    <!-- Driver -->
+                    <div class="col-span-2">
+                        <div class="font-f1 text-lg font-bold" style="color: ${teamColor};">${driver.tla}</div>
+                        <div class="text-xs text-gray-400 uppercase tracking-wide">${driver.team_name}</div>
+                    </div>
+                    
+                    <!-- DRS -->
+                    <div class="col-span-1 text-center">
+                        <div class="${drsClass} text-lg">
+                            <i class="${drsIcon}"></i>
+                        </div>
+                        <div class="text-xs text-gray-500">${drsStatus ? 'OPEN' : 'CLOSED'}</div>
+                    </div>
+                    
+                    <!-- Tire -->
+                    <div class="col-span-1 text-center">
+                        <div class="w-8 h-8 rounded-full mx-auto flex items-center justify-center text-xs font-bold ${tireColor}">
+                            ${timingDriver.tire_compound?.charAt(0) || 'M'}
+                        </div>
+                        <div class="text-xs text-gray-400">${tireAge} laps</div>
+                    </div>
+                    
+                    <!-- Status -->
+                    <div class="col-span-1 text-center">
+                        <div class="${pitClass} font-bold text-sm">${pitStatus}</div>
+                        <div class="text-xs text-gray-400">G${timingDriver.grid_position || position}</div>
+                    </div>
+                    
+                    <!-- Lap Time -->
+                    <div class="col-span-2">
+                        <div class="font-f1 text-lg font-bold text-white">${timingDriver.lap_time || '--:---.---'}</div>
+                        <div class="text-sm text-f1-green">${timingDriver.best_lap_time || '--:---.---'}</div>
+                    </div>
+                    
+                    <!-- Sectors -->
+                    <div class="col-span-3">
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="text-center">
+                                <div class="font-f1 text-sm ${getSectorColor(timingDriver.sector_1_time)}">${timingDriver.sector_1_time || '--'}</div>
+                                <div class="text-xs text-gray-500">S1</div>
                             </div>
-                            <div class="sector-time sector-2-time">
-                                <span class="sector-label">S2</span>
-                                <span class="time-value personal-best">35.421</span>
+                            <div class="text-center">
+                                <div class="font-f1 text-sm ${getSectorColor(timingDriver.sector_2_time)}">${timingDriver.sector_2_time || '--'}</div>
+                                <div class="text-xs text-gray-500">S2</div>
                             </div>
-                            <div class="sector-time sector-3-time">
-                                <span class="sector-label">S3</span>
-                                <span class="time-value current">24.102</span>
+                            <div class="text-center">
+                                <div class="font-f1 text-sm ${getSectorColor(timingDriver.sector_3_time)}">${timingDriver.sector_3_time || '--'}</div>
+                                <div class="text-xs text-gray-500">S3</div>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="sector-time-card hamilton-sectors">
-                        <div class="driver-mini-name">HAM</div>
-                        <div class="sector-times">
-                            <div class="sector-time sector-1-time">
-                                <span class="sector-label">S1</span>
-                                <span class="time-value">23.956</span>
-                            </div>
-                            <div class="sector-time sector-2-time">
-                                <span class="sector-label">S2</span>
-                                <span class="time-value fastest">35.201</span>
-                            </div>
-                            <div class="sector-time sector-3-time">
-                                <span class="sector-label">S3</span>
-                                <span class="time-value">24.334</span>
-                            </div>
-                        </div>
+                    <!-- Gap -->
+                    <div class="col-span-1 text-center">
+                        <div class="font-f1 text-sm font-bold text-f1-yellow">${timingDriver.gap_to_leader || '--'}</div>
+                        <div class="text-xs text-gray-400">${timingDriver.interval || '--'}</div>
                     </div>
                 </div>
-            </div>
+            `;
+            
+            return driverRow;
+        }
 
-            <!-- Professional Telemetry Data Grid -->
-            <div class="professional-telemetry-grid">
-                <!-- G-Force Display -->
-                <div class="telemetry-card g-force-card">
-                    <div class="card-header">
-                        <h4 class="card-title">G-FORCE ANALYSIS</h4>
-                        <div class="live-indicator"></div>
+        // Enhanced helper functions
+        function getTireColor(compound) {
+            switch(compound) {
+                case 'SOFT': return 'bg-red-500 text-white';
+                case 'MEDIUM': return 'bg-yellow-400 text-black';
+                case 'HARD': return 'bg-gray-200 text-black';
+                case 'INTERMEDIATE': return 'bg-green-500 text-white';
+                case 'WET': return 'bg-blue-500 text-white';
+                default: return 'bg-gray-600 text-white';
+            }
+        }
+
+        function getSectorColor(time) {
+            if (!time || time === '--') return 'text-gray-400';
+            const timeFloat = parseFloat(time);
+            if (timeFloat < 22) return 'sector-fastest'; // Purple - Fastest
+            if (timeFloat < 25) return 'sector-personal'; // Green - Personal best
+            return 'sector-slower'; // Yellow - Slower
+        }
+
+        // Update session info in header
+        function updateSessionInfo(meta) {
+            if (!meta) return;
+            
+            document.getElementById('session-type').textContent = meta.session_name || 'PRACTICE';
+            
+            // Update session time
+            const sessionTime = new Date().toLocaleTimeString('en-US', { 
+                hour12: false, 
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('session-time').textContent = sessionTime;
+            
+            // Update weather
+            if (meta.weather) {
+                document.getElementById('weather-info').textContent = `${meta.weather.air_temp}°C`;
+                
+                const weatherDetails = document.getElementById('weather-details');
+                weatherDetails.innerHTML = `
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Air Temp</span>
+                        <span class="text-white font-bold">${meta.weather.air_temp}°C</span>
                     </div>
-                    <div class="g-force-display">
-                        <div class="g-force-meter">
-                            <div class="g-axis lateral">
-                                <div class="g-value">+2.1G</div>
-                                <div class="g-bar">
-                                    <div class="g-fill" style="width: 65%;"></div>
-                                </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Track Temp</span>
+                        <span class="text-white font-bold">${meta.weather.track_temp}°C</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Humidity</span>
+                        <span class="text-white font-bold">${meta.weather.humidity}%</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Wind</span>
+                        <span class="text-white font-bold">${meta.weather.wind_speed} km/h</span>
+                    </div>
+                `;
+            }
+        }
+
+        // Enhanced fetch with better data processing
+        async function fetchData() {
+            try {
+                const response = await fetch('/api/telemetry');
+                const data = await response.json();
+                
+                if (data && typeof data === 'object') {
+                    drivers = {};
+                    timingData = { lines: {} };
+                    
+                    Object.keys(data).forEach(key => {
+                        if (key !== '_meta' && data[key].driver_acronym) {
+                            const driverData = data[key];
+                            const racingNumber = driverData.position || Math.random().toString().substr(2, 2);
+                            
+                            drivers[racingNumber] = {
+                                tla: driverData.driver_acronym,
+                                team_colour: driverData.team_color ? driverData.team_color.replace('#', '') : 'FFFFFF',
+                                full_name: key,
+                                team_name: driverData.team_name
+                            };
+                            
+                            timingData.lines[racingNumber] = {
+                                racing_number: racingNumber,
+                                position: driverData.position,
+                                last_lap_time: driverData.lap_time,
+                                best_lap_time: driverData.best_lap_time,
+                                gap_to_leader: driverData.gap_to_leader,
+                                interval: driverData.interval,
+                                drs_enabled: driverData.drs_enabled,
+                                tire_compound: driverData.tire_compound,
+                                tire_age: driverData.tire_age,
+                                in_pit: driverData.in_pit,
+                                pit_out: driverData.pit_out,
+                                grid_position: driverData.grid_position,
+                                sector_1_time: driverData.sector_1_time,
+                                sector_2_time: driverData.sector_2_time,
+                                sector_3_time: driverData.sector_3_time,
+                                knocked_out: driverData.knocked_out || false,
+                                retired: driverData.retired || false,
+                                stopped: driverData.stopped || false
+                            };
+                        }
+                    });
+                    
+                    updateLeaderboard();
+                    updateSessionInfo(data._meta);
+                }
+                
+            } catch (error) {
+                console.error('Error fetching telemetry data:', error);
+                showConnectionError();
+            }
+        }
+
+        // Enhanced leaderboard update with animations
+        function updateLeaderboard() {
+            if (!drivers || !timingData) return;
+            
+            const driverList = document.getElementById('driver-list');
+            driverList.innerHTML = '';
+            
+            const sortedDrivers = Object.values(timingData.lines)
+                .sort((a, b) => (a.position || 99) - (b.position || 99));
+            
+            sortedDrivers.forEach((timingDriver, index) => {
+                const driver = drivers[timingDriver.racing_number];
+                if (driver) {
+                    const driverRow = createDriverRow(driver, timingDriver, index + 1);
+                    driverList.appendChild(driverRow);
+                    
+                    // Add staggered animation delay
+                    driverRow.style.animationDelay = `${index * 50}ms`;
+                }
+            });
+        }
+
+        // Enhanced race control with F1 styling
+        function updateRaceControl() {
+            const container = document.getElementById('race-control-messages');
+            container.innerHTML = '';
+            
+            const messages = [
+                { time: new Date(), message: "🟢 TRACK STATUS: GREEN", type: "info" },
+                { time: new Date(Date.now() - 30000), message: "🔵 DRS ENABLED - All sectors", type: "info" },
+                { time: new Date(Date.now() - 90000), message: "🟡 YELLOW FLAGS - Turn 7", type: "warning" },
+                { time: new Date(Date.now() - 180000), message: "🏁 SESSION ACTIVE", type: "success" }
+            ];
+            
+            messages.forEach(message => {
+                const messageEl = document.createElement('div');
+                messageEl.className = 'bg-gray-900 rounded-lg p-3 border-l-4 border-f1-blue animate-slide-up';
+                messageEl.innerHTML = `
+                    <div class="text-xs text-gray-400 mb-1">${message.time.toLocaleTimeString()}</div>
+                    <div class="text-sm font-medium">${message.message}</div>
+                `;
+                container.appendChild(messageEl);
+            });
+        }
+
+        // Enhanced team radios with driver avatars and styling
+        function updateTeamRadios() {
+            const container = document.getElementById('team-radios');
+            container.innerHTML = '';
+            
+            const radios = [
+                { time: new Date(), driver: "HAM", team: "Mercedes", message: "Box this lap, box box!", type: "urgent" },
+                { time: new Date(Date.now() - 45000), driver: "VER", team: "Red Bull", message: "Good pace, keep pushing", type: "normal" },
+                { time: new Date(Date.now() - 90000), driver: "LEC", team: "Ferrari", message: "Tire temperature rising", type: "warning" },
+                { time: new Date(Date.now() - 180000), driver: "NOR", team: "McLaren", message: "Traffic ahead in sector 2", type: "info" }
+            ];
+            
+            radios.forEach(radio => {
+                const radioEl = document.createElement('div');
+                const teamColor = teamColors[radio.team] || '#FFFFFF';
+                radioEl.className = 'bg-gray-900 rounded-lg p-4 border-l-4 animate-slide-up';
+                radioEl.style.borderColor = teamColor;
+                radioEl.innerHTML = `
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold" 
+                                 style="background-color: ${teamColor}; color: black;">
+                                ${radio.driver}
                             </div>
-                            <div class="g-axis longitudinal">
-                                <div class="g-value">-3.8G</div>
-                                <div class="g-bar">
-                                    <div class="g-fill brake-g" style="width: 90%;"></div>
-                                </div>
-                            </div>
+                            <span class="font-semibold" style="color: ${teamColor};">${radio.team}</span>
                         </div>
+                        <div class="text-xs text-gray-400">${radio.time.toLocaleTimeString()}</div>
                     </div>
+                    <div class="text-sm italic text-gray-300">"${radio.message}"</div>
+                `;
+                container.appendChild(radioEl);
+            });
+        }
+
+        // Enhanced track violations with penalty severity
+        function updateTrackViolations() {
+            const container = document.getElementById('track-violations');
+            container.innerHTML = '';
+            
+            const violations = [
+                { time: new Date(Date.now() - 60000), driver: "SAI", violation: "Track limits - Turn 9", penalty: "Warning", severity: "warning" },
+                { time: new Date(Date.now() - 180000), driver: "STR", violation: "Unsafe release", penalty: "5s penalty", severity: "penalty" },
+                { time: new Date(Date.now() - 300000), driver: "GAS", violation: "Track limits - Turn 4", penalty: "Warning", severity: "warning" }
+            ];
+            
+            violations.forEach(violation => {
+                const violationEl = document.createElement('div');
+                const severityColor = violation.severity === 'penalty' ? 'border-f1-red' : 'border-f1-yellow';
+                violationEl.className = `bg-gray-900 rounded-lg p-4 border-l-4 ${severityColor} animate-slide-up`;
+                violationEl.innerHTML = `
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="font-f1 font-bold text-f1-yellow">${violation.driver}</div>
+                        <div class="text-xs text-gray-400">${violation.time.toLocaleTimeString()}</div>
+                    </div>
+                    <div class="text-sm text-gray-300 mb-1">${violation.violation}</div>
+                    <div class="text-sm font-bold ${violation.severity === 'penalty' ? 'text-f1-red' : 'text-f1-yellow'}">
+                        ${violation.penalty}
+                    </div>
+                `;
+                container.appendChild(violationEl);
+            });
+        }
+
+        function showConnectionError() {
+            const driverList = document.getElementById('driver-list');
+            driverList.innerHTML = `
+                <div class="text-center py-8">
+                    <div class="text-f1-red text-4xl mb-4">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="text-gray-400">Connection lost. Reconnecting...</div>
                 </div>
+            `;
+        }
 
-                <!-- Brake Temperature -->
-                <div class="telemetry-card brake-temp-card">
-                    <div class="card-header">
-                        <h4 class="card-title">BRAKE TEMPERATURES</h4>
-                        <div class="warning-indicator"></div>
-                    </div>
-                    <div class="brake-temp-display">
-                        <div class="brake-temps">
-                            <div class="brake-corner fl">
-                                <div class="corner-label">FL</div>
-                                <div class="temp-value hot">890°C</div>
-                            </div>
-                            <div class="brake-corner fr">
-                                <div class="corner-label">FR</div>
-                                <div class="temp-value optimal">820°C</div>
-                            </div>
-                            <div class="brake-corner rl">
-                                <div class="corner-label">RL</div>
-                                <div class="temp-value">780°C</div>
-                            </div>
-                            <div class="brake-corner rr">
-                                <div class="corner-label">RR</div>
-                                <div class="temp-value">785°C</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        // Initialize the F1 telemetry system
+        function initializeTelemetry() {
+            console.log('🏁 Initializing F1 Live Telemetry System...');
+            
+            // Initial data load
+            updateRaceControl();
+            updateTeamRadios();
+            updateTrackViolations();
+            
+            // Start real-time updates
+            fetchData();
+            
+            // Ultra-fast updates for live feel
+            setInterval(fetchData, 1000);  // Main telemetry every 1 second
+            setInterval(updateRaceControl, 10000); // Race control every 10 seconds
+            setInterval(updateTeamRadios, 15000); // Team radios every 15 seconds
+            setInterval(updateTrackViolations, 20000); // Violations every 20 seconds
+            
+            // Update session timer every second
+            setInterval(() => {
+                const sessionTime = new Date().toLocaleTimeString('en-US', { 
+                    hour12: false, 
+                    hour: '2-digit', 
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+                document.getElementById('session-time').textContent = sessionTime;
+            }, 1000);
+        }
 
-                <!-- Aerodynamics Data -->
-                <div class="telemetry-card aero-card">
-                    <div class="card-header">
-                        <h4 class="card-title">AERODYNAMICS</h4>
-                        <div class="efficiency-indicator">98.2%</div>
-                    </div>
-                    <div class="aero-display">
-                        <div class="aero-metrics">
-                            <div class="aero-item">
-                                <span class="aero-label">DOWNFORCE</span>
-                                <span class="aero-value">2,850N</span>
-                            </div>
-                            <div class="aero-item">
-                                <span class="aero-label">DRAG</span>
-                                <span class="aero-value">1,234N</span>
-                            </div>
-                            <div class="aero-item">
-                                <span class="aero-label">L/D RATIO</span>
-                                <span class="aero-value">2.31</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Real-time Telemetry Chart -->
-                <div class="telemetry-card speed-chart-card">
-                    <div class="card-header">
-                        <h4 class="card-title">LIVE SPEED TRACE</h4>
-                        <div class="chart-controls">
-                            <button class="chart-btn active" data-metric="speed">SPEED</button>
-                            <button class="chart-btn" data-metric="throttle">THROTTLE</button>
-                            <button class="chart-btn" data-metric="brake">BRAKE</button>
-                        </div>
-                    </div>
-                    <div class="mini-chart-container">
-                        <canvas id="liveSpeedChart" class="telemetry-chart"></canvas>
-                    </div>
-                </div>
-
-                <!-- Tire Degradation Visual -->
-                <div class="telemetry-card tire-degradation-card">
-                    <div class="card-header">
-                        <h4 class="card-title">TIRE DEGRADATION</h4>
-                        <div class="compound-indicator medium">MEDIUM</div>
-                    </div>
-                    <div class="tire-visual-display">
-                        <div class="tire-visual fl-tire">
-                            <div class="tire-wear" style="height: 78%;"></div>
-                            <div class="tire-label">FL</div>
-                            <div class="tire-percentage">78%</div>
-                        </div>
-                        <div class="tire-visual fr-tire">
-                            <div class="tire-wear" style="height: 82%;"></div>
-                            <div class="tire-label">FR</div>
-                            <div class="tire-percentage">82%</div>
-                        </div>
-                        <div class="tire-visual rl-tire">
-                            <div class="tire-wear" style="height: 71%;"></div>
-                            <div class="tire-label">RL</div>
-                            <div class="tire-percentage">71%</div>
-                        </div>
-                        <div class="tire-visual rr-tire">
-                            <div class="tire-wear" style="height: 75%;"></div>
-                            <div class="tire-label">RR</div>
-                            <div class="tire-percentage">75%</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Engine Performance -->
-                <div class="telemetry-card engine-performance-card">
-                    <div class="card-header">
-                        <h4 class="card-title">POWER UNIT STATUS</h4>
-                        <div class="engine-mode-indicator">RACE</div>
-                    </div>
-                    <div class="engine-metrics">
-                        <div class="engine-metric">
-                            <div class="metric-label">RPM</div>
-                            <div class="metric-value rpm-value">12,450</div>
-                            <div class="metric-bar">
-                                <div class="metric-fill" style="width: 83%;"></div>
-                            </div>
-                        </div>
-                        <div class="engine-metric">
-                            <div class="metric-label">FUEL FLOW</div>
-                            <div class="metric-value">98.7 kg/h</div>
-                            <div class="metric-bar">
-                                <div class="metric-fill fuel-fill" style="width: 96%;"></div>
-                            </div>
-                        </div>
-                        <div class="engine-metric">
-                            <div class="metric-label">ERS DEPLOY</div>
-                            <div class="metric-value ers-value">+142kW</div>
-                            <div class="metric-bar">
-                                <div class="metric-fill ers-fill" style="width: 71%;"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="{{ url_for('static', filename='js/telemetry.js') }}"></script>
+        // Start the system when page loads
+        document.addEventListener('DOMContentLoaded', initializeTelemetry);
+    </script>
 </body>
 </html>

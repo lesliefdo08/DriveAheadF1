@@ -1,0 +1,18 @@
+# os
+.DS_Store
+
+# credentials
+.env
+
+# complied files
+/frontend/.next
+/frontend/out
+/frontend/node_modules
+/frontend/yarn.lock
+
+.2023-austria-sprint.data.txt
+
+/target
+
+# logs
+/backend/.venv

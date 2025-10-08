@@ -3,486 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DriveAhead - Advanced F1 Analytics & Predictions</title>
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo.png') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <title>DriveAhead F1 - Formula 1 Analytics Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .animate-pulse-slow { animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        .gradient-bg {
+            background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
+        }
+    </style>
 </head>
-<body>
-    <div class="loading-screen" id="loadingScreen">
-        <div class="loader">
-            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="DriveAhead Logo" class="loading-logo">
-            <div class="f1-car"></div>
-            <div class="loading-text">DRIVEAHEAD</div>
-            <div class="loading-progress"></div>
+<body class="bg-black text-white min-h-screen">
+    <!-- Hero Section -->
+    <div class="min-h-screen flex flex-col justify-center items-center relative overflow-hidden">
+        <!-- Background Pattern -->
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute top-1/4 left-1/4 w-32 h-32 border border-red-500 rounded-full animate-pulse-slow"></div>
+            <div class="absolute bottom-1/4 right-1/4 w-24 h-24 border border-blue-500 rounded-full animate-pulse-slow" style="animation-delay: 1s;"></div>
+            <div class="absolute top-1/2 left-1/2 w-16 h-16 border border-yellow-500 rounded-full animate-pulse-slow" style="animation-delay: 2s;"></div>
         </div>
-    </div>
-
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="DriveAhead Logo" class="logo-image">
-                <div class="logo-text">
-                    <h2>DriveAhead</h2>
-                    <span class="tagline">Advanced F1 Analytics</span>
-                </div>
+        
+        <!-- Main Content -->
+        <div class="text-center z-10 max-w-4xl mx-auto px-6">
+            <!-- Logo -->
+            <div class="mb-8">
+                <i class="fas fa-flag-checkered text-6xl text-red-500 mb-4"></i>
+                <h1 class="text-6xl md:text-8xl font-bold bg-gradient-to-r from-red-500 via-white to-red-500 bg-clip-text text-transparent mb-4">
+                    DriveAhead F1
+                </h1>
+                <p class="text-xl md:text-2xl text-gray-300 mb-8">
+                    Real-time Formula 1 Telemetry & Timing
+                </p>
             </div>
-            <ul class="nav-menu">
-                <li><a href="#home">Home</a></li>
-                <li><a href="#analytics">Analytics</a></li>
-                <li><a href="#predictions">Predictions</a></li>
-                <li><a href="/telemetry">Live Telemetry</a></li>
-                <li><a href="/predictions">Live Predictions</a></li>
-                <li><a href="#data">Live Data</a></li>
-            </ul>
-            <div class="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </div>
-    </nav>
-
-    <main>
-        <section class="hero" id="home">
-            <div class="hero-background">
-                <div class="f1-grid-overlay"></div>
-                <div class="speed-lines"></div>
-            </div>
-            <div class="hero-content">
-                <div class="hero-text">
-                    <h1 class="hero-title">
-                        <span class="title-main">DriveAhead</span>
-                    </h1>
-                    <p class="hero-subtitle">
-                        Unleash the power of AI-driven Formula 1 analytics. Get real-time predictions, 
-                        performance insights, and strategic analysis that gives you the competitive edge.
-                    </p>
-                    <div class="hero-buttons">
-                        <button class="btn btn-primary" onclick="window.location.href='/predictions'">
-                            <i class="fas fa-rocket"></i>
-                            <span>Start Predicting</span>
-                        </button>
-                        <button class="btn btn-secondary" onclick="scrollToSection('analytics')">
-                            <i class="fas fa-chart-bar"></i>
-                            <span>Explore Data</span>
-                        </button>
-                    </div>
-                    <div class="hero-stats">
-                        <div class="stat-item">
-                            <div class="stat-number">98.7%</div>
-                            <div class="stat-label">Accuracy</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number">0.003s</div>
-                            <div class="stat-label">Latency</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number">24/7</div>
-                            <div class="stat-label">Real-Time</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="hero-visual">
-                    <div class="hero-logo">
-                        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="DriveAhead Logo" class="enlarged-logo">
-                        <div class="logo-glow"></div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="race-countdown" id="countdown">
-            <div class="container">
-                <div class="countdown-header" style="text-align: center;">
-                    <h2>Next Race</h2>
-                    <div class="race-info" id="raceInfo" style="display: flex; flex-direction: column; align-items: center;"></div>
-                        <span class="race-name" id="raceName">Loading...</span>
-                        <span class="race-location" id="raceLocation"></span>
-                        <span class="race-date" id="raceDate"></span>
-                    </div>
-                </div>
-                <div class="countdown-timer" id="countdownTimer">
-                    <div class="time-unit">
-                        <span class="time-value" id="days">00</span>
-                        <span class="time-label">Days</span>
-                    </div>
-                    <div class="time-separator">:</div>
-                    <div class="time-unit">
-                        <span class="time-value" id="hours">00</span>
-                        <span class="time-label">Hours</span>
-                    </div>
-                    <div class="time-separator">:</div>
-                    <div class="time-unit">
-                        <span class="time-value" id="minutes">00</span>
-                        <span class="time-label">Minutes</span>
-                    </div>
-                </div>
-                <div class="live-status" id="liveStatus" style="display: none;">
-                    <div class="live-indicator">
-                        <span class="live-dot"></span>
-                        <span class="live-text">RACE IS LIVE</span>
-                    </div>
-                </div>
-                <div class="upcoming-races">
-                    <h3>Upcoming Race Calendar</h3>
-                    <div class="race-calendar" id="upcomingRaces">
-                        <div class="calendar-loading">
-                            <i class="fas fa-spinner fa-spin"></i>
-                            <span>Loading race schedule...</span>
-                        </div>
-                        <!-- Race cards will be populated by JavaScript with proper spacing -->
-                    </div>
-                    <div class="calendar-footer">
-                        <span class="timezone-info">All times shown in IST (Indian Standard Time)</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="features" id="analytics">
-            <div class="container">
-                <div class="section-header">
-                    <h2>Comprehensive F1 Analytics</h2>
-                    <p>Powered by FastF1 data and advanced machine learning algorithms</p>
-                </div>
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-tachometer-alt"></i>
-                        </div>
-                        <div class="feature-content">
-                            <h3>Real-time Telemetry</h3>
-                            <p>Live data streaming from F1 sessions including speed, throttle, brake pressure, and engine parameters.</p>
-                            <div class="feature-stats">
-                                <span class="stat">300+ Data Points</span>
-                                <span class="stat">50Hz Frequency</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-trophy"></i>
-                        </div>
-                        <div class="feature-content">
-                            <h3>Driver Performance</h3>
-                            <p>Comprehensive analysis of driver performance metrics, lap times, sector analysis, and consistency ratings.</p>
-                            <div class="feature-stats">
-                                <span class="stat">20 Drivers</span>
-                                <span class="stat">23 Races</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-route"></i>
-                        </div>
-                        <div class="feature-content">
-                            <h3>Track Analytics</h3>
-                            <p>Deep dive into circuit characteristics, optimal racing lines, overtaking zones, and weather impact analysis.</p>
-                            <div class="feature-stats">
-                                <span class="stat">24 Circuits</span>
-                                <span class="stat">3D Visualization</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-cogs"></i>
-                        </div>
-                        <div class="feature-content">
-                            <h3>Strategy Optimization</h3>
-                            <p>Advanced pit stop strategy analysis, tire degradation modeling, and fuel consumption optimization.</p>
-                            <div class="feature-stats">
-                                <span class="stat">5 Tire Compounds</span>
-                                <span class="stat">AI-Powered</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="predictions-section" id="predictions">
-            <div class="container">
-                <div class="section-header">
-                    <h2>AI-Powered Predictions</h2>
-                    <p>Machine learning models with 87.3% accuracy across 2025 F1 season</p>
-                </div>
-                <div class="predictions-dashboard">
-                    <div class="prediction-card main-prediction">
-                        <h3>Next Race Winner Prediction</h3>
-                        <div class="prediction-result" id="nextRaceWinnerPrediction">
-                            <div class="driver-prediction">
-                                <div class="driver-avatar"></div>
-                                <div class="driver-info">
-                                    <span class="driver-name" id="predictedDriverName">Loading...</span>
-                                    <span class="team-name" id="predictedTeamName">Loading...</span>
-                                </div>
-                                <div class="prediction-confidence">
-                                    <span class="confidence-value" id="predictionConfidence">---%</span>
-                                    <span class="confidence-label">Confidence</span>
-                                </div>
-                            </div>
-                            <div class="prediction-details" id="predictionDetails">
-                                <div class="race-info" id="nextRaceInfo">
-                                    <span class="race-name" id="nextRaceName">Loading...</span>
-                                    <span class="circuit-name" id="nextCircuitName">Loading...</span>
-                                    <span class="race-date" id="nextRaceDate">Loading...</span>
-                                </div>
-                                <div class="circuit-factors" id="circuitFactors">
-                                    <h4>Key Circuit Factors</h4>
-                                    <div class="factors-list" id="factorsList">
-                                        <span class="factor">Loading...</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="prediction-card">
-                        <h3>Top 5 Contenders</h3>
-                        <div class="top-predictions" id="topPredictions">
-                            <div class="prediction-item">
-                                <span class="position">#1</span>
-                                <span class="driver">Loading...</span>
-                                <span class="probability">--%</span>
-                            </div>
-                            <!-- Additional predictions will be loaded dynamically -->
-                        </div>
-                    </div>
-                    <div class="prediction-card">
-                        <h3>AI Model Performance</h3>
-                        <div class="model-stats" id="modelPerformance">
-                            <div class="accuracy-meter">
-                                <div class="accuracy-circle">
-                                    <span class="accuracy-value" id="overallAccuracy">78.3%</span>
-                                    <span class="accuracy-label">Overall</span>
-                                </div>
-                            </div>
-                            <div class="performance-breakdown" id="performanceBreakdown">
-                                <div class="breakdown-item">
-                                    <span class="metric-label">Race Winner</span>
-                                    <span class="metric-value" id="winnerAccuracy">65.2%</span>
-                                </div>
-                                <div class="breakdown-item">
-                                    <span class="metric-label">Podium Finish</span>
-                                    <span class="metric-value" id="podiumAccuracy">82.7%</span>
-                                </div>
-                                <div class="breakdown-item">
-                                    <span class="metric-label">Points Finish</span>
-                                    <span class="metric-value" id="pointsAccuracy">89.4%</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="recent-predictions" id="recentPredictions">
-                            <h4>Recent Prediction Results</h4>
-                            <div class="prediction-history">
-                                <!-- Will be populated by JavaScript -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-                            </div>
-                        </div>
-                        <div class="prediction-factors">
-                            <div class="factor">
-                                <span class="factor-label">Track Performance</span>
-                                <div class="factor-bar">
-                                    <div class="factor-fill" style="width: 0%"></div>
-                                </div>
-                            </div>
-                            <div class="factor">
-                                <span class="factor-label">Recent Form</span>
-                                <div class="factor-bar">
-                                    <div class="factor-fill" style="width: 0%"></div>
-                                </div>
-                            </div>
-                            <div class="factor">
-                                <span class="factor-label">Car Performance</span>
-                                <div class="factor-bar">
-                                    <div class="factor-fill" style="width: 0%"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="predictions-grid">
-                        <div class="prediction-mini">
-                            <h4>Championship Leader</h4>
-                            <div class="prediction-value" id="championshipLeader">Loading...</div>
-                        </div>
-                        <div class="prediction-mini">
-                            <h4>Fastest Qualifier</h4>
-                            <div class="prediction-value" id="fastestQualifier">Loading...</div>
-                        </div>
-                        <div class="prediction-mini">
-                            <h4>Most Overtakes</h4>
-                            <div class="prediction-value" id="mostOvertakes">Loading...</div>
-                        </div>
-                        <div class="prediction-mini">
-                            <h4>Best Strategy</h4>
-                            <div class="prediction-value" id="bestStrategy">Loading...</div>
-                        </div>
-                    </div>
+            
+            <!-- Feature Cards -->
+            <div class="grid md:grid-cols-3 gap-6 mb-12">
+                <div class="gradient-bg p-6 rounded-lg border border-gray-700 hover:border-red-500 transition-all duration-300">
+                    <i class="fas fa-tachometer-alt text-3xl text-red-500 mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-2">Live Telemetry</h3>
+                    <p class="text-gray-400">Real-time driver data, sector times, and car performance metrics</p>
                 </div>
                 
-                <!-- New 2024 Completed Races Analysis Section -->
-                <div class="completed-races-section">
-                    <div class="section-header">
-                        <h3>2025 F1 Season - AI Prediction Performance</h3>
-                        <p>Comprehensive analysis of our predictions vs actual race results</p>
-                    </div>
-                    
-                    <div class="prediction-performance-stats">
-                        <div class="performance-stat">
-                            <div class="stat-value" id="overallAccuracy">87.4%</div>
-                            <div class="stat-label">Overall Accuracy</div>
-                            <div class="stat-description">Average prediction accuracy across all analyzed races</div>
-                        </div>
-                        <div class="performance-stat">
-                            <div class="stat-value" id="correctPredictions">3</div>
-                            <div class="stat-label">Correct Predictions</div>
-                            <div class="stat-description">Race winners correctly predicted</div>
-                        </div>
-                        <div class="performance-stat">
-                            <div class="stat-value" id="totalAnalyzed">4</div>
-                            <div class="stat-label">Races Analyzed</div>
-                            <div class="stat-description">Complete race weekends with predictions</div>
-                        </div>
-                        <div class="performance-stat">
-                            <div class="stat-value">Improving</div>
-                            <div class="stat-label">Accuracy Trend</div>
-                            <div class="stat-description">AI learning and improving over time</div>
-                        </div>
-                    </div>
-
-                    <div class="completed-races-grid">
-                        <div class="race-analysis-header">
-                            <h4>Recent Race Predictions Analysis</h4>
-                            <p>Detailed breakdown of AI predictions vs actual results</p>
-                        </div>
-                        <div class="completed-races-list" id="completedRacesList">
-                            <!-- Populated by JavaScript -->
-                            <div class="loading-placeholder">Loading completed races analysis...</div>
-                        </div>
-                    </div>
-
-                    <div class="ai-insights-panel">
-                        <div class="insights-header">
-                            <h4><i class="fas fa-brain"></i> AI Performance Insights</h4>
-                        </div>
-                        <div class="insights-grid">
-                            <div class="insight-item">
-                                <div class="insight-icon"><i class="fas fa-trophy"></i></div>
-                                <div class="insight-content">
-                                    <div class="insight-title">Most Predictable Winner</div>
-                                    <div class="insight-value" id="mostPredictable">Max Verstappen</div>
-                                    <div class="insight-description">Highest prediction confidence rates</div>
-                                </div>
-                            </div>
-                            <div class="insight-item">
-                                <div class="insight-icon"><i class="fas fa-surprise"></i></div>
-                                <div class="insight-content">
-                                    <div class="insight-title">Biggest Upset</div>
-                                    <div class="insight-value" id="biggestUpset">George Russell (Las Vegas GP)</div>
-                                    <div class="insight-description">Most unexpected race result</div>
-                                </div>
-                            </div>
-                            <div class="insight-item">
-                                <div class="insight-icon"><i class="fas fa-chart-line"></i></div>
-                                <div class="insight-content">
-                                    <div class="insight-title">Accuracy Evolution</div>
-                                    <div class="insight-value">+12.3%</div>
-                                    <div class="insight-description">Improvement from early to late season</div>
-                                </div>
-                            </div>
-                            <div class="insight-item">
-                                <div class="insight-icon"><i class="fas fa-bullseye"></i></div>
-                                <div class="insight-content">
-                                    <div class="insight-title">Precision Rate</div>
-                                    <div class="insight-value">75%</div>
-                                    <div class="insight-description">Exact winner predictions</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="gradient-bg p-6 rounded-lg border border-gray-700 hover:border-blue-500 transition-all duration-300">
+                    <i class="fas fa-chart-line text-3xl text-blue-500 mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-2">Live Standings</h3>
+                    <p class="text-gray-400">Current championship standings and race predictions</p>
+                </div>
+                
+                <div class="gradient-bg p-6 rounded-lg border border-gray-700 hover:border-yellow-500 transition-all duration-300">
+                    <i class="fas fa-broadcast-tower text-3xl text-yellow-500 mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-2">Race Control</h3>
+                    <p class="text-gray-400">Live race control messages and team radio communications</p>
                 </div>
             </div>
-        </section>
-
-        <section class="live-data" id="data">
-            <div class="container">
-                <div class="section-header">
-                    <h2>Live F1 Data Stream</h2>
-                    <p>Real-time data from current F1 season</p>
-                </div>
-                <div class="data-grid">
-                    <div class="data-card">
-                        <h3>Driver Standings</h3>
-                        <div class="standings-list" id="driverStandings">
-                            <div class="loading-placeholder">Loading standings...</div>
-                        </div>
-                    </div>
-                    <div class="data-card">
-                        <h3>Constructor Standings</h3>
-                        <div class="standings-list" id="constructorStandings">
-                            <div class="loading-placeholder">Loading standings...</div>
-                        </div>
-                    </div>
-                    <div class="data-card wide">
-                        <h3>Latest Race Results</h3>
-                        <div class="race-results" id="raceResults">
-                            <div class="loading-placeholder">Loading race results...</div>
-                        </div>
-                    </div>
-                </div>
+            
+            <!-- CTA Buttons -->
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <a href="/telemetry" class="bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-8 rounded-lg text-lg transition-all duration-300 transform hover:scale-105 flex items-center">
+                    <i class="fas fa-play mr-2"></i>
+                    Go to Dashboard
+                </a>
+                
+                <a href="/standings" class="border-2 border-gray-600 hover:border-white text-white font-bold py-4 px-8 rounded-lg text-lg transition-all duration-300 transform hover:scale-105 flex items-center">
+                    <i class="fas fa-trophy mr-2"></i>
+                    Check Standings
+                </a>
             </div>
-        </section>
-    </main>
-
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <div class="footer-logo">
-                        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="DriveAhead Logo" class="footer-logo-image">
-                        <div class="footer-logo-text">
-                            <h3>DriveAhead</h3>
-                        </div>
-                    </div>
-                    <p>Advanced Formula 1 Analytics Platform powered by cutting-edge machine learning and real-time data processing.</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Technology</h4>
-                    <ul>
-                        <li>Jolpica F1 API</li>
-                        <li>Python & Flask</li>
-                        <li>JavaScript & HTML5</li>
-                        <li>Chart.js Visualizations</li>
-                        <li>Real-time Data Processing</li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Features</h4>
-                    <ul>
-                        <li>Live Telemetry</li>
-                        <li>Race Predictions</li>
-                        <li>Strategy Analysis</li>
-                        <li>Performance Metrics</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 DriveAhead. Advanced F1 Analytics Platform.</p>
-                <p class="team-credits">Developed by <strong>Leslie Fernando, Glenn Fernando, Kenneth Fernandes & Verena Fernandes</strong></p>
+            
+            <!-- Live Status -->
+            <div class="mt-8">
+                <span class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-full text-sm font-medium">
+                    <i class="fas fa-circle animate-pulse mr-2"></i>
+                    LIVE - 2025 Season
+                </span>
             </div>
         </div>
+        
+        <!-- Navigation -->
+        <nav class="absolute top-0 left-0 right-0 p-6 z-20">
+            <div class="max-w-7xl mx-auto flex justify-between items-center">
+                <div class="flex items-center">
+                    <i class="fas fa-flag-checkered text-2xl text-red-500 mr-2"></i>
+                    <span class="text-xl font-bold">DriveAhead F1</span>
+                </div>
+                <div class="hidden md:flex space-x-6">
+                    <a href="/telemetry" class="text-gray-300 hover:text-white transition-colors">Dashboard</a>
+                    <a href="/standings" class="text-gray-300 hover:text-white transition-colors">Standings</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 py-8 text-center text-gray-400">
+        <p>&copy; 2024 DriveAhead F1. Real-time Formula 1 analytics platform.</p>
+        <p class="mt-2 text-sm">Data provided by Jolpica F1 API and enhanced telemetry systems.</p>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="{{ url_for('static', filename='js/config.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/main_simple.js') }}"></script>
+    <script>
+        // Simple animation for the hero section
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add some interactive elements
+            const cards = document.querySelectorAll('.gradient-bg');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px)';
+                });
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+        });
+    </script>
 </body>
 </html>
