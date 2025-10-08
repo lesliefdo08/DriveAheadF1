@@ -1,26 +1,31 @@
 # DriveAhead F1 Analytics Platform 🏎️
 
-A modern, real-time Formula 1 analytics platform providing comprehensive race predictions, driver standings, constructor performance data, and live race insights.
+A professional, real-time Formula 1 analytics platform featuring live race countdown, professional telemetry interface, AI predictions, and comprehensive F1 data integration.
 
 ## 🚀 Features
 
-### Live Predictions Dashboard
-- **Horizontal Analytics Layout**: Side-by-side team performance and analytics containers
-- **Real-time Race Predictions**: AI-powered predictions for upcoming F1 races
-- **Performance Metrics**: Detailed driver and constructor analytics
-- **Interactive Visualizations**: Modern charts and progress indicators
+### 🕐 Live Race Countdown
+- **Real-time Timer**: Live countdown to next race (00DAYS : 00HOURS : 00MINUTES)
+- **Dynamic Status**: Race weekend status detection and updates
+- **Live Timestamps**: Real-time clock updates every second
 
-### Comprehensive F1 Data
-- **Driver Standings**: Live championship standings with points tracking
-- **Constructor Standings**: Team performance and championship positions
-- **Race Schedule**: Complete F1 calendar with race information
-- **Historical Results**: Past race results and performance analysis
+### 🏁 Professional Telemetry Interface
+- **F1 Broadcast Design**: Professional glass panels with backdrop blur
+- **Ultra-fast Updates**: 1-second telemetry refresh for live racing feel
+- **Team Colors**: 2025 F1 team-specific color coding
+- **12-Column Grid**: Professional driver leaderboard layout
 
-### Modern UI/UX
-- **Responsive Design**: Optimized for desktop, tablet, and mobile
-- **Smooth Animations**: Professional transitions and loading states
-- **Error Handling**: Robust error states with retry mechanisms
-- **Dark Theme**: Modern F1-inspired design aesthetic
+### 📊 Advanced Analytics
+- **AI Race Predictions**: Machine learning powered winner predictions
+- **Live Standings**: Real-time driver and constructor championships
+- **Performance Metrics**: Comprehensive F1 analytics and insights
+- **Professional Styling**: Orbitron font and F1 color scheme
+
+### 🎨 Modern Design
+- **Professional UI**: F1 broadcast-style interface
+- **Responsive Layout**: Optimized for all devices
+- **Smooth Animations**: CSS transitions and gradients
+- **Enhanced UX**: Glass panels, shadows, and professional typography
 
 ## 🛠️ Technology Stack
 
