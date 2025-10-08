@@ -7,7 +7,54 @@ services:
     buildCommand: pip install --upgrade pip && pip install --only-binary=all -r requirements.txt || pip install -r requirements.txt
     startCommand: python -m gunicorn --bind 0.0.0.0:$PORT app:app
     envVars:
+      # Essential Configuration
       - key: LOG_LEVEL
         value: INFO
       - key: FLASK_ENV
         value: production
+      - key: SECRET_KEY
+        value: driveahead-f1-2025-production-secret-change-this-random-key-abc123
+      
+      # API Configuration
+      - key: JOLPICA_API_BASE
+        value: http://api.jolpi.ca/ergast/f1
+      - key: API_TIMEOUT
+        value: 10
+      - key: API_CACHE_TTL
+        value: 300
+      - key: API_RETRY_ATTEMPTS
+        value: 3
+      - key: API_RETRY_DELAY
+        value: 1.0
+      
+      # Performance Settings
+      - key: DATA_REFRESH_INTERVAL
+        value: 30000
+      - key: LOADING_TIMEOUT
+        value: 5000
+      - key: CHART_ANIMATION_DURATION
+        value: 1000
+      
+      # Cache Configuration
+      - key: CACHE_ENABLED
+        value: true
+      - key: CACHE_TIMEOUT
+        value: 300
+      - key: CACHE_MAX_SIZE
+        value: 1000
+      
+      # F1 Data Configuration
+      - key: F1_SEASON
+        value: 2025
+      - key: DEFAULT_RACE_LIMIT
+        value: 23
+      - key: TELEMETRY_UPDATE_INTERVAL
+        value: 1000
+      
+      # Production Optimizations
+      - key: WERKZEUG_RUN_MAIN
+        value: true
+      - key: FLASK_SKIP_DOTENV
+        value: true
+      - key: PYTHONUNBUFFERED
+        value: 1

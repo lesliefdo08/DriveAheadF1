@@ -1,0 +1,34 @@
+# 🌍 RENDER ENVIRONMENT VARIABLES
+# Copy these exact values to your Render service environment variables
+
+## Essential Configuration
+LOG_LEVEL=INFO
+FLASK_ENV=production
+SECRET_KEY=driveahead-f1-2025-production-secret-change-this-random-key-abc123
+
+## API Configuration
+JOLPICA_API_BASE=http://api.jolpi.ca/ergast/f1
+API_TIMEOUT=10
+API_CACHE_TTL=300
+API_RETRY_ATTEMPTS=3
+API_RETRY_DELAY=1.0
+
+## Performance Settings
+DATA_REFRESH_INTERVAL=30000
+LOADING_TIMEOUT=5000
+CHART_ANIMATION_DURATION=1000
+
+## Cache Configuration  
+CACHE_ENABLED=true
+CACHE_TIMEOUT=300
+CACHE_MAX_SIZE=1000
+
+## F1 Data Configuration
+F1_SEASON=2025
+DEFAULT_RACE_LIMIT=23
+TELEMETRY_UPDATE_INTERVAL=1000
+
+## Production Optimizations
+WERKZEUG_RUN_MAIN=true
+FLASK_SKIP_DOTENV=true
+PYTHONUNBUFFERED=1
