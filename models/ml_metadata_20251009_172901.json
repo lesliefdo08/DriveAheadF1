@@ -1,0 +1,56 @@
+{
+  "timestamp": "20251009_172901",
+  "algorithms": [
+    "random_forest",
+    "xgboost",
+    "logistic_regression"
+  ],
+  "tasks": [
+    "position",
+    "winner",
+    "podium"
+  ],
+  "feature_columns": [
+    "qualifying_position",
+    "weather_clear",
+    "track_temperature",
+    "tire_strategy",
+    "avg_speed",
+    "pit_stop_time",
+    "driver_skill",
+    "team_performance",
+    "circuit_factor",
+    "driver_encoded",
+    "team_encoded",
+    "circuit_encoded"
+  ],
+  "model_performance": {
+    "random_forest": {
+      "position_mae": 1.328127521475507,
+      "winner_accuracy": 0.9716666666666667,
+      "podium_accuracy": 0.9383333333333334
+    },
+    "xgboost": {
+      "position_mae": 1.3421034812927246,
+      "winner_accuracy": 0.9716666666666667,
+      "podium_accuracy": 0.935
+    },
+    "logistic_regression": {
+      "winner_accuracy": 0.97,
+      "podium_accuracy": 0.9366666666666666
+    }
+  },
+  "model_files": {
+    "random_forest_position": "models/random_forest_position_20251009_172901.pkl",
+    "random_forest_winner": "models/random_forest_winner_20251009_172901.pkl",
+    "random_forest_podium": "models/random_forest_podium_20251009_172901.pkl",
+    "xgboost_position": "models/xgboost_position_20251009_172901.pkl",
+    "xgboost_winner": "models/xgboost_winner_20251009_172901.pkl",
+    "xgboost_podium": "models/xgboost_podium_20251009_172901.pkl",
+    "logistic_regression_winner": "models/logistic_regression_winner_20251009_172901.pkl",
+    "logistic_regression_podium": "models/logistic_regression_podium_20251009_172901.pkl"
+  },
+  "scaler_file": "models/scaler_20251009_172901.pkl",
+  "encoder_file": "models/encoders_20251009_172901.pkl",
+  "training_date": "2025-10-09T17:29:01.701247"
+}

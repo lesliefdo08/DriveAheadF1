@@ -148,6 +148,40 @@
             </div>
         </div>
 
+        <!-- Probability Threshold Chart -->
+        <div class="mb-12">
+            <div class="glass-panel rounded-2xl p-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="f1-font text-2xl font-bold text-white">Prediction Probability Chart</h3>
+                    <div class="text-right text-sm text-gray-400">
+                        <div>Threshold: <span class="text-red-500 font-bold">20%</span></div>
+                        <div class="text-xs">Drivers above this line have a real chance</div>
+                    </div>
+                </div>
+                
+                <!-- Chart Container -->
+                <div class="bg-gray-900/50 rounded-xl p-6">
+                    <canvas id="probabilityChart" width="800" height="400"></canvas>
+                </div>
+                
+                <!-- Legend -->
+                <div class="flex justify-center mt-4 space-x-6 text-sm">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-4 h-4 bg-green-500 rounded"></div>
+                        <span class="text-gray-300">Strong Chance (>30%)</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-4 h-4 bg-yellow-500 rounded"></div>
+                        <span class="text-gray-300">Possible (20-30%)</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-4 h-4 bg-red-500 rounded"></div>
+                        <span class="text-gray-300">Unlikely (<20%)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Prediction Analytics -->
         <div class="grid lg:grid-cols-3 gap-8 mb-12">
             <!-- Model Performance -->
@@ -263,6 +297,7 @@
                     await this.loadWinnerPrediction();
                     await this.loadTop5Predictions();
                     await this.loadPodiumPredictions();
+                    await this.createProbabilityChart();
                     await this.loadCircuitFactors();
                     await this.loadPredictionHistory();
                 } catch (error) {
@@ -449,7 +484,124 @@
                         </div>
                     `).join('');
                 }
-            }            async loadCircuitFactors() {
+            }
+
+            async createProbabilityChart() {
+                try {
+                    const response = await fetch('/api/predictions');
+                    const data = await response.json();
+                    
+                    let chartData = [];
+                    if (data.predictions && data.predictions.length > 0) {
+                        chartData = data.predictions.slice(0, 8); // Top 8 drivers
+                    } else {
+                        // Fallback data
+                        chartData = [
+                            { driver: 'Max Verstappen', probability: 87 },
+                            { driver: 'Lando Norris', probability: 72 },
+                            { driver: 'Charles Leclerc', probability: 68 },
+                            { driver: 'Oscar Piastri', probability: 61 },
+                            { driver: 'Carlos Sainz', probability: 55 },
+                            { driver: 'George Russell', probability: 42 },
+                            { driver: 'Lewis Hamilton', probability: 38 },
+                            { driver: 'Sergio Perez', probability: 25 }
+                        ];
+                    }
+
+                    // Get canvas context
+                    const canvas = document.getElementById('probabilityChart');
+                    const ctx = canvas.getContext('2d');
+
+                    // Clear previous chart
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                    // Chart settings
+                    const chartWidth = canvas.width - 100;
+                    const chartHeight = canvas.height - 80;
+                    const startX = 60;
+                    const startY = 20;
+                    const barWidth = chartWidth / chartData.length;
+                    const threshold = 20; // 20% threshold
+                    
+                    // Colors based on probability
+                    const getBarColor = (probability) => {
+                        if (probability >= 30) return '#10b981'; // Green - Strong chance
+                        if (probability >= 20) return '#f59e0b'; // Yellow - Possible
+                        return '#ef4444'; // Red - Unlikely
+                    };
+
+                    // Draw bars
+                    chartData.forEach((driver, index) => {
+                        const barHeight = (driver.probability / 100) * chartHeight;
+                        const x = startX + (index * barWidth) + (barWidth * 0.1);
+                        const y = startY + chartHeight - barHeight;
+                        const width = barWidth * 0.8;
+
+                        // Draw bar
+                        ctx.fillStyle = getBarColor(driver.probability);
+                        ctx.fillRect(x, y, width, barHeight);
+
+                        // Draw percentage on top of bar
+                        ctx.fillStyle = '#ffffff';
+                        ctx.font = 'bold 12px Arial';
+                        ctx.textAlign = 'center';
+                        ctx.fillText(`${driver.probability}%`, x + width/2, y - 5);
+
+                        // Draw driver name at bottom
+                        ctx.fillStyle = '#9ca3af';
+                        ctx.font = '10px Arial';
+                        ctx.save();
+                        ctx.translate(x + width/2, startY + chartHeight + 15);
+                        ctx.rotate(-Math.PI/4);
+                        ctx.textAlign = 'right';
+                        ctx.fillText(driver.driver.split(' ')[1] || driver.driver, 0, 0);
+                        ctx.restore();
+                    });
+
+                    // Draw threshold line
+                    const thresholdY = startY + chartHeight - (threshold / 100) * chartHeight;
+                    ctx.strokeStyle = '#dc2626';
+                    ctx.lineWidth = 2;
+                    ctx.setLineDash([5, 5]);
+                    ctx.beginPath();
+                    ctx.moveTo(startX, thresholdY);
+                    ctx.lineTo(startX + chartWidth, thresholdY);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+
+                    // Draw threshold label
+                    ctx.fillStyle = '#dc2626';
+                    ctx.font = 'bold 12px Arial';
+                    ctx.textAlign = 'left';
+                    ctx.fillText('20% Threshold', startX + chartWidth - 100, thresholdY - 10);
+
+                    // Draw Y-axis labels
+                    ctx.fillStyle = '#9ca3af';
+                    ctx.font = '10px Arial';
+                    ctx.textAlign = 'right';
+                    for (let i = 0; i <= 100; i += 20) {
+                        const y = startY + chartHeight - (i / 100) * chartHeight;
+                        ctx.fillText(`${i}%`, startX - 10, y + 3);
+                    }
+
+                    // Draw axes
+                    ctx.strokeStyle = '#4b5563';
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    // Y-axis
+                    ctx.moveTo(startX, startY);
+                    ctx.lineTo(startX, startY + chartHeight);
+                    // X-axis
+                    ctx.moveTo(startX, startY + chartHeight);
+                    ctx.lineTo(startX + chartWidth, startY + chartHeight);
+                    ctx.stroke();
+
+                } catch (error) {
+                    console.error('Error creating probability chart:', error);
+                }
+            }
+
+            async loadCircuitFactors() {
                 const factors = [
                     'High-speed straights favor Red Bull aerodynamics',
                     'Medium downforce setup optimal for this track',
