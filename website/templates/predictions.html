@@ -345,56 +345,111 @@
             }
 
             async loadTop5Predictions() {
-                const sampleData = [
-                    { driver: 'Max Verstappen', team: 'Red Bull Racing', confidence: 87 },
-                    { driver: 'Charles Leclerc', team: 'Ferrari', confidence: 72 },
-                    { driver: 'Lando Norris', team: 'McLaren', confidence: 68 },
-                    { driver: 'Lewis Hamilton', team: 'Mercedes', confidence: 61 },
-                    { driver: 'George Russell', team: 'Mercedes', confidence: 55 }
-                ];
+                try {
+                    const response = await fetch('/api/predictions');
+                    const data = await response.json();
+                    
+                    if (data.predictions && data.predictions.length > 0) {
+                        const top5 = data.predictions.slice(0, 5);
+                        document.getElementById('top5Predictions').innerHTML = top5.map((prediction, index) => `
+                            <div class="flex items-center justify-between p-3 bg-gray-800/30 rounded-lg border border-gray-700/50">
+                                <div class="flex items-center space-x-3">
+                                    <span class="text-lg font-bold text-gray-400">#${index + 1}</span>
+                                    <div>
+                                        <div class="font-semibold text-white">${prediction.driver}</div>
+                                        <div class="text-xs text-gray-400">${prediction.team}</div>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="font-bold text-red-500">${prediction.probability}%</div>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                } catch (error) {
+                    console.error('Error loading top 5 predictions:', error);
+                    // Fallback data that matches the winner prediction
+                    const fallbackData = [
+                        { driver: 'Max Verstappen', team: 'Red Bull Racing', probability: 87 },
+                        { driver: 'Lando Norris', team: 'McLaren', probability: 72 },
+                        { driver: 'Charles Leclerc', team: 'Ferrari', probability: 68 },
+                        { driver: 'Oscar Piastri', team: 'McLaren', probability: 61 },
+                        { driver: 'Carlos Sainz', team: 'Ferrari', probability: 55 }
+                    ];
 
-                document.getElementById('top5Predictions').innerHTML = sampleData.map((prediction, index) => `
-                    <div class="flex items-center justify-between p-3 bg-gray-800/30 rounded-lg border border-gray-700/50">
-                        <div class="flex items-center space-x-3">
-                            <span class="text-lg font-bold text-gray-400">#${index + 1}</span>
-                            <div>
-                                <div class="font-semibold text-white">${prediction.driver}</div>
-                                <div class="text-xs text-gray-400">${prediction.team}</div>
+                    document.getElementById('top5Predictions').innerHTML = fallbackData.map((prediction, index) => `
+                        <div class="flex items-center justify-between p-3 bg-gray-800/30 rounded-lg border border-gray-700/50">
+                            <div class="flex items-center space-x-3">
+                                <span class="text-lg font-bold text-gray-400">#${index + 1}</span>
+                                <div>
+                                    <div class="font-semibold text-white">${prediction.driver}</div>
+                                    <div class="text-xs text-gray-400">${prediction.team}</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="font-bold text-red-500">${prediction.probability}%</div>
                             </div>
                         </div>
-                        <div class="text-right">
-                            <div class="font-bold text-red-500">${prediction.confidence}%</div>
-                        </div>
-                    </div>
-                `).join('');
-            }
+                    `).join('');
+                }
+            }            async loadPodiumPredictions() {
+                try {
+                    const response = await fetch('/api/predictions');
+                    const data = await response.json();
+                    
+                    if (data.predictions && data.predictions.length >= 3) {
+                        const podiumData = data.predictions.slice(0, 3).map((prediction, index) => ({
+                            position: index + 1,
+                            driver: prediction.driver,
+                            team: prediction.team,
+                            confidence: prediction.probability,
+                            color: index === 0 ? 'bg-yellow-500' : index === 1 ? 'bg-gray-400' : 'bg-amber-600'
+                        }));
 
-            async loadPodiumPredictions() {
-                const podiumData = [
-                    { position: 1, driver: 'Max Verstappen', team: 'Red Bull Racing', confidence: 87, color: 'bg-yellow-500' },
-                    { position: 2, driver: 'Charles Leclerc', team: 'Ferrari', confidence: 72, color: 'bg-gray-400' },
-                    { position: 3, driver: 'Lando Norris', team: 'McLaren', confidence: 68, color: 'bg-amber-600' }
-                ];
-
-                document.getElementById('podiumPredictions').innerHTML = podiumData.map(prediction => `
-                    <div class="flex items-center justify-between p-3 bg-gray-800/30 rounded-lg border border-gray-700/50">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-8 h-8 ${prediction.color} rounded-full flex items-center justify-center">
-                                <span class="text-white font-bold text-sm">${prediction.position}</span>
+                        document.getElementById('podiumPredictions').innerHTML = podiumData.map(prediction => `
+                            <div class="flex items-center justify-between p-3 bg-gray-800/30 rounded-lg border border-gray-700/50">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 ${prediction.color} rounded-full flex items-center justify-center">
+                                        <span class="text-white font-bold text-sm">${prediction.position}</span>
+                                    </div>
+                                    <div>
+                                        <div class="font-semibold text-white">${prediction.driver}</div>
+                                        <div class="text-xs text-gray-400">${prediction.team}</div>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="font-bold text-red-500">${prediction.confidence}%</div>
+                                </div>
                             </div>
-                            <div>
-                                <div class="font-semibold text-white">${prediction.driver}</div>
-                                <div class="text-xs text-gray-400">${prediction.team}</div>
+                        `).join('');
+                    }
+                } catch (error) {
+                    console.error('Error loading podium predictions:', error);
+                    // Fallback data that matches the winner prediction
+                    const podiumData = [
+                        { position: 1, driver: 'Max Verstappen', team: 'Red Bull Racing', confidence: 87, color: 'bg-yellow-500' },
+                        { position: 2, driver: 'Lando Norris', team: 'McLaren', confidence: 72, color: 'bg-gray-400' },
+                        { position: 3, driver: 'Charles Leclerc', team: 'Ferrari', confidence: 68, color: 'bg-amber-600' }
+                    ];
+
+                    document.getElementById('podiumPredictions').innerHTML = podiumData.map(prediction => `
+                        <div class="flex items-center justify-between p-3 bg-gray-800/30 rounded-lg border border-gray-700/50">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 ${prediction.color} rounded-full flex items-center justify-center">
+                                    <span class="text-white font-bold text-sm">${prediction.position}</span>
+                                </div>
+                                <div>
+                                    <div class="font-semibold text-white">${prediction.driver}</div>
+                                    <div class="text-xs text-gray-400">${prediction.team}</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="font-bold text-red-500">${prediction.confidence}%</div>
                             </div>
                         </div>
-                        <div class="text-right">
-                            <div class="font-bold text-red-500">${prediction.confidence}%</div>
-                        </div>
-                    </div>
-                `).join('');
-            }
-
-            async loadCircuitFactors() {
+                    `).join('');
+                }
+            }            async loadCircuitFactors() {
                 const factors = [
                     'High-speed straights favor Red Bull aerodynamics',
                     'Medium downforce setup optimal for this track',
