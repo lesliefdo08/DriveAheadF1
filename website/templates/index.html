@@ -640,19 +640,18 @@
             }
 
             setupRaceCountdown(raceDate, raceTime) {
-                // Parse the race date and time correctly
+                // Parse the race date and time correctly using IST timezone
                 let targetDate;
                 
                 // Expected format: date="2025-10-19", time="19:00:00Z"
-                if (raceTime && raceTime.includes('Z')) {
-                    // UTC time - construct ISO 8601 string
-                    targetDate = new Date(`${raceDate}T${raceTime}`);
-                } else if (raceTime) {
-                    // Time without timezone, assume UTC
-                    targetDate = new Date(`${raceDate}T${raceTime}Z`);
+                // Convert to IST format (matching working DriveAhead repo logic)
+                if (raceTime) {
+                    // Remove 'Z' if present and construct date with IST timezone offset
+                    const cleanTime = raceTime.replace('Z', '');
+                    targetDate = new Date(`${raceDate}T${cleanTime}+05:30`);
                 } else {
-                    // No time provided, use default race start time
-                    targetDate = new Date(`${raceDate}T14:00:00Z`);
+                    // No time provided, use default race start time in IST
+                    targetDate = new Date(`${raceDate}T17:00:00+05:30`);
                 }
                 
                 // Detailed debug logging
