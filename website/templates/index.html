@@ -157,35 +157,35 @@
                     DriveAhead
                 </h1>
                 <p class="text-2xl md:text-4xl font-light mb-4 text-gray-300">
-                    Unleash the power of AI-driven Formula 1 analytics
+                    F1 Analytics & Probability Engine
                 </p>
                 <p class="text-lg text-gray-400 mb-12 max-w-3xl mx-auto">
-                    Get real-time predictions, performance insights, and strategic analysis that gives you the competitive edge.
+                    Explore how machine learning interprets F1 data to calculate win probabilities. Track live standings, compare statistical favorites to race results, and dive into the beautiful chaos of Formula 1.
                 </p>
                 
                 <!-- CTA Buttons -->
                 <div class="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
                     <a href="/predictions" class="bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-8 rounded-lg text-lg transition-all duration-300 transform hover:scale-105 f1-glow">
-                        <i class="fas fa-play mr-2"></i>Start Predicting
+                        <i class="fas fa-brain mr-2"></i>View Probabilities
                     </a>
-                    <a href="#analytics" class="border-2 border-gray-600 hover:border-red-500 text-white font-bold py-4 px-8 rounded-lg text-lg transition-all duration-300 transform hover:scale-105">
-                        <i class="fas fa-chart-line mr-2"></i>Explore Data
+                    <a href="/standings" class="border-2 border-gray-600 hover:border-red-500 text-white font-bold py-4 px-8 rounded-lg text-lg transition-all duration-300 transform hover:scale-105">
+                        <i class="fas fa-trophy mr-2"></i>Live Standings
                     </a>
                 </div>
                 
                 <!-- Stats -->
                 <div class="grid grid-cols-3 gap-8 max-w-2xl mx-auto">
                     <div class="text-center">
-                        <div class="f1-font text-3xl font-bold text-red-500">98.7%</div>
-                        <div class="text-sm text-gray-400">ACCURACY</div>
+                        <div class="f1-font text-3xl font-bold text-red-500">97.0%</div>
+                        <div class="text-sm text-gray-400">MODEL ACCURACY</div>
                     </div>
                     <div class="text-center">
-                        <div class="f1-font text-3xl font-bold text-blue-500">0.003s</div>
-                        <div class="text-sm text-gray-400">LATENCY</div>
+                        <div class="f1-font text-3xl font-bold text-blue-500">3 AI</div>
+                        <div class="text-sm text-gray-400">ALGORITHMS</div>
                     </div>
                     <div class="text-center">
-                        <div class="f1-font text-3xl font-bold text-green-500">24/7</div>
-                        <div class="text-sm text-gray-400">REAL-TIME</div>
+                        <div class="f1-font text-3xl font-bold text-green-500">2025</div>
+                        <div class="text-sm text-gray-400">LIVE SEASON</div>
                     </div>
                 </div>
             </div>
@@ -214,25 +214,25 @@
                     <div class="glass-panel rounded-2xl p-8">
                         <div class="text-center">
                             <div id="raceNameCountdown" class="text-sm text-gray-400 mb-6">Loading...</div>
+                            <div id="countdownStatus" class="text-white text-lg font-semibold mb-4">NEXT RACE COUNTDOWN</div>
                             <div class="countdown-container">
                                 <div class="countdown-segment">
-                                    <span id="countdownDays" class="countdown-number">00</span>
+                                    <span id="countdownDays" class="countdown-number">--</span>
                                     <div class="countdown-label">DAYS</div>
                                 </div>
                                 <div class="countdown-segment">
-                                    <span id="countdownHours" class="countdown-number">00</span>
+                                    <span id="countdownHours" class="countdown-number">--</span>
                                     <div class="countdown-label">HOURS</div>
                                 </div>
                                 <div class="countdown-segment">
-                                    <span id="countdownMinutes" class="countdown-number">00</span>
+                                    <span id="countdownMinutes" class="countdown-number">--</span>
                                     <div class="countdown-label">MINUTES</div>
                                 </div>
                                 <div class="countdown-segment">
-                                    <span id="countdownSeconds" class="countdown-number">00</span>
+                                    <span id="countdownSeconds" class="countdown-number">--</span>
                                     <div class="countdown-label">SECONDS</div>
                                 </div>
                             </div>
-                            <div id="countdownStatus" class="text-xs text-gray-500 uppercase tracking-wide mt-4">Next Race Countdown</div>
                         </div>
                     </div>
                 </div>
@@ -257,92 +257,92 @@
     <section id="analytics" class="py-20 bg-gray-900">
         <div class="container mx-auto px-6">
             <div class="text-center mb-16">
-                <h2 class="f1-font text-4xl font-bold mb-4 text-white">Comprehensive F1 Analytics</h2>
+                <h2 class="f1-font text-4xl font-bold mb-4 text-white">Why DriveAhead?</h2>
                 <p class="text-xl text-gray-400 max-w-3xl mx-auto">
-                    Powered by FastF1 data and advanced machine learning algorithms
+                    For fans who want live F1 data. For students learning ML. For developers building portfolios. For anyone who loves racing analytics.
                 </p>
             </div>
             
             <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-                <!-- Real-time Telemetry -->
+                <!-- For F1 Fans -->
                 <div class="glass-panel rounded-xl p-6 hover:transform hover:scale-105 transition-all duration-300">
                     <div class="text-center">
-                        <i class="fas fa-tachometer-alt text-4xl text-red-500 mb-4"></i>
-                        <h3 class="f1-font text-xl font-bold mb-3 text-white">Real-time Telemetry</h3>
+                        <i class="fas fa-flag-checkered text-4xl text-red-500 mb-4"></i>
+                        <h3 class="f1-font text-xl font-bold mb-3 text-white">For F1 Fans</h3>
                         <p class="text-gray-400 mb-6 text-sm">
-                            Live data streaming from F1 sessions including speed, throttle, brake pressure, and engine parameters.
+                            Live 2025 season data with race countdowns, up-to-date standings, and probability insights. See which drivers ML favors and compare favorites to actual race chaos.
                         </p>
                         <div class="grid grid-cols-2 gap-4 text-center">
                             <div>
-                                <div class="f1-font text-lg font-bold text-red-500">300+</div>
-                                <div class="text-xs text-gray-400">DATA POINTS</div>
+                                <div class="f1-font text-lg font-bold text-red-500">LIVE</div>
+                                <div class="text-xs text-gray-400">2025 DATA</div>
                             </div>
                             <div>
-                                <div class="f1-font text-lg font-bold text-red-500">50HZ</div>
-                                <div class="text-xs text-gray-400">FREQUENCY</div>
+                                <div class="f1-font text-lg font-bold text-red-500">24/7</div>
+                                <div class="text-xs text-gray-400">UPDATES</div>
                             </div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Driver Performance -->
+                <!-- For Students -->
                 <div class="glass-panel rounded-xl p-6 hover:transform hover:scale-105 transition-all duration-300">
                     <div class="text-center">
-                        <i class="fas fa-user-racing text-4xl text-blue-500 mb-4"></i>
-                        <h3 class="f1-font text-xl font-bold mb-3 text-white">Driver Performance</h3>
+                        <i class="fas fa-graduation-cap text-4xl text-blue-500 mb-4"></i>
+                        <h3 class="f1-font text-xl font-bold mb-3 text-white">For Students</h3>
                         <p class="text-gray-400 mb-6 text-sm">
-                            Comprehensive analysis of driver performance metrics, lap times, sector analysis, and consistency ratings.
+                            Learn how ML interprets sports statistics. See Random Forest, XGBoost, and Logistic Regression in action. Understand probability vs certainty in unpredictable domains.
                         </p>
                         <div class="grid grid-cols-2 gap-4 text-center">
                             <div>
-                                <div class="f1-font text-lg font-bold text-blue-500">20</div>
-                                <div class="text-xs text-gray-400">DRIVERS</div>
+                                <div class="f1-font text-lg font-bold text-blue-500">3 AI</div>
+                                <div class="text-xs text-gray-400">ALGORITHMS</div>
                             </div>
                             <div>
-                                <div class="f1-font text-lg font-bold text-blue-500">23</div>
-                                <div class="text-xs text-gray-400">RACES</div>
+                                <div class="f1-font text-lg font-bold text-blue-500">97%</div>
+                                <div class="text-xs text-gray-400">ACCURACY</div>
                             </div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Track Analytics -->
+                <!-- For Developers -->
                 <div class="glass-panel rounded-xl p-6 hover:transform hover:scale-105 transition-all duration-300">
                     <div class="text-center">
-                        <i class="fas fa-route text-4xl text-green-500 mb-4"></i>
-                        <h3 class="f1-font text-xl font-bold mb-3 text-white">Track Analytics</h3>
+                        <i class="fas fa-code text-4xl text-green-500 mb-4"></i>
+                        <h3 class="f1-font text-xl font-bold mb-3 text-white">For Developers</h3>
                         <p class="text-gray-400 mb-6 text-sm">
-                            Deep dive into circuit characteristics, optimal racing lines, overtaking zones, and weather impact analysis.
+                            Full-stack ML deployment: Flask backend, real-time API integration, model training pipeline, professional F1 broadcast UI, and production deployment on Render.
                         </p>
                         <div class="grid grid-cols-2 gap-4 text-center">
                             <div>
-                                <div class="f1-font text-lg font-bold text-green-500">24</div>
-                                <div class="text-xs text-gray-400">CIRCUITS</div>
+                                <div class="f1-font text-lg font-bold text-green-500">FULL</div>
+                                <div class="text-xs text-gray-400">STACK ML</div>
                             </div>
                             <div>
-                                <div class="f1-font text-lg font-bold text-green-500">3D</div>
-                                <div class="text-xs text-gray-400">VISUALIZATION</div>
+                                <div class="f1-font text-lg font-bold text-green-500">PROD</div>
+                                <div class="text-xs text-gray-400">DEPLOYED</div>
                             </div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Strategy Optimization -->
+                <!-- Probability vs Reality -->
                 <div class="glass-panel rounded-xl p-6 hover:transform hover:scale-105 transition-all duration-300">
                     <div class="text-center">
-                        <i class="fas fa-brain text-4xl text-yellow-500 mb-4"></i>
-                        <h3 class="f1-font text-xl font-bold mb-3 text-white">Strategy Optimization</h3>
+                        <i class="fas fa-chart-line text-4xl text-yellow-500 mb-4"></i>
+                        <h3 class="f1-font text-xl font-bold mb-3 text-white">Probability Analytics</h3>
                         <p class="text-gray-400 mb-6 text-sm">
-                            Advanced pit stop strategy analysis, tire degradation modeling, and fuel consumption optimization.
+                            This isn't fortune telling—it's statistical analysis. Track championship leader probabilities vs unpredictable race outcomes. When favorites lose, racing gets exciting!
                         </p>
                         <div class="grid grid-cols-2 gap-4 text-center">
                             <div>
-                                <div class="f1-font text-lg font-bold text-yellow-500">5</div>
-                                <div class="text-xs text-gray-400">TIRE COMPOUNDS</div>
+                                <div class="f1-font text-lg font-bold text-yellow-500">STATS</div>
+                                <div class="text-xs text-gray-400">NOT MAGIC</div>
                             </div>
                             <div>
-                                <div class="f1-font text-lg font-bold text-yellow-500">AI</div>
-                                <div class="text-xs text-gray-400">POWERED</div>
+                                <div class="f1-font text-lg font-bold text-yellow-500">CHAOS</div>
+                                <div class="text-xs text-gray-400">IS EXCITING</div>
                             </div>
                         </div>
                     </div>
@@ -355,8 +355,8 @@
     <section id="predictions" class="py-20 bg-black">
         <div class="container mx-auto px-6">
             <div class="text-center mb-16">
-                <h2 class="f1-font text-4xl font-bold mb-4 text-white">AI-Powered Predictions</h2>
-                <p class="text-xl text-gray-400">Machine learning models with 87.3% accuracy across 2025 F1 season</p>
+                <h2 class="f1-font text-4xl font-bold mb-4 text-white">ML Probability Engine</h2>
+                <p class="text-xl text-gray-400">Three-algorithm ensemble calculating statistical favorites—not guaranteeing winners</p>
             </div>
             
             <div class="grid lg:grid-cols-3 gap-8 max-w-7xl mx-auto">

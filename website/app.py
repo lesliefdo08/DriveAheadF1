@@ -69,6 +69,10 @@ def telemetry():
 def standings():
     return render_template("standings.html")
 
+@app.route("/dashboard")
+def dashboard():
+    return render_template("dashboard.html")
+
 @app.route("/predictions")
 def predictions():
     return render_template("predictions.html")
