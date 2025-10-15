@@ -55,7 +55,9 @@
         .driver-row {
             background: linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(26,26,26,0.8) 100%);
             border-left: 3px solid transparent;
-            transition: all 0.3s ease;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+            transform: translateX(-20px);
         }
         
         .driver-row:hover {
@@ -67,6 +69,34 @@
         .position-1 { border-left-color: #FFD700 !important; }
         .position-2 { border-left-color: #C0C0C0 !important; }
         .position-3 { border-left-color: #CD7F32 !important; }
+        
+        .position-up {
+            animation: positionUp 0.8s ease-out;
+        }
+        
+        .position-down {
+            animation: positionDown 0.8s ease-out;
+        }
+        
+        @keyframes positionUp {
+            0% { background: rgba(0, 255, 65, 0.3); }
+            50% { transform: scale(1.02); }
+            100% { background: transparent; }
+        }
+        
+        @keyframes positionDown {
+            0% { background: rgba(255, 30, 30, 0.3); }
+            50% { transform: scale(0.98); }
+            100% { background: transparent; }
+        }
+        
+        #driver-list {
+            position: relative;
+        }
+        
+        #driver-list > div {
+            position: relative;
+        }
         
         .sector-fastest { color: #A855F7; font-weight: bold; }
         .sector-personal { color: #00FF41; font-weight: bold; }
@@ -714,7 +744,7 @@
                 <div class="grid grid-cols-12 gap-4 items-center">
                     <!-- Position -->
                     <div class="col-span-1 text-center">
-                        <div class="w-10 h-10 rounded-full flex items-center justify-center font-f1 text-lg font-bold" 
+                        <div class="driver-position w-10 h-10 rounded-full flex items-center justify-center font-f1 text-lg font-bold" 
                              style="background: linear-gradient(135deg, ${teamColor}33, ${teamColor}66); border: 2px solid ${teamColor};">
                             ${position}
                         </div>
@@ -736,46 +766,38 @@
                     
                     <!-- Tire -->
                     <div class="col-span-1 text-center">
-                        <div class="w-8 h-8 rounded-full mx-auto flex items-center justify-center text-xs font-bold ${tireColor}">
+                        <div class="driver-tire w-8 h-8 rounded-full mx-auto flex items-center justify-center text-xs font-bold ${tireColor}">
                             ${timingDriver.tire_compound?.charAt(0) || 'M'}
                         </div>
-                        <div class="text-xs text-gray-400">${tireAge} laps</div>
+                        <div class="driver-tire-age text-xs text-gray-400">${tireAge} laps</div>
                     </div>
                     
-                    <!-- Status -->
-                    <div class="col-span-1 text-center">
-                        <div class="${pitClass} font-bold text-sm">${pitStatus}</div>
-                        <div class="text-xs text-gray-400">G${timingDriver.grid_position || position}</div>
+                    <!-- Gap & Interval -->
+                    <div class="col-span-2 text-center">
+                        <div class="driver-gap font-f1 text-sm text-white">${timingDriver.gap_to_leader || '--'}</div>
+                        <div class="driver-interval text-xs text-gray-400">${timingDriver.interval || '--'}</div>
                     </div>
                     
                     <!-- Lap Time -->
                     <div class="col-span-2">
-                        <div class="font-f1 text-lg font-bold text-white">${timingDriver.lap_time || '--:---.---'}</div>
-                        <div class="text-sm text-f1-green">${timingDriver.best_lap_time || '--:---.---'}</div>
+                        <div class="driver-last-lap font-f1 text-lg font-bold text-white">${timingDriver.last_lap_time || '--:---.---'}</div>
+                        <div class="driver-best-lap text-sm text-f1-green">${timingDriver.best_lap_time || '--:---.---'}</div>
                     </div>
                     
-                    <!-- Sectors -->
-                    <div class="col-span-3">
-                        <div class="grid grid-cols-3 gap-2">
-                            <div class="text-center">
-                                <div class="font-f1 text-sm ${getSectorColor(timingDriver.sector_1_time)}">${timingDriver.sector_1_time || '--'}</div>
-                                <div class="text-xs text-gray-500">S1</div>
-                            </div>
-                            <div class="text-center">
-                                <div class="font-f1 text-sm ${getSectorColor(timingDriver.sector_2_time)}">${timingDriver.sector_2_time || '--'}</div>
-                                <div class="text-xs text-gray-500">S2</div>
-                            </div>
-                            <div class="text-center">
-                                <div class="font-f1 text-sm ${getSectorColor(timingDriver.sector_3_time)}">${timingDriver.sector_3_time || '--'}</div>
-                                <div class="text-xs text-gray-500">S3</div>
-                            </div>
+                    <!-- Speed & DRS -->
+                    <div class="col-span-2 text-center">
+                        <div class="driver-speed font-f1 text-xl font-bold text-f1-purple">${timingDriver.speed_trap || '---'}</div>
+                        <div class="text-xs text-gray-400">km/h</div>
+                    </div>
+                    
+                    <!-- Sectors (Compact) -->
+                    <div class="col-span-2">
+                        <div class="flex gap-2 justify-center items-center text-xs">
+                            <span class="font-mono text-purple-400">${timingDriver.sectors?.[0]?.time || '--'}</span>
+                            <span class="font-mono text-green-400">${timingDriver.sectors?.[1]?.time || '--'}</span>
+                            <span class="font-mono text-yellow-400">${timingDriver.sectors?.[2]?.time || '--'}</span>
                         </div>
-                    </div>
-                    
-                    <!-- Gap -->
-                    <div class="col-span-1 text-center">
-                        <div class="font-f1 text-sm font-bold text-f1-yellow">${timingDriver.gap_to_leader || '--'}</div>
-                        <div class="text-xs text-gray-400">${timingDriver.interval || '--'}</div>
+                        <div class="text-xs text-gray-500 text-center mt-1">S1 / S2 / S3</div>
                     </div>
                 </div>
             `;
@@ -901,11 +923,11 @@
         }
 
         // Enhanced leaderboard with better styling and animations
+        let previousPositions = {};
+        
         function updateLeaderboard() {
             const container = document.getElementById('driver-list');
             if (!drivers || !timingData) return;
-            
-            container.innerHTML = '';
             
             // Sort drivers by position
             const sortedDrivers = Object.keys(drivers).sort((a, b) => {
@@ -914,20 +936,115 @@
                 return posA - posB;
             });
             
+            // Get existing rows
+            const existingRows = {};
+            Array.from(container.children).forEach(row => {
+                const number = row.dataset.driverNumber;
+                if (number) existingRows[number] = row;
+            });
+            
+            // Update or create rows
             sortedDrivers.forEach((racingNumber, index) => {
                 const driver = drivers[racingNumber];
                 const timingDriver = timingData.lines[racingNumber];
-                const position = index + 1;
+                const position = timingDriver.position;
                 
-                const driverRow = createDriverRow(driver, timingDriver, position);
-                container.appendChild(driverRow);
+                let driverRow = existingRows[racingNumber];
                 
-                // Staggered animation
-                setTimeout(() => {
-                    driverRow.style.opacity = '1';
-                    driverRow.style.transform = 'translateX(0)';
-                }, index * 50);
+                if (driverRow) {
+                    // Update existing row
+                    updateDriverRow(driverRow, driver, timingDriver, position);
+                    
+                    // Check for position change
+                    const oldPosition = previousPositions[racingNumber];
+                    if (oldPosition && oldPosition !== position) {
+                        if (oldPosition > position) {
+                            driverRow.classList.add('position-up');
+                        } else {
+                            driverRow.classList.add('position-down');
+                        }
+                        setTimeout(() => {
+                            driverRow.classList.remove('position-up', 'position-down');
+                        }, 1000);
+                    }
+                    
+                    // Smooth reordering with CSS transitions
+                    const currentIndex = Array.from(container.children).indexOf(driverRow);
+                    if (currentIndex !== index) {
+                        if (index === 0) {
+                            container.insertBefore(driverRow, container.firstChild);
+                        } else {
+                            const targetRow = container.children[index];
+                            if (targetRow) {
+                                container.insertBefore(driverRow, targetRow);
+                            } else {
+                                container.appendChild(driverRow);
+                            }
+                        }
+                    }
+                } else {
+                    // Create new row
+                    driverRow = createDriverRow(driver, timingDriver, position);
+                    driverRow.dataset.driverNumber = racingNumber;
+                    
+                    if (index === 0) {
+                        container.insertBefore(driverRow, container.firstChild);
+                    } else {
+                        const targetRow = container.children[index];
+                        if (targetRow) {
+                            container.insertBefore(driverRow, targetRow);
+                        } else {
+                            container.appendChild(driverRow);
+                        }
+                    }
+                    
+                    // Fade in animation
+                    setTimeout(() => {
+                        driverRow.style.opacity = '1';
+                        driverRow.style.transform = 'translateX(0)';
+                    }, 50);
+                }
+                
+                previousPositions[racingNumber] = position;
             });
+        }
+        
+        function updateDriverRow(row, driver, timingDriver, position) {
+            // Update only the data that changes, not the entire row
+            const posElement = row.querySelector('.driver-position');
+            if (posElement) posElement.textContent = position;
+            
+            const gapElement = row.querySelector('.driver-gap');
+            if (gapElement) gapElement.textContent = timingDriver.gap_to_leader || '--';
+            
+            const intervalElement = row.querySelector('.driver-interval');
+            if (intervalElement) intervalElement.textContent = timingDriver.interval || '--';
+            
+            const lastLapElement = row.querySelector('.driver-last-lap');
+            if (lastLapElement) lastLapElement.textContent = timingDriver.last_lap_time || '--:---.---';
+            
+            const bestLapElement = row.querySelector('.driver-best-lap');
+            if (bestLapElement) bestLapElement.textContent = timingDriver.best_lap_time || '--:---.---';
+            
+            const speedElement = row.querySelector('.driver-speed');
+            if (speedElement) speedElement.textContent = timingDriver.speed_trap || '---';
+            
+            const tireElement = row.querySelector('.driver-tire');
+            if (tireElement) {
+                tireElement.textContent = (timingDriver.tire_compound || 'M')[0];
+                tireElement.className = 'driver-tire w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ' + getTireColorClass(timingDriver.tire_compound);
+            }
+            
+            const tireAgeElement = row.querySelector('.driver-tire-age');
+            if (tireAgeElement) tireAgeElement.textContent = timingDriver.tire_age || '0';
+        }
+        
+        function getTireColorClass(compound) {
+            if (!compound) return 'bg-yellow-400 text-black';
+            if (compound.includes('SOFT')) return 'bg-red-500 text-white';
+            if (compound.includes('MEDIUM')) return 'bg-yellow-400 text-black';
+            if (compound.includes('HARD')) return 'bg-white text-black';
+            return 'bg-yellow-400 text-black';
         }
 
         // Enhanced race control messages with real-time updates

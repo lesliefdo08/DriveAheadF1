@@ -102,46 +102,68 @@ def api_predictions_winner():
 @app.route("/api/telemetry")
 def api_telemetry():
     current_time = datetime.now()
-    drivers = [
-        {"name": "Max Verstappen", "team": "Red Bull Racing"},
-        {"name": "Lando Norris", "team": "McLaren"},
-        {"name": "Charles Leclerc", "team": "Ferrari"},
-        {"name": "Oscar Piastri", "team": "McLaren"},
-        {"name": "George Russell", "team": "Mercedes"}
-    ]
-    
-    telemetry_data = {}
     base_time = time.time()
     
-    for i, driver in enumerate(drivers):
-        position = i + 1
-        lap_variation = math.sin(base_time * 0.1 + i) * 2
-        speed_variation = math.cos(base_time * 0.05 + i) * 15
+    drivers_list = [
+        {"name": "Max Verstappen", "acronym": "VER", "team": "Red Bull Racing", "number": "1"},
+        {"name": "Lando Norris", "acronym": "NOR", "team": "McLaren", "number": "4"},
+        {"name": "Charles Leclerc", "acronym": "LEC", "team": "Ferrari", "number": "16"},
+        {"name": "Oscar Piastri", "acronym": "PIA", "team": "McLaren", "number": "81"},
+        {"name": "George Russell", "acronym": "RUS", "team": "Mercedes", "number": "63"},
+        {"name": "Lewis Hamilton", "acronym": "HAM", "team": "Mercedes", "number": "44"},
+        {"name": "Carlos Sainz", "acronym": "SAI", "team": "Ferrari", "number": "55"},
+        {"name": "Sergio Perez", "acronym": "PER", "team": "Red Bull Racing", "number": "11"}
+    ]
+    
+    # Simulate position changes
+    positions = list(range(1, len(drivers_list) + 1))
+    if random.random() > 0.7:  # 30% chance of position change
+        i = random.randint(0, len(positions) - 2)
+        positions[i], positions[i + 1] = positions[i + 1], positions[i]
+    
+    telemetry_data = {}
+    
+    for idx, driver in enumerate(drivers_list):
+        position = positions[idx]
+        lap_variation = math.sin(base_time * 0.1 + idx) * 2
+        speed_variation = math.cos(base_time * 0.05 + idx) * 15
         
-        telemetry_data[str(position)] = {
+        telemetry_data[driver["number"]] = {
             "position": position,
-            "driver": driver["name"],
-            "team": driver["team"],
-            "gap": "+0.000" if position == 1 else f"+{(position-1)*0.5 + lap_variation:.3f}",
-            "last_lap": f"1:{22 + lap_variation:.3f}",
-            "best_lap": f"1:{20 + i*0.2:.3f}",
-            "sector_1": f"25.{random.randint(100, 999)}",
-            "sector_2": f"42.{random.randint(100, 999)}",
-            "sector_3": f"28.{random.randint(100, 999)}",
-            "speed": int(310 + speed_variation),
-            "tire": random.choice(["SOFT", "MEDIUM", "HARD"]),
-            "stint": random.randint(5, 25)
+            "driver_acronym": driver["acronym"],
+            "driver_name": driver["name"],
+            "team_name": driver["team"],
+            "gap_to_leader": "+0.000" if position == 1 else f"+{(position-1)*1.2 + lap_variation:.3f}",
+            "interval": "+0.000" if position == 1 else f"+{0.5 + lap_variation:.3f}",
+            "last_lap_time": f"1:{22 + lap_variation:.3f}",
+            "best_lap_time": f"1:{20 + idx*0.2:.3f}",
+            "sectors": [
+                {"time": f"25.{random.randint(100, 999)}", "status": random.choice(["fastest", "personal", "slower"])},
+                {"time": f"42.{random.randint(100, 999)}", "status": random.choice(["fastest", "personal", "slower"])},
+                {"time": f"28.{random.randint(100, 999)}", "status": random.choice(["fastest", "personal", "slower"])}
+            ],
+            "speed_trap": int(310 + speed_variation),
+            "tire_compound": random.choice(["SOFT", "MEDIUM", "HARD"]),
+            "tire_age": random.randint(5, 25),
+            "drs_enabled": random.choice([True, False]),
+            "in_pit": False,
+            "pit_out": False,
+            "throttle_percent": random.randint(0, 100),
+            "brake_pressure": random.randint(0, 100)
         }
     
     return jsonify({
-        "session": "Race",
-        "lap": random.randint(15, 45),
-        "weather": "Clear",
-        "track_temp": "32°C",
-        "air_temp": "26°C",
-        "humidity": "45%",
-        "drivers": telemetry_data,
-        "timestamp": current_time.isoformat()
+        **telemetry_data,
+        "_meta": {
+            "session_name": "RACE",
+            "lap_number": random.randint(15, 45),
+            "weather": {
+                "air_temp": "26",
+                "track_temp": "32",
+                "humidity": "45",
+                "wind_speed": "12"
+            }
+        }
     })
 
 @app.route("/api/predictions")
