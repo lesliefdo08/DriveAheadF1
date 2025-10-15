@@ -276,9 +276,9 @@ class F1MLTrainingSystem:
         self.evaluate_models(X_test, y_pos_test, y_win_test, y_pod_test)
         
     def evaluate_models(self, X_test, y_pos_test, y_win_test, y_pod_test):
-        """Rigorous Model Evaluation with MAE and Accuracy"""
+        """Rigorous Model Evaluation with MAE, Accuracy, Precision, Recall, and F1-Score"""
         print("\n📈 Rigorous Model Evaluation:")
-        print("=" * 60)
+        print("=" * 80)
         
         performance = {}
         
@@ -290,20 +290,34 @@ class F1MLTrainingSystem:
         rf_pos_mae = mean_absolute_error(y_pos_test, rf_pos_pred)
         print(f"   Position MAE: {rf_pos_mae:.3f}")
         
-        # Winner prediction (Accuracy)
+        # Winner prediction (Classification Metrics)
         rf_win_pred = self.models['random_forest']['winner'].predict(X_test)
         rf_win_acc = accuracy_score(y_win_test, rf_win_pred)
-        print(f"   Winner Accuracy: {rf_win_acc:.3f}")
+        rf_win_report = classification_report(y_win_test, rf_win_pred, output_dict=True, zero_division=0)
+        rf_win_precision = rf_win_report['1']['precision'] if '1' in rf_win_report else 0
+        rf_win_recall = rf_win_report['1']['recall'] if '1' in rf_win_report else 0
+        rf_win_f1 = rf_win_report['1']['f1-score'] if '1' in rf_win_report else 0
+        print(f"   Winner - Accuracy: {rf_win_acc:.3f}, Precision: {rf_win_precision:.3f}, Recall: {rf_win_recall:.3f}, F1: {rf_win_f1:.3f}")
         
-        # Podium prediction (Accuracy)
+        # Podium prediction (Classification Metrics)
         rf_pod_pred = self.models['random_forest']['podium'].predict(X_test)
         rf_pod_acc = accuracy_score(y_pod_test, rf_pod_pred)
-        print(f"   Podium Accuracy: {rf_pod_acc:.3f}")
+        rf_pod_report = classification_report(y_pod_test, rf_pod_pred, output_dict=True, zero_division=0)
+        rf_pod_precision = rf_pod_report['1']['precision'] if '1' in rf_pod_report else 0
+        rf_pod_recall = rf_pod_report['1']['recall'] if '1' in rf_pod_report else 0
+        rf_pod_f1 = rf_pod_report['1']['f1-score'] if '1' in rf_pod_report else 0
+        print(f"   Podium - Accuracy: {rf_pod_acc:.3f}, Precision: {rf_pod_precision:.3f}, Recall: {rf_pod_recall:.3f}, F1: {rf_pod_f1:.3f}")
         
         performance['random_forest'] = {
             'position_mae': rf_pos_mae,
             'winner_accuracy': rf_win_acc,
-            'podium_accuracy': rf_pod_acc
+            'winner_precision': rf_win_precision,
+            'winner_recall': rf_win_recall,
+            'winner_f1': rf_win_f1,
+            'podium_accuracy': rf_pod_acc,
+            'podium_precision': rf_pod_precision,
+            'podium_recall': rf_pod_recall,
+            'podium_f1': rf_pod_f1
         }
         
         # XGBoost Evaluation
@@ -314,41 +328,70 @@ class F1MLTrainingSystem:
         xgb_pos_mae = mean_absolute_error(y_pos_test, xgb_pos_pred)
         print(f"   Position MAE: {xgb_pos_mae:.3f}")
         
-        # Winner prediction (Accuracy)
+        # Winner prediction (Classification Metrics)
         xgb_win_pred = self.models['xgboost']['winner'].predict(X_test)
         xgb_win_acc = accuracy_score(y_win_test, xgb_win_pred)
-        print(f"   Winner Accuracy: {xgb_win_acc:.3f}")
+        xgb_win_report = classification_report(y_win_test, xgb_win_pred, output_dict=True, zero_division=0)
+        xgb_win_precision = xgb_win_report['1']['precision'] if '1' in xgb_win_report else 0
+        xgb_win_recall = xgb_win_report['1']['recall'] if '1' in xgb_win_report else 0
+        xgb_win_f1 = xgb_win_report['1']['f1-score'] if '1' in xgb_win_report else 0
+        print(f"   Winner - Accuracy: {xgb_win_acc:.3f}, Precision: {xgb_win_precision:.3f}, Recall: {xgb_win_recall:.3f}, F1: {xgb_win_f1:.3f}")
         
-        # Podium prediction (Accuracy)
+        # Podium prediction (Classification Metrics)
         xgb_pod_pred = self.models['xgboost']['podium'].predict(X_test)
         xgb_pod_acc = accuracy_score(y_pod_test, xgb_pod_pred)
-        print(f"   Podium Accuracy: {xgb_pod_acc:.3f}")
+        xgb_pod_report = classification_report(y_pod_test, xgb_pod_pred, output_dict=True, zero_division=0)
+        xgb_pod_precision = xgb_pod_report['1']['precision'] if '1' in xgb_pod_report else 0
+        xgb_pod_recall = xgb_pod_report['1']['recall'] if '1' in xgb_pod_report else 0
+        xgb_pod_f1 = xgb_pod_report['1']['f1-score'] if '1' in xgb_pod_report else 0
+        print(f"   Podium - Accuracy: {xgb_pod_acc:.3f}, Precision: {xgb_pod_precision:.3f}, Recall: {xgb_pod_recall:.3f}, F1: {xgb_pod_f1:.3f}")
         
         performance['xgboost'] = {
             'position_mae': xgb_pos_mae,
             'winner_accuracy': xgb_win_acc,
-            'podium_accuracy': xgb_pod_acc
+            'winner_precision': xgb_win_precision,
+            'winner_recall': xgb_win_recall,
+            'winner_f1': xgb_win_f1,
+            'podium_accuracy': xgb_pod_acc,
+            'podium_precision': xgb_pod_precision,
+            'podium_recall': xgb_pod_recall,
+            'podium_f1': xgb_pod_f1
         }
         
         # Logistic Regression Evaluation
         print("\n📊 LOGISTIC REGRESSION:")
         
-        # Winner prediction (Accuracy)
+        # Winner prediction (Classification Metrics)
         lr_win_pred = self.models['logistic_regression']['winner'].predict(X_test)
         lr_win_acc = accuracy_score(y_win_test, lr_win_pred)
-        print(f"   Winner Accuracy: {lr_win_acc:.3f}")
+        lr_win_report = classification_report(y_win_test, lr_win_pred, output_dict=True, zero_division=0)
+        lr_win_precision = lr_win_report['1']['precision'] if '1' in lr_win_report else 0
+        lr_win_recall = lr_win_report['1']['recall'] if '1' in lr_win_report else 0
+        lr_win_f1 = lr_win_report['1']['f1-score'] if '1' in lr_win_report else 0
+        print(f"   Winner - Accuracy: {lr_win_acc:.3f}, Precision: {lr_win_precision:.3f}, Recall: {lr_win_recall:.3f}, F1: {lr_win_f1:.3f}")
         
-        # Podium prediction (Accuracy)
+        # Podium prediction (Classification Metrics)
         lr_pod_pred = self.models['logistic_regression']['podium'].predict(X_test)
         lr_pod_acc = accuracy_score(y_pod_test, lr_pod_pred)
-        print(f"   Podium Accuracy: {lr_pod_acc:.3f}")
+        lr_pod_report = classification_report(y_pod_test, lr_pod_pred, output_dict=True, zero_division=0)
+        lr_pod_precision = lr_pod_report['1']['precision'] if '1' in lr_pod_report else 0
+        lr_pod_recall = lr_pod_report['1']['recall'] if '1' in lr_pod_report else 0
+        lr_pod_f1 = lr_pod_report['1']['f1-score'] if '1' in lr_pod_report else 0
+        print(f"   Podium - Accuracy: {lr_pod_acc:.3f}, Precision: {lr_pod_precision:.3f}, Recall: {lr_pod_recall:.3f}, F1: {lr_pod_f1:.3f}")
         
         performance['logistic_regression'] = {
             'winner_accuracy': lr_win_acc,
-            'podium_accuracy': lr_pod_acc
+            'winner_precision': lr_win_precision,
+            'winner_recall': lr_win_recall,
+            'winner_f1': lr_win_f1,
+            'podium_accuracy': lr_pod_acc,
+            'podium_precision': lr_pod_precision,
+            'podium_recall': lr_pod_recall,
+            'podium_f1': lr_pod_f1
         }
         
         self.model_performance = performance
+        print("=" * 80)
         
         # Find best models
         print("\n🏆 BEST PERFORMING MODELS:")

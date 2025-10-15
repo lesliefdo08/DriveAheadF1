@@ -1,0 +1,80 @@
+{
+  "timestamp": "20251015_141016",
+  "optimization": "ENABLED - Only 3 best models saved",
+  "best_models": {
+    "position": {
+      "algorithm": "random_forest",
+      "file": "models/position_model_20251015_141016.pkl",
+      "mae": 1.328127521475507
+    },
+    "winner": {
+      "algorithm": "random_forest",
+      "file": "models/winner_model_20251015_141016.pkl",
+      "accuracy": 0.9716666666666667
+    },
+    "podium": {
+      "algorithm": "random_forest",
+      "file": "models/podium_model_20251015_141016.pkl",
+      "accuracy": 0.9383333333333334
+    }
+  },
+  "feature_columns": [
+    "qualifying_position",
+    "weather_clear",
+    "track_temperature",
+    "tire_strategy",
+    "avg_speed",
+    "pit_stop_time",
+    "driver_skill",
+    "team_performance",
+    "circuit_factor",
+    "driver_encoded",
+    "team_encoded",
+    "circuit_encoded"
+  ],
+  "model_performance": {
+    "random_forest": {
+      "position_mae": 1.328127521475507,
+      "winner_accuracy": 0.9716666666666667,
+      "winner_precision": 0.5,
+      "winner_recall": 0.11764705882352941,
+      "winner_f1": 0.19047619047619047,
+      "podium_accuracy": 0.9383333333333334,
+      "podium_precision": 0.6511627906976745,
+      "podium_recall": 0.56,
+      "podium_f1": 0.6021505376344086
+    },
+    "xgboost": {
+      "position_mae": 1.3421034812927246,
+      "winner_accuracy": 0.9716666666666667,
+      "winner_precision": 0.5,
+      "winner_recall": 0.17647058823529413,
+      "winner_f1": 0.2608695652173913,
+      "podium_accuracy": 0.935,
+      "podium_precision": 0.627906976744186,
+      "podium_recall": 0.54,
+      "podium_f1": 0.5806451612903226
+    },
+    "logistic_regression": {
+      "winner_accuracy": 0.97,
+      "winner_precision": 0.3333333333333333,
+      "winner_recall": 0.058823529411764705,
+      "winner_f1": 0.1,
+      "podium_accuracy": 0.9366666666666666,
+      "podium_precision": 0.6363636363636364,
+      "podium_recall": 0.56,
+      "podium_f1": 0.5957446808510638
+    }
+  },
+  "scaler_file": "models/scaler_20251015_141016.pkl",
+  "encoder_file": "models/encoders_20251015_141016.pkl",
+  "training_date": "2025-10-15T14:10:16.492803",
+  "total_models_saved": 3,
+  "files_saved": [
+    "models/position_model_20251015_141016.pkl",
+    "models/winner_model_20251015_141016.pkl",
+    "models/podium_model_20251015_141016.pkl",
+    "models/scaler_20251015_141016.pkl",
+    "models/encoders_20251015_141016.pkl"
+  ]
+}
