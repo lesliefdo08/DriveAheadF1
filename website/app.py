@@ -37,6 +37,13 @@ next_race = {
     "location": "Austin, Texas"
 }
 
+@app.route("/favicon.ico")
+def favicon():
+    from flask import send_from_directory
+    import os
+    return send_from_directory(os.path.join(app.root_path, 'static', 'images'),
+                             'logo.png', mimetype='image/png')
+
 @app.route("/")
 def index():
     return render_template("index.html")
