@@ -1,0 +1,80 @@
+{
+  "timestamp": "20251015_144309",
+  "optimization": "ENABLED - Only 3 best models saved",
+  "best_models": {
+    "position": {
+      "algorithm": "xgboost",
+      "file": "models/position_model_20251015_144309.pkl",
+      "mae": 1.4082938432693481
+    },
+    "winner": {
+      "algorithm": "xgboost",
+      "file": "models/winner_model_20251015_144309.pkl",
+      "accuracy": 0.97
+    },
+    "podium": {
+      "algorithm": "xgboost",
+      "file": "models/podium_model_20251015_144309.pkl",
+      "accuracy": 0.9516666666666667
+    }
+  },
+  "feature_columns": [
+    "qualifying_position",
+    "weather_clear",
+    "track_temperature",
+    "tire_strategy",
+    "avg_speed",
+    "pit_stop_time",
+    "driver_skill",
+    "team_performance",
+    "circuit_factor",
+    "driver_encoded",
+    "team_encoded",
+    "circuit_encoded"
+  ],
+  "model_performance": {
+    "random_forest": {
+      "position_mae": 1.4187174441426997,
+      "winner_accuracy": 0.965,
+      "winner_precision": 0.8,
+      "winner_recall": 0.16666666666666666,
+      "winner_f1": 0.27586206896551724,
+      "podium_accuracy": 0.9466666666666667,
+      "podium_precision": 0.7727272727272727,
+      "podium_recall": 0.6071428571428571,
+      "podium_f1": 0.68
+    },
+    "xgboost": {
+      "position_mae": 1.4082938432693481,
+      "winner_accuracy": 0.97,
+      "winner_precision": 0.875,
+      "winner_recall": 0.2916666666666667,
+      "winner_f1": 0.4375,
+      "podium_accuracy": 0.9516666666666667,
+      "podium_precision": 0.7547169811320755,
+      "podium_recall": 0.7142857142857143,
+      "podium_f1": 0.7339449541284404
+    },
+    "logistic_regression": {
+      "winner_accuracy": 0.9633333333333334,
+      "winner_precision": 0.625,
+      "winner_recall": 0.20833333333333334,
+      "winner_f1": 0.3125,
+      "podium_accuracy": 0.9433333333333334,
+      "podium_precision": 0.7391304347826086,
+      "podium_recall": 0.6071428571428571,
+      "podium_f1": 0.6666666666666666
+    }
+  },
+  "scaler_file": "models/scaler_20251015_144309.pkl",
+  "encoder_file": "models/encoders_20251015_144309.pkl",
+  "training_date": "2025-10-15T14:43:09.303615",
+  "total_models_saved": 3,
+  "files_saved": [
+    "models/position_model_20251015_144309.pkl",
+    "models/winner_model_20251015_144309.pkl",
+    "models/podium_model_20251015_144309.pkl",
+    "models/scaler_20251015_144309.pkl",
+    "models/encoders_20251015_144309.pkl"
+  ]
+}

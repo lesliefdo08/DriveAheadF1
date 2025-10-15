@@ -1,4 +1,4 @@
-# 🌍 RENDER ENVIRONMENT VARIABLES
+# RENDER ENVIRONMENT VARIABLES
 # Copy these exact values to your Render service environment variables
 
 ## Essential Configuration

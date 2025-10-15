@@ -917,7 +917,7 @@
                     updateSectorAnalysis(timingData);
                 }
             } catch (error) {
-                console.error('🔴 Error fetching telemetry:', error);
+                console.error('Error fetching telemetry:', error);
                 showConnectionError();
             }
         }
@@ -1150,7 +1150,7 @@
             // Set up real-time updates (every 1 second for live feel)
             setInterval(fetchData, 1000);
             
-            console.log('✅ Telemetry system ready - Live data streaming...');
+            console.log('Telemetry system ready - Live data streaming...');
         });
     </script>
 </body>

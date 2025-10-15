@@ -5,7 +5,7 @@ class DriveAheadHomepage {
     }
 
     init() {
-        console.log('🏎️ Initializing DriveAhead Homepage...');
+        console.log('Initializing DriveAhead Homepage...');
         
         // Hide loading screen after content loads
         this.hideLoadingScreen();
@@ -16,7 +16,7 @@ class DriveAheadHomepage {
         // Initialize hero animations
         this.initAnimations();
         
-        console.log('✅ Homepage initialized successfully');
+        console.log('Homepage initialized successfully');
     }
 
     hideLoadingScreen() {
@@ -27,7 +27,7 @@ class DriveAheadHomepage {
                 loadingScreen.style.opacity = '0';
                 setTimeout(() => {
                     loadingScreen.style.display = 'none';
-                    console.log('🎯 Loading screen hidden successfully');
+                    console.log('Loading screen hidden successfully');
                 }, 500); // Wait for fade transition
             }, 1000);
         }

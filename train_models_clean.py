@@ -32,41 +32,41 @@ class F1MLTrainingSystem:
         self.feature_columns = []
         self.model_performance = {}
         
-        print("🏁 DriveAhead F1 ML Training System - ACTIVE")
-        print("🤖 The Powerhouse: Random Forest | XGBoost | Logistic Regression")
+        print("DriveAhead F1 ML Training System - ACTIVE")
+        print("The Powerhouse: Random Forest | XGBoost | Logistic Regression")
         
         # Create models directory if it doesn't exist
         os.makedirs('models', exist_ok=True)
         
     def generate_f1_training_data(self, n_samples=2000):
         """Generate realistic F1 training data"""
-        print(f"🏎️ Generating {n_samples} F1 training samples...")
+        print(f"Generating {n_samples} F1 training samples...")
         
-        # F1 2024-2025 drivers and teams
+        # F1 2025 SEASON - CURRENT LINEUP (After Round 18)
         drivers = [
             'Max Verstappen', 'Sergio Perez',  # Red Bull
-            'Charles Leclerc', 'Carlos Sainz',  # Ferrari  
+            'Charles Leclerc', 'Lewis Hamilton',  # Ferrari (Hamilton moved from Mercedes!)
             'Lando Norris', 'Oscar Piastri',   # McLaren
-            'George Russell', 'Lewis Hamilton', # Mercedes
+            'George Russell', 'Andrea Kimi Antonelli', # Mercedes (Antonelli rookie!)
             'Fernando Alonso', 'Lance Stroll',  # Aston Martin
-            'Pierre Gasly', 'Esteban Ocon',    # Alpine
-            'Alexander Albon', 'Logan Sargeant', # Williams
-            'Nico Hulkenberg', 'Kevin Magnussen', # Haas
-            'Daniel Ricciardo', 'Yuki Tsunoda', # RB
-            'Valtteri Bottas', 'Zhou Guanyu'   # Sauber
+            'Pierre Gasly', 'Jack Doohan',    # Alpine (Doohan replaced Ocon)
+            'Alexander Albon', 'Carlos Sainz', # Williams (Sainz from Ferrari!)
+            'Nico Hulkenberg', 'Esteban Ocon', # Haas (Ocon moved from Alpine)
+            'Isack Hadjar', 'Yuki Tsunoda', # RB F1 Team (Hadjar rookie!)
+            'Gabriel Bortoleto', 'Zhou Guanyu'   # Sauber (Bortoleto rookie!)
         ]
         
         teams = {
-            'Max Verstappen': 'Red Bull Racing', 'Sergio Perez': 'Red Bull Racing',
-            'Charles Leclerc': 'Ferrari', 'Carlos Sainz': 'Ferrari',
+            'Max Verstappen': 'Red Bull', 'Sergio Perez': 'Red Bull',
+            'Charles Leclerc': 'Ferrari', 'Lewis Hamilton': 'Ferrari',
             'Lando Norris': 'McLaren', 'Oscar Piastri': 'McLaren',
-            'George Russell': 'Mercedes', 'Lewis Hamilton': 'Mercedes',
+            'George Russell': 'Mercedes', 'Andrea Kimi Antonelli': 'Mercedes',
             'Fernando Alonso': 'Aston Martin', 'Lance Stroll': 'Aston Martin',
-            'Pierre Gasly': 'Alpine', 'Esteban Ocon': 'Alpine',
-            'Alexander Albon': 'Williams', 'Logan Sargeant': 'Williams',
-            'Nico Hulkenberg': 'Haas', 'Kevin Magnussen': 'Haas',
-            'Daniel Ricciardo': 'RB', 'Yuki Tsunoda': 'RB',
-            'Valtteri Bottas': 'Sauber', 'Zhou Guanyu': 'Sauber'
+            'Pierre Gasly': 'Alpine', 'Jack Doohan': 'Alpine',
+            'Alexander Albon': 'Williams', 'Carlos Sainz': 'Williams',
+            'Nico Hulkenberg': 'Haas', 'Esteban Ocon': 'Haas',
+            'Isack Hadjar': 'RB F1 Team', 'Yuki Tsunoda': 'RB F1 Team',
+            'Gabriel Bortoleto': 'Sauber', 'Zhou Guanyu': 'Sauber'
         }
         
         circuits = [
@@ -85,22 +85,42 @@ class F1MLTrainingSystem:
             team = teams[driver]
             circuit = np.random.choice(circuits)
             
-            # Driver performance factors (based on real 2024 performance)
+            # Driver performance factors (based on REAL 2025 Season after Round 18)
             driver_skill = {
-                'Max Verstappen': 0.95, 'Charles Leclerc': 0.88, 'Lando Norris': 0.85,
-                'Oscar Piastri': 0.82, 'George Russell': 0.80, 'Lewis Hamilton': 0.78,
-                'Carlos Sainz': 0.76, 'Fernando Alonso': 0.75, 'Sergio Perez': 0.72,
-                'Pierre Gasly': 0.68, 'Alexander Albon': 0.65, 'Nico Hulkenberg': 0.62,
-                'Esteban Ocon': 0.60, 'Daniel Ricciardo': 0.58, 'Yuki Tsunoda': 0.55,
-                'Kevin Magnussen': 0.52, 'Lance Stroll': 0.50, 'Valtteri Bottas': 0.48,
-                'Logan Sargeant': 0.45, 'Zhou Guanyu': 0.42
+                'Oscar Piastri': 0.92,      # P1 - 336 pts, 7 wins - LEADING!
+                'Lando Norris': 0.90,       # P2 - 314 pts, 5 wins
+                'Max Verstappen': 0.88,     # P3 - 273 pts, 4 wins (down from 2024)
+                'George Russell': 0.85,     # P4 - 237 pts, 2 wins - Strong!
+                'Charles Leclerc': 0.82,    # P5 - 173 pts
+                'Lewis Hamilton': 0.80,     # P6 - 125 pts (Ferrari adjustment)
+                'Andrea Kimi Antonelli': 0.70, # P7 - 88 pts - ROOKIE!
+                'Alexander Albon': 0.68,    # P8 - 70 pts
+                'Carlos Sainz': 0.75,       # Williams driver
+                'Sergio Perez': 0.65,       # Struggling season
+                'Fernando Alonso': 0.72,
+                'Pierre Gasly': 0.65,
+                'Nico Hulkenberg': 0.62,
+                'Esteban Ocon': 0.60,
+                'Isack Hadjar': 0.55,       # P9 - 39 pts - ROOKIE!
+                'Yuki Tsunoda': 0.58,
+                'Lance Stroll': 0.52,
+                'Jack Doohan': 0.48,        # ROOKIE!
+                'Gabriel Bortoleto': 0.45,  # ROOKIE!
+                'Zhou Guanyu': 0.42
             }.get(driver, 0.5)
             
-            # Team performance factors
+            # Team performance factors (based on 2025 Constructor Standings)
             team_performance = {
-                'Red Bull Racing': 0.92, 'McLaren': 0.88, 'Ferrari': 0.85,
-                'Mercedes': 0.75, 'Aston Martin': 0.65, 'RB': 0.55,
-                'Alpine': 0.52, 'Williams': 0.48, 'Haas': 0.45, 'Sauber': 0.40
+                'McLaren': 0.95,        # P1 - 650 pts, 12 wins - DOMINANT!
+                'Mercedes': 0.82,       # P2 - 325 pts, 2 wins
+                'Ferrari': 0.78,        # P3 - 298 pts, 0 wins
+                'Red Bull': 0.75,       # P4 - 290 pts (DOWN from 2024!)
+                'Williams': 0.62,       # P5 - 102 pts (Improved!)
+                'RB F1 Team': 0.55,     # P6 - 72 pts
+                'Haas': 0.50,
+                'Alpine': 0.48,
+                'Aston Martin': 0.52,
+                'Sauber': 0.40
             }.get(team, 0.5)
             
             # Generate features
@@ -152,12 +172,12 @@ class F1MLTrainingSystem:
             })
         
         df = pd.DataFrame(data)
-        print(f"✅ Generated {len(df)} training samples with {len(df.columns)} features")
+        print(f"Generated {len(df)} training samples with {len(df.columns)} features")
         return df
     
     def prepare_features(self, df):
         """Prepare features for ML training"""
-        print("🔧 Preparing features for machine learning...")
+        print("Preparing features for machine learning...")
         
         # Encode categorical variables
         le_driver = LabelEncoder()
@@ -195,7 +215,7 @@ class F1MLTrainingSystem:
     
     def train_models(self, X, y_position, y_winner, y_podium):
         """Train all three ML algorithms"""
-        print("\n🤖 Training The Powerhouse ML Algorithms...")
+        print("\nTraining The Powerhouse ML Algorithms...")
         
         # Split data
         X_train, X_test, y_pos_train, y_pos_test = train_test_split(
@@ -208,7 +228,7 @@ class F1MLTrainingSystem:
             X, y_podium, test_size=0.2, random_state=42)
         
         # 1. RANDOM FOREST
-        print("\n🌲 Training Random Forest Models...")
+        print("\nTraining Random Forest Models...")
         
         # Position prediction (regression)
         rf_position = RandomForestRegressor(
@@ -226,7 +246,7 @@ class F1MLTrainingSystem:
         rf_podium.fit(X_train, y_pod_train)
         
         # 2. XGBOOST
-        print("🚀 Training XGBoost Models...")
+        print("Training XGBoost Models...")
         
         # Position prediction
         xgb_position = xgb.XGBRegressor(
@@ -244,7 +264,7 @@ class F1MLTrainingSystem:
         xgb_podium.fit(X_train, y_pod_train)
         
         # 3. LOGISTIC REGRESSION
-        print("📊 Training Logistic Regression Models...")
+        print("Training Logistic Regression Models...")
         
         # Winner prediction
         lr_winner = LogisticRegression(random_state=42, max_iter=1000)
@@ -277,13 +297,13 @@ class F1MLTrainingSystem:
         
     def evaluate_models(self, X_test, y_pos_test, y_win_test, y_pod_test):
         """Rigorous Model Evaluation with MAE, Accuracy, Precision, Recall, and F1-Score"""
-        print("\n📈 Rigorous Model Evaluation:")
+        print("\nRigorous Model Evaluation:")
         print("=" * 80)
         
         performance = {}
         
         # Random Forest Evaluation
-        print("🌲 RANDOM FOREST:")
+        print("RANDOM FOREST:")
         
         # Position prediction (MAE)
         rf_pos_pred = self.models['random_forest']['position'].predict(X_test)
@@ -321,7 +341,7 @@ class F1MLTrainingSystem:
         }
         
         # XGBoost Evaluation
-        print("\n🚀 XGBOOST:")
+        print("\nXGBOOST:")
         
         # Position prediction (MAE)
         xgb_pos_pred = self.models['xgboost']['position'].predict(X_test)
@@ -359,7 +379,7 @@ class F1MLTrainingSystem:
         }
         
         # Logistic Regression Evaluation
-        print("\n📊 LOGISTIC REGRESSION:")
+        print("\nLOGISTIC REGRESSION:")
         
         # Winner prediction (Classification Metrics)
         lr_win_pred = self.models['logistic_regression']['winner'].predict(X_test)
@@ -394,7 +414,7 @@ class F1MLTrainingSystem:
         print("=" * 80)
         
         # Find best models
-        print("\n🏆 BEST PERFORMING MODELS:")
+        print("\nBEST PERFORMING MODELS:")
         print("=" * 40)
         
         # Best position predictor
@@ -424,8 +444,8 @@ class F1MLTrainingSystem:
         """Save ONLY the 3 best performing models + scaler + encoders (OPTIMIZED)"""
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         
-        print(f"\n💾 Saving ONLY the 3 BEST models (timestamp: {timestamp})...")
-        print("🎯 OPTIMIZATION: Saving only Position, Winner, and Podium best models")
+        print(f"\nSaving ONLY the 3 BEST models (timestamp: {timestamp})...")
+        print("OPTIMIZATION: Saving only Position, Winner, and Podium best models")
         print("=" * 70)
         
         # Determine the best algorithm for each task based on performance
@@ -489,21 +509,21 @@ class F1MLTrainingSystem:
         with open(position_filename, 'wb') as f:
             pickle.dump(best_models['position'], f)
         model_files['position'] = position_filename
-        print(f"💾 Saved: {position_filename}")
+        print(f"Saved: {position_filename}")
         
         # Save Winner model
         winner_filename = f"models/winner_model_{timestamp}.pkl"
         with open(winner_filename, 'wb') as f:
             pickle.dump(best_models['winner'], f)
         model_files['winner'] = winner_filename
-        print(f"💾 Saved: {winner_filename}")
+        print(f"Saved: {winner_filename}")
         
         # Save Podium model
         podium_filename = f"models/podium_model_{timestamp}.pkl"
         with open(podium_filename, 'wb') as f:
             pickle.dump(best_models['podium'], f)
         model_files['podium'] = podium_filename
-        print(f"💾 Saved: {podium_filename}")
+        print(f"Saved: {podium_filename}")
         
         # Save scalers and encoders
         scaler_file = f"models/scaler_{timestamp}.pkl"
@@ -514,7 +534,7 @@ class F1MLTrainingSystem:
         encoder_file = f"models/encoders_{timestamp}.pkl"
         with open(encoder_file, 'wb') as f:
             pickle.dump(self.encoders, f)
-        print(f"💾 Saved: {encoder_file}")
+        print(f"Saved: {encoder_file}")
         
         # Save optimized metadata with ONLY the 3 best models
         metadata = {
@@ -550,19 +570,19 @@ class F1MLTrainingSystem:
         with open(metadata_file, 'w') as f:
             json.dump(metadata, f, indent=2)
         
-        print(f"💾 Saved: {metadata_file}")
+        print(f"Saved: {metadata_file}")
         print("=" * 70)
-        print("✅ OPTIMIZATION COMPLETE!")
-        print(f"📊 Total files saved: 5 (3 models + scaler + encoders)")
-        print(f"💡 Computation reduced by saving only best-performing models")
+        print("OPTIMIZATION COMPLETE!")
+        print(f"Total files saved: 5 (3 models + scaler + encoders)")
+        print(f"Computation reduced by saving only best-performing models")
         print("=" * 70)
         
         return timestamp
     
     def run_complete_training(self):
         """Run the complete ML training pipeline"""
-        print("🏁 Starting Complete F1 ML Training Pipeline...")
-        print("🎯 The Powerhouse: Random Forest + XGBoost + Logistic Regression")
+        print("Starting Complete F1 ML Training Pipeline...")
+        print("The Powerhouse: Random Forest + XGBoost + Logistic Regression")
         print("=" * 70)
         
         # 1. Generate training data
@@ -583,9 +603,9 @@ class F1MLTrainingSystem:
         timestamp = self.save_models()
         
         print("\n" + "=" * 70)
-        print("🏆 F1 ML Training Complete!")
-        print(f"📅 Models trained: {timestamp}")
-        print("🚀 Ready for integration with DriveAhead F1 predictions!")
+        print("F1 ML Training Complete!")
+        print(f"Models trained: {timestamp}")
+        print("Ready for integration with DriveAhead F1 predictions!")
         print("=" * 70)
         
         return timestamp

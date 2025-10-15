@@ -13,18 +13,28 @@ app = Flask(__name__)
 app.secret_key = "driveahead-f1-analytics-2025"
 CORS(app)
 
+# REAL 2025 F1 Championship Standings (After Singapore GP, Round 18 - October 5, 2025)
+# Source: Jolpica F1 API - Official Data
 driver_standings = [
-    {"position": 1, "driver": "Max Verstappen", "team": "Red Bull Racing", "points": 429, "wins": 8},
-    {"position": 2, "driver": "Lando Norris", "team": "McLaren", "points": 349, "wins": 4},
-    {"position": 3, "driver": "Charles Leclerc", "team": "Ferrari", "points": 341, "wins": 3},
-    {"position": 4, "driver": "Oscar Piastri", "team": "McLaren", "points": 291, "wins": 2},
-    {"position": 5, "driver": "Carlos Sainz", "team": "Ferrari", "points": 272, "wins": 1}
+    {"position": 1, "driver": "Oscar Piastri", "team": "McLaren", "points": 336, "wins": 7},
+    {"position": 2, "driver": "Lando Norris", "team": "McLaren", "points": 314, "wins": 5},
+    {"position": 3, "driver": "Max Verstappen", "team": "Red Bull", "points": 273, "wins": 4},
+    {"position": 4, "driver": "George Russell", "team": "Mercedes", "points": 237, "wins": 2},
+    {"position": 5, "driver": "Charles Leclerc", "team": "Ferrari", "points": 173, "wins": 0},
+    {"position": 6, "driver": "Lewis Hamilton", "team": "Ferrari", "points": 125, "wins": 0},
+    {"position": 7, "driver": "Andrea Kimi Antonelli", "team": "Mercedes", "points": 88, "wins": 0},
+    {"position": 8, "driver": "Alexander Albon", "team": "Williams", "points": 70, "wins": 0},
+    {"position": 9, "driver": "Isack Hadjar", "team": "RB F1 Team", "points": 39, "wins": 0},
+    {"position": 10, "driver": "Nico Hulkenberg", "team": "Sauber", "points": 37, "wins": 0}
 ]
 
 constructor_standings = [
-    {"position": 1, "team": "McLaren", "points": 666, "wins": 6},
-    {"position": 2, "team": "Ferrari", "points": 652, "wins": 5},
-    {"position": 3, "team": "Red Bull Racing", "points": 589, "wins": 8}
+    {"position": 1, "team": "McLaren", "points": 650, "wins": 12},
+    {"position": 2, "team": "Mercedes", "points": 325, "wins": 2},
+    {"position": 3, "team": "Ferrari", "points": 298, "wins": 0},
+    {"position": 4, "team": "Red Bull", "points": 290, "wins": 4},
+    {"position": 5, "team": "Williams", "points": 102, "wins": 0},
+    {"position": 6, "team": "RB F1 Team", "points": 72, "wins": 0}
 ]
 
 next_race = {
@@ -206,14 +216,84 @@ def api_race_schedule():
 
 @app.route("/api/last-race")
 def api_last_race():
+    # REAL Singapore GP 2025 Results (October 5, 2025 - Round 18)
+    # Source: Jolpica F1 API - Official Data
     last_race = {
         "round": 18,
-        "name": "Azerbaijan Grand Prix",
-        "circuit": "Baku City Circuit",
-        "country": "Azerbaijan", 
-        "date": "2025-09-15",
+        "raceName": "Singapore Grand Prix",
+        "name": "Singapore Grand Prix",
+        "circuit": "Marina Bay Street Circuit",
+        "country": "Singapore", 
+        "date": "2025-10-05",
         "time": "12:00:00Z",
-        "location": "Baku, Azerbaijan"
+        "location": "Marina Bay, Singapore",
+        "Results": [
+            {
+                "position": "1",
+                "Driver": {
+                    "givenName": "George",
+                    "familyName": "Russell"
+                },
+                "Constructor": {
+                    "name": "Mercedes"
+                },
+                "Time": {
+                    "time": "1:40:22.367"
+                }
+            },
+            {
+                "position": "2",
+                "Driver": {
+                    "givenName": "Max",
+                    "familyName": "Verstappen"
+                },
+                "Constructor": {
+                    "name": "Red Bull"
+                },
+                "Time": {
+                    "time": "+5.430s"
+                }
+            },
+            {
+                "position": "3",
+                "Driver": {
+                    "givenName": "Lando",
+                    "familyName": "Norris"
+                },
+                "Constructor": {
+                    "name": "McLaren"
+                },
+                "Time": {
+                    "time": "+6.066s"
+                }
+            },
+            {
+                "position": "4",
+                "Driver": {
+                    "givenName": "Oscar",
+                    "familyName": "Piastri"
+                },
+                "Constructor": {
+                    "name": "McLaren"
+                },
+                "Time": {
+                    "time": "+8.146s"
+                }
+            },
+            {
+                "position": "5",
+                "Driver": {
+                    "givenName": "Andrea Kimi",
+                    "familyName": "Antonelli"
+                },
+                "Constructor": {
+                    "name": "Mercedes"
+                },
+                "Time": {
+                    "time": "+33.681s"
+                }
+            }
+        ]
     }
     return jsonify({
         "race": last_race,
