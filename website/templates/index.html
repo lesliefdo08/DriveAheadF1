@@ -104,6 +104,21 @@
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
+        
+        /* Countdown Number Transitions */
+        .countdown-number {
+            transition: all 0.2s ease-in-out;
+        }
+        
+        /* Smooth animation pulse for countdown status */
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.8;
+            }
+        }
     </style>
 </head>
 <body class="bg-black text-white min-h-screen overflow-x-hidden">
@@ -198,7 +213,7 @@
                     <!-- Countdown Timer -->
                     <div class="glass-panel rounded-2xl p-8">
                         <div class="text-center">
-                            <div class="text-sm text-gray-400 mb-6">Loading...</div>
+                            <div id="raceNameCountdown" class="text-sm text-gray-400 mb-6">Loading...</div>
                             <div class="countdown-container">
                                 <div class="countdown-segment">
                                     <span id="countdownDays" class="countdown-number">00</span>
@@ -212,8 +227,12 @@
                                     <span id="countdownMinutes" class="countdown-number">00</span>
                                     <div class="countdown-label">MINUTES</div>
                                 </div>
+                                <div class="countdown-segment">
+                                    <span id="countdownSeconds" class="countdown-number">00</span>
+                                    <div class="countdown-label">SECONDS</div>
+                                </div>
                             </div>
-                            <div class="text-xs text-gray-500 uppercase tracking-wide mt-4">Next Race Countdown</div>
+                            <div id="countdownStatus" class="text-xs text-gray-500 uppercase tracking-wide mt-4">Next Race Countdown</div>
                         </div>
                     </div>
                 </div>
@@ -569,6 +588,9 @@
                     
                     if (data.race) {
                         const race = data.race;
+                        // Store race name globally for countdown display
+                        window.currentRaceName = race.name;
+                        
                         document.getElementById('nextRaceInfo').innerHTML = `
                             <div class="space-y-4">
                                 <h3 class="f1-font text-2xl font-bold text-white">${race.name}</h3>
@@ -602,6 +624,11 @@
                             raceInfoText.textContent = `${race.name} • ${race.location}`;
                         }
                         
+                        // Debug: Log the race data received from API
+                        console.log('Race data from API:', race);
+                        console.log('Race date:', race.date);
+                        console.log('Race time:', race.time);
+                        
                         // Set up countdown timer
                         this.setupRaceCountdown(race.date, race.time);
                     }
@@ -613,42 +640,110 @@
             }
 
             setupRaceCountdown(raceDate, raceTime) {
-                // Convert to proper timezone handling
+                // Parse the race date and time correctly
                 let targetDate;
-                if (raceTime && raceTime.endsWith('Z')) {
-                    // UTC time from API
+                
+                // Expected format: date="2025-10-19", time="19:00:00Z"
+                if (raceTime && raceTime.includes('Z')) {
+                    // UTC time - construct ISO 8601 string
                     targetDate = new Date(`${raceDate}T${raceTime}`);
+                } else if (raceTime) {
+                    // Time without timezone, assume UTC
+                    targetDate = new Date(`${raceDate}T${raceTime}Z`);
                 } else {
-                    // Local time
-                    targetDate = new Date(`${raceDate}T${raceTime || '14:00:00'}`);
+                    // No time provided, use default race start time
+                    targetDate = new Date(`${raceDate}T14:00:00Z`);
+                }
+                
+                // Detailed debug logging
+                console.log('=== COUNTDOWN DEBUG ===');
+                console.log('Input - Race Date:', raceDate);
+                console.log('Input - Race Time:', raceTime);
+                console.log('Constructed Date String:', `${raceDate}T${raceTime}`);
+                console.log('Target Date Object:', targetDate);
+                console.log('Target Date (UTC):', targetDate.toUTCString());
+                console.log('Target Date (Local):', targetDate.toLocaleString());
+                console.log('Target Timestamp:', targetDate.getTime());
+                console.log('Current Time:', new Date().toLocaleString());
+                console.log('Current Timestamp:', new Date().getTime());
+                console.log('======================');
+                
+                // Update the race name display
+                const raceNameElement = document.getElementById('raceNameCountdown');
+                if (raceNameElement && window.currentRaceName) {
+                    raceNameElement.textContent = window.currentRaceName;
                 }
                 
                 const updateCountdown = () => {
                     const now = new Date();
                     const timeDiff = targetDate.getTime() - now.getTime();
                     
+                    console.log('Current Time:', now.toLocaleString());
+                    console.log('Time Difference (ms):', timeDiff);
+                    console.log('Time Difference (hours):', timeDiff / (1000 * 60 * 60));
+                    
                     const daysElement = document.getElementById('countdownDays');
                     const hoursElement = document.getElementById('countdownHours');
                     const minutesElement = document.getElementById('countdownMinutes');
+                    const secondsElement = document.getElementById('countdownSeconds');
+                    const statusElement = document.getElementById('countdownStatus');
                     
-                    if (!daysElement || !hoursElement || !minutesElement) return;
+                    if (!daysElement || !hoursElement || !minutesElement || !secondsElement) return;
                     
                     if (timeDiff <= 0) {
                         daysElement.textContent = '00';
                         hoursElement.textContent = '00';
                         minutesElement.textContent = '00';
+                        secondsElement.textContent = '00';
+                        if (statusElement) {
+                            statusElement.textContent = 'RACE STARTED!';
+                            statusElement.classList.add('text-green-500', 'font-bold');
+                        }
                         return;
                     }
                     
                     const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
                     const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                     const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
                     
-                    daysElement.textContent = String(days).padStart(2, '0');
-                    hoursElement.textContent = String(hours).padStart(2, '0');
-                    minutesElement.textContent = String(minutes).padStart(2, '0');
+                    // Animate the change
+                    const updateWithAnimation = (element, newValue) => {
+                        const oldValue = element.textContent;
+                        if (oldValue !== newValue) {
+                            element.style.transform = 'scale(1.1)';
+                            element.style.color = '#ef4444';
+                            setTimeout(() => {
+                                element.textContent = newValue;
+                                element.style.transform = 'scale(1)';
+                                element.style.color = '';
+                            }, 100);
+                        }
+                    };
                     
-                    console.log(`Countdown: ${days}d ${hours}h ${minutes}m`); // Debug log
+                    updateWithAnimation(daysElement, String(days).padStart(2, '0'));
+                    updateWithAnimation(hoursElement, String(hours).padStart(2, '0'));
+                    updateWithAnimation(minutesElement, String(minutes).padStart(2, '0'));
+                    updateWithAnimation(secondsElement, String(seconds).padStart(2, '0'));
+                    
+                    // Debug logging every 10 seconds
+                    if (seconds % 10 === 0) {
+                        console.log(`Countdown: ${days}d ${hours}h ${minutes}m ${seconds}s (${Math.floor(timeDiff / (1000 * 60 * 60))} total hours)`);
+                    }
+                    
+                    // Update status message based on time remaining
+                    if (statusElement) {
+                        if (days === 0 && hours < 1) {
+                            statusElement.textContent = 'RACE STARTING SOON!';
+                            statusElement.classList.add('text-yellow-500', 'font-bold', 'animate-pulse');
+                        } else if (days === 0 && hours < 24) {
+                            statusElement.textContent = 'RACE STARTS TODAY!';
+                            statusElement.classList.add('text-green-500', 'font-bold');
+                        } else {
+                            statusElement.textContent = 'NEXT RACE COUNTDOWN';
+                            statusElement.classList.remove('text-green-500', 'text-yellow-500', 'font-bold', 'animate-pulse');
+                        }
+                    }
                 };
                 
                 updateCountdown(); // Run immediately
