@@ -37,6 +37,9 @@ next_race = {
     "location": "Austin, Texas"
 }
 
+# For demo purposes, you can use a future date for testing:
+# next_race["date"] = "2025-10-20"  # Tomorrow for testing
+
 @app.route("/favicon.ico")
 def favicon():
     from flask import send_from_directory

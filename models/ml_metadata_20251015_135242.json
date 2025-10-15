@@ -1,0 +1,62 @@
+{
+  "timestamp": "20251015_135242",
+  "optimization": "ENABLED - Only 3 best models saved",
+  "best_models": {
+    "position": {
+      "algorithm": "random_forest",
+      "file": "models/position_model_20251015_135242.pkl",
+      "mae": 1.328127521475507
+    },
+    "winner": {
+      "algorithm": "random_forest",
+      "file": "models/winner_model_20251015_135242.pkl",
+      "accuracy": 0.9716666666666667
+    },
+    "podium": {
+      "algorithm": "random_forest",
+      "file": "models/podium_model_20251015_135242.pkl",
+      "accuracy": 0.9383333333333334
+    }
+  },
+  "feature_columns": [
+    "qualifying_position",
+    "weather_clear",
+    "track_temperature",
+    "tire_strategy",
+    "avg_speed",
+    "pit_stop_time",
+    "driver_skill",
+    "team_performance",
+    "circuit_factor",
+    "driver_encoded",
+    "team_encoded",
+    "circuit_encoded"
+  ],
+  "model_performance": {
+    "random_forest": {
+      "position_mae": 1.328127521475507,
+      "winner_accuracy": 0.9716666666666667,
+      "podium_accuracy": 0.9383333333333334
+    },
+    "xgboost": {
+      "position_mae": 1.3421034812927246,
+      "winner_accuracy": 0.9716666666666667,
+      "podium_accuracy": 0.935
+    },
+    "logistic_regression": {
+      "winner_accuracy": 0.97,
+      "podium_accuracy": 0.9366666666666666
+    }
+  },
+  "scaler_file": "models/scaler_20251015_135242.pkl",
+  "encoder_file": "models/encoders_20251015_135242.pkl",
+  "training_date": "2025-10-15T13:52:42.744264",
+  "total_models_saved": 3,
+  "files_saved": [
+    "models/position_model_20251015_135242.pkl",
+    "models/winner_model_20251015_135242.pkl",
+    "models/podium_model_20251015_135242.pkl",
+    "models/scaler_20251015_135242.pkl",
+    "models/encoders_20251015_135242.pkl"
+  ]
+}

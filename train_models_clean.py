@@ -378,49 +378,141 @@ class F1MLTrainingSystem:
         print(f"Podium Prediction: {best_podium[0]} (Accuracy: {best_podium[1]:.3f})")
         
     def save_models(self):
-        """Save trained models and metadata"""
+        """Save ONLY the 3 best performing models + scaler + encoders (OPTIMIZED)"""
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         
-        print(f"\n💾 Saving trained models (timestamp: {timestamp})...")
+        print(f"\n💾 Saving ONLY the 3 BEST models (timestamp: {timestamp})...")
+        print("🎯 OPTIMIZATION: Saving only Position, Winner, and Podium best models")
+        print("=" * 70)
         
-        # Save models
+        # Determine the best algorithm for each task based on performance
+        best_algorithms = {}
+        
+        # 1. Best Position Model (lowest MAE)
+        position_scores = [
+            ('random_forest', self.model_performance['random_forest']['position_mae']),
+            ('xgboost', self.model_performance['xgboost']['position_mae'])
+        ]
+        best_position_algo = min(position_scores, key=lambda x: x[1])
+        best_algorithms['position'] = {
+            'algorithm': best_position_algo[0],
+            'score': best_position_algo[1],
+            'metric': 'MAE'
+        }
+        print(f"✓ Best POSITION model: {best_position_algo[0]} (MAE: {best_position_algo[1]:.3f})")
+        
+        # 2. Best Winner Model (highest accuracy)
+        winner_scores = [
+            ('random_forest', self.model_performance['random_forest']['winner_accuracy']),
+            ('xgboost', self.model_performance['xgboost']['winner_accuracy']),
+            ('logistic_regression', self.model_performance['logistic_regression']['winner_accuracy'])
+        ]
+        best_winner_algo = max(winner_scores, key=lambda x: x[1])
+        best_algorithms['winner'] = {
+            'algorithm': best_winner_algo[0],
+            'score': best_winner_algo[1],
+            'metric': 'Accuracy'
+        }
+        print(f"✓ Best WINNER model: {best_winner_algo[0]} (Accuracy: {best_winner_algo[1]:.3f})")
+        
+        # 3. Best Podium Model (highest accuracy)
+        podium_scores = [
+            ('random_forest', self.model_performance['random_forest']['podium_accuracy']),
+            ('xgboost', self.model_performance['xgboost']['podium_accuracy']),
+            ('logistic_regression', self.model_performance['logistic_regression']['podium_accuracy'])
+        ]
+        best_podium_algo = max(podium_scores, key=lambda x: x[1])
+        best_algorithms['podium'] = {
+            'algorithm': best_podium_algo[0],
+            'score': best_podium_algo[1],
+            'metric': 'Accuracy'
+        }
+        print(f"✓ Best PODIUM model: {best_podium_algo[0]} (Accuracy: {best_podium_algo[1]:.3f})")
+        
+        print("=" * 70)
+        
+        # Create best_models dictionary containing ONLY the 3 best models
+        best_models = {
+            'position': self.models[best_position_algo[0]]['position'],
+            'winner': self.models[best_winner_algo[0]]['winner'],
+            'podium': self.models[best_podium_algo[0]]['podium']
+        }
+        
+        # Save ONLY the 3 best models
         model_files = {}
-        for algorithm in self.models:
-            for task in self.models[algorithm]:
-                filename = f"models/{algorithm}_{task}_{timestamp}.pkl"
-                with open(filename, 'wb') as f:
-                    pickle.dump(self.models[algorithm][task], f)
-                model_files[f"{algorithm}_{task}"] = filename
-                print(f"   Saved: {filename}")
+        
+        # Save Position model
+        position_filename = f"models/position_model_{timestamp}.pkl"
+        with open(position_filename, 'wb') as f:
+            pickle.dump(best_models['position'], f)
+        model_files['position'] = position_filename
+        print(f"💾 Saved: {position_filename}")
+        
+        # Save Winner model
+        winner_filename = f"models/winner_model_{timestamp}.pkl"
+        with open(winner_filename, 'wb') as f:
+            pickle.dump(best_models['winner'], f)
+        model_files['winner'] = winner_filename
+        print(f"💾 Saved: {winner_filename}")
+        
+        # Save Podium model
+        podium_filename = f"models/podium_model_{timestamp}.pkl"
+        with open(podium_filename, 'wb') as f:
+            pickle.dump(best_models['podium'], f)
+        model_files['podium'] = podium_filename
+        print(f"💾 Saved: {podium_filename}")
         
         # Save scalers and encoders
         scaler_file = f"models/scaler_{timestamp}.pkl"
         with open(scaler_file, 'wb') as f:
             pickle.dump(self.scalers, f)
+        print(f"💾 Saved: {scaler_file}")
         
         encoder_file = f"models/encoders_{timestamp}.pkl"
         with open(encoder_file, 'wb') as f:
             pickle.dump(self.encoders, f)
+        print(f"💾 Saved: {encoder_file}")
         
-        # Save metadata
+        # Save optimized metadata with ONLY the 3 best models
         metadata = {
             'timestamp': timestamp,
-            'algorithms': ['random_forest', 'xgboost', 'logistic_regression'],
-            'tasks': ['position', 'winner', 'podium'],
+            'optimization': 'ENABLED - Only 3 best models saved',
+            'best_models': {
+                'position': {
+                    'algorithm': best_algorithms['position']['algorithm'],
+                    'file': position_filename,
+                    'mae': best_algorithms['position']['score']
+                },
+                'winner': {
+                    'algorithm': best_algorithms['winner']['algorithm'],
+                    'file': winner_filename,
+                    'accuracy': best_algorithms['winner']['score']
+                },
+                'podium': {
+                    'algorithm': best_algorithms['podium']['algorithm'],
+                    'file': podium_filename,
+                    'accuracy': best_algorithms['podium']['score']
+                }
+            },
             'feature_columns': self.feature_columns,
             'model_performance': self.model_performance,
-            'model_files': model_files,
             'scaler_file': scaler_file,
             'encoder_file': encoder_file,
-            'training_date': datetime.now().isoformat()
+            'training_date': datetime.now().isoformat(),
+            'total_models_saved': 3,
+            'files_saved': [position_filename, winner_filename, podium_filename, scaler_file, encoder_file]
         }
         
         metadata_file = f"models/ml_metadata_{timestamp}.json"
         with open(metadata_file, 'w') as f:
             json.dump(metadata, f, indent=2)
         
-        print(f"   Saved metadata: {metadata_file}")
-        print("✅ All models saved successfully!")
+        print(f"💾 Saved: {metadata_file}")
+        print("=" * 70)
+        print("✅ OPTIMIZATION COMPLETE!")
+        print(f"📊 Total files saved: 5 (3 models + scaler + encoders)")
+        print(f"💡 Computation reduced by saving only best-performing models")
+        print("=" * 70)
         
         return timestamp
     
