@@ -6,49 +6,15 @@ import random
 import time
 import math
 
+# Import the real-time F1 data fetcher
+from f1_data_fetcher import f1_fetcher
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 app.secret_key = "driveahead-f1-analytics-2025"
 CORS(app)
-
-# REAL 2025 F1 Championship Standings (After Singapore GP, Round 18 - October 5, 2025)
-# Source: Jolpica F1 API - Official Data
-driver_standings = [
-    {"position": 1, "driver": "Oscar Piastri", "team": "McLaren", "points": 336, "wins": 7},
-    {"position": 2, "driver": "Lando Norris", "team": "McLaren", "points": 314, "wins": 5},
-    {"position": 3, "driver": "Max Verstappen", "team": "Red Bull", "points": 273, "wins": 4},
-    {"position": 4, "driver": "George Russell", "team": "Mercedes", "points": 237, "wins": 2},
-    {"position": 5, "driver": "Charles Leclerc", "team": "Ferrari", "points": 173, "wins": 0},
-    {"position": 6, "driver": "Lewis Hamilton", "team": "Ferrari", "points": 125, "wins": 0},
-    {"position": 7, "driver": "Andrea Kimi Antonelli", "team": "Mercedes", "points": 88, "wins": 0},
-    {"position": 8, "driver": "Alexander Albon", "team": "Williams", "points": 70, "wins": 0},
-    {"position": 9, "driver": "Isack Hadjar", "team": "RB F1 Team", "points": 39, "wins": 0},
-    {"position": 10, "driver": "Nico Hulkenberg", "team": "Sauber", "points": 37, "wins": 0}
-]
-
-constructor_standings = [
-    {"position": 1, "team": "McLaren", "points": 650, "wins": 12},
-    {"position": 2, "team": "Mercedes", "points": 325, "wins": 2},
-    {"position": 3, "team": "Ferrari", "points": 298, "wins": 0},
-    {"position": 4, "team": "Red Bull", "points": 290, "wins": 4},
-    {"position": 5, "team": "Williams", "points": 102, "wins": 0},
-    {"position": 6, "team": "RB F1 Team", "points": 72, "wins": 0}
-]
-
-next_race = {
-    "round": 19,
-    "name": "United States Grand Prix",
-    "circuit": "Circuit of the Americas",
-    "country": "United States",
-    "date": "2025-10-19",
-    "time": "19:00:00Z",
-    "location": "Austin, Texas"
-}
-
-# For demo purposes, you can use a future date for testing:
-# next_race["date"] = "2025-10-20"  # Tomorrow for testing
 
 @app.route("/favicon.ico")
 def favicon():
@@ -88,33 +54,74 @@ def api_status():
 
 @app.route("/api/standings")
 def api_standings():
-    return jsonify({
-        "drivers": driver_standings,
-        "constructors": constructor_standings,
-        "last_updated": datetime.now().isoformat(),
-        "season": 2025
-    })
+    """REAL-TIME: Fetch live standings from Jolpica F1 API"""
+    try:
+        driver_data = f1_fetcher.get_current_standings()
+        constructor_data = f1_fetcher.get_constructor_standings()
+        
+        return jsonify({
+            "drivers": driver_data['standings'],
+            "constructors": constructor_data['standings'],
+            "last_updated": driver_data['last_updated'],
+            "season": driver_data['season'],
+            "round": driver_data['round'],
+            "source": driver_data['source']
+        })
+    except Exception as e:
+        logger.error(f"Error in api_standings: {e}")
+        return jsonify({
+            "error": "Failed to fetch standings",
+            "message": str(e)
+        }), 500
 
 @app.route("/api/next-race")
 def api_next_race():
-    return jsonify({
-        "race": next_race,
-        "last_updated": datetime.now().isoformat()
-    })
+    """REAL-TIME: Dynamically detect next upcoming race"""
+    try:
+        next_race_data = f1_fetcher.get_next_race()
+        return jsonify(next_race_data)
+    except Exception as e:
+        logger.error(f"Error in api_next_race: {e}")
+        return jsonify({
+            "error": "Failed to fetch next race",
+            "message": str(e)
+        }), 500
 
 @app.route("/api/predictions/winner")
 def api_predictions_winner():
-    prediction = {
-        "driver": driver_standings[0]["driver"],
-        "team": driver_standings[0]["team"],
-        "confidence": 87,
-        "position": 1
-    }
-    
-    return jsonify({
-        "prediction": prediction,
-        "last_updated": datetime.now().isoformat()
-    })
+    """REAL-TIME: Prediction based on current standings"""
+    try:
+        driver_data = f1_fetcher.get_current_standings()
+        
+        if driver_data['standings']:
+            leader = driver_data['standings'][0]
+            prediction = {
+                "driver": leader["driver"],
+                "team": leader["team"],
+                "confidence": 87,
+                "position": 1,
+                "current_points": leader["points"],
+                "wins": leader["wins"]
+            }
+        else:
+            prediction = {
+                "driver": "Oscar Piastri",
+                "team": "McLaren",
+                "confidence": 87,
+                "position": 1
+            }
+        
+        return jsonify({
+            "prediction": prediction,
+            "last_updated": datetime.now().isoformat(),
+            "source": driver_data.get('source', 'fallback')
+        })
+    except Exception as e:
+        logger.error(f"Error in api_predictions_winner: {e}")
+        return jsonify({
+            "error": "Failed to generate prediction",
+            "message": str(e)
+        }), 500
 
 @app.route("/api/telemetry")
 def api_telemetry():
@@ -185,124 +192,86 @@ def api_telemetry():
 
 @app.route("/api/predictions")
 def api_predictions():
-    predictions = []
-    for i, standing in enumerate(driver_standings):
-        points = standing["points"]
-        probability = min(45, max(5, (points / 429) * 45))
+    """REAL-TIME: Generate predictions based on current standings"""
+    try:
+        driver_data = f1_fetcher.get_current_standings()
+        standings = driver_data['standings']
         
-        predictions.append({
-            "driver": standing["driver"],
-            "team": standing["team"],
-            "probability": round(probability, 1),
-            "predicted_position": i + 1,
-            "confidence": "High" if probability > 25 else "Medium",
-            "odds": f"{round(100/max(probability, 1), 1)}:1"
+        predictions = []
+        for i, standing in enumerate(standings):
+            points = standing["points"]
+            probability = min(45, max(5, (points / 429) * 45))
+            
+            predictions.append({
+                "driver": standing["driver"],
+                "team": standing["team"],
+                "probability": round(probability, 1),
+                "predicted_position": i + 1,
+                "confidence": "High" if probability > 25 else "Medium",
+                "odds": f"{round(100/max(probability, 1), 1)}:1",
+                "current_points": standing["points"],
+                "wins": standing["wins"]
+            })
+        
+        return jsonify({
+            "predictions": predictions,
+            "last_updated": driver_data['last_updated'],
+            "model_type": "ML",
+            "source": driver_data['source'],
+            "season": driver_data['season'],
+            "round": driver_data['round']
         })
-    
-    return jsonify({
-        "predictions": predictions,
-        "last_updated": datetime.now().isoformat(),
-        "model_type": "ML"
-    })
+    except Exception as e:
+        logger.error(f"Error in api_predictions: {e}")
+        return jsonify({
+            "error": "Failed to generate predictions",
+            "message": str(e)
+        }), 500
 
 @app.route("/api/race-schedule")
 def api_race_schedule():
-    races = [
-        {"round": 19, "name": "United States Grand Prix", "date": "2025-10-19", "time": "19:00:00Z", "location": "Austin, Texas"},
-        {"round": 20, "name": "Mexico City Grand Prix", "date": "2025-10-27", "time": "20:00:00Z", "location": "Mexico City, Mexico"},
-        {"round": 21, "name": "Brazilian Grand Prix", "date": "2025-11-03", "time": "17:00:00Z", "location": "São Paulo, Brazil"}
-    ]
-    return jsonify({
-        "races": races,
-        "last_updated": datetime.now().isoformat(),
-        "season": 2025
-    })
+    """REAL-TIME: Fetch full season race schedule"""
+    try:
+        schedule_data = f1_fetcher.get_race_schedule()
+        
+        # Filter to show only upcoming races
+        now = datetime.now()
+        upcoming_races = []
+        for race in schedule_data['races']:
+            race_date = datetime.strptime(race['date'], '%Y-%m-%d')
+            if race_date >= now.replace(hour=0, minute=0, second=0, microsecond=0):
+                upcoming_races.append(race)
+        
+        return jsonify({
+            "races": upcoming_races if upcoming_races else schedule_data['races'][-3:],  # Show last 3 if season ended
+            "total_races": schedule_data['total_races'],
+            "last_updated": schedule_data['last_updated'],
+            "season": schedule_data['season'],
+            "source": schedule_data['source']
+        })
+    except Exception as e:
+        logger.error(f"Error in api_race_schedule: {e}")
+        return jsonify({
+            "error": "Failed to fetch race schedule",
+            "message": str(e)
+        }), 500
 
 @app.route("/api/last-race")
 def api_last_race():
-    # REAL Singapore GP 2025 Results (October 5, 2025 - Round 18)
-    # Source: Jolpica F1 API - Official Data
-    last_race = {
-        "round": 18,
-        "raceName": "Singapore Grand Prix",
-        "name": "Singapore Grand Prix",
-        "circuit": "Marina Bay Street Circuit",
-        "country": "Singapore", 
-        "date": "2025-10-05",
-        "time": "12:00:00Z",
-        "location": "Marina Bay, Singapore",
-        "Results": [
-            {
-                "position": "1",
-                "Driver": {
-                    "givenName": "George",
-                    "familyName": "Russell"
-                },
-                "Constructor": {
-                    "name": "Mercedes"
-                },
-                "Time": {
-                    "time": "1:40:22.367"
-                }
-            },
-            {
-                "position": "2",
-                "Driver": {
-                    "givenName": "Max",
-                    "familyName": "Verstappen"
-                },
-                "Constructor": {
-                    "name": "Red Bull"
-                },
-                "Time": {
-                    "time": "+5.430s"
-                }
-            },
-            {
-                "position": "3",
-                "Driver": {
-                    "givenName": "Lando",
-                    "familyName": "Norris"
-                },
-                "Constructor": {
-                    "name": "McLaren"
-                },
-                "Time": {
-                    "time": "+6.066s"
-                }
-            },
-            {
-                "position": "4",
-                "Driver": {
-                    "givenName": "Oscar",
-                    "familyName": "Piastri"
-                },
-                "Constructor": {
-                    "name": "McLaren"
-                },
-                "Time": {
-                    "time": "+8.146s"
-                }
-            },
-            {
-                "position": "5",
-                "Driver": {
-                    "givenName": "Andrea Kimi",
-                    "familyName": "Antonelli"
-                },
-                "Constructor": {
-                    "name": "Mercedes"
-                },
-                "Time": {
-                    "time": "+33.681s"
-                }
-            }
-        ]
-    }
-    return jsonify({
-        "race": last_race,
-        "last_updated": datetime.now().isoformat()
-    })
+    """REAL-TIME: Fetch results from the most recent race"""
+    try:
+        last_race_data = f1_fetcher.get_last_race_results()
+        return jsonify({
+            "race": last_race_data,
+            "last_updated": datetime.now().isoformat(),
+            "source": last_race_data.get('source', 'jolpica_api')
+        })
+    except Exception as e:
+        logger.error(f"Error in api_last_race: {e}")
+        return jsonify({
+            "error": "Failed to fetch last race results",
+            "message": str(e)
+        }), 500
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
