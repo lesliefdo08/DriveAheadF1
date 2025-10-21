@@ -9,6 +9,9 @@ import math
 # Import the real-time F1 data fetcher
 from f1_data_fetcher import f1_fetcher
 
+# Import the advanced ML predictor
+from advanced_predictor import advanced_predictor
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -89,39 +92,43 @@ def api_next_race():
 
 @app.route("/api/predictions/winner")
 def api_predictions_winner():
-    """REAL-TIME: Prediction based on current standings"""
+    """REAL-TIME: Advanced ML prediction for next race winner"""
     try:
-        driver_data = f1_fetcher.get_current_standings()
+        # Get next race information
+        next_race_data = f1_fetcher.get_next_race()
         
-        if driver_data['standings']:
-            leader = driver_data['standings'][0]
-            prediction = {
-                "driver": leader["driver"],
-                "team": leader["team"],
-                "confidence": 87,
-                "position": 1,
-                "current_points": leader["points"],
-                "wins": leader["wins"]
-            }
-        else:
-            prediction = {
-                "driver": "Oscar Piastri",
-                "team": "McLaren",
-                "confidence": 87,
-                "position": 1
-            }
+        # Use advanced predictor to predict winner
+        prediction = advanced_predictor.predict_race_winner(next_race_data)
         
         return jsonify({
-            "prediction": prediction,
+            "prediction": {
+                "driver": prediction['predicted_winner'],
+                "team": prediction['team'],
+                "confidence": prediction['confidence'],
+                "position": 1,
+                "reasoning": prediction['reasoning'],
+                "breakdown": prediction.get('breakdown', {}),
+                "top_3": prediction.get('top_3_predictions', [])
+            },
+            "race": next_race_data.get('race', {}),
             "last_updated": datetime.now().isoformat(),
-            "source": driver_data.get('source', 'fallback')
+            "prediction_method": prediction.get('prediction_method', 'Advanced ML Multi-Factor Analysis')
         })
     except Exception as e:
         logger.error(f"Error in api_predictions_winner: {e}")
+        # Fallback to simple prediction
+        driver_data = f1_fetcher.get_current_standings()
+        leader = driver_data['standings'][0] if driver_data['standings'] else {}
         return jsonify({
-            "error": "Failed to generate prediction",
-            "message": str(e)
-        }), 500
+            "prediction": {
+                "driver": leader.get("driver", "Oscar Piastri"),
+                "team": leader.get("team", "McLaren"),
+                "confidence": 75,
+                "position": 1
+            },
+            "last_updated": datetime.now().isoformat(),
+            "prediction_method": "Fallback (Championship Leader)"
+        })
 
 @app.route("/api/telemetry")
 def api_telemetry():
@@ -192,31 +199,66 @@ def api_telemetry():
 
 @app.route("/api/predictions")
 def api_predictions():
-    """REAL-TIME: Generate predictions based on current standings"""
+    """REAL-TIME: Advanced ML predictions for all drivers"""
     try:
+        # Get current standings and next race
         driver_data = f1_fetcher.get_current_standings()
-        standings = driver_data['standings']
+        next_race_data = f1_fetcher.get_next_race()
         
+        # Get advanced prediction for winner
+        winner_prediction = advanced_predictor.predict_race_winner(next_race_data)
+        
+        # Get top 3 predictions from advanced predictor
+        top_3_predictions = winner_prediction.get('top_3_predictions', [])
+        
+        # Build full prediction list
         predictions = []
-        for i, standing in enumerate(standings):
-            points = standing["points"]
-            probability = min(45, max(5, (points / 429) * 45))
-            
+        
+        # Add top 3 from advanced predictor
+        for idx, pred in enumerate(top_3_predictions):
             predictions.append({
-                "driver": standing["driver"],
-                "team": standing["team"],
-                "probability": round(probability, 1),
-                "predicted_position": i + 1,
-                "confidence": "High" if probability > 25 else "Medium",
-                "odds": f"{round(100/max(probability, 1), 1)}:1",
-                "current_points": standing["points"],
-                "wins": standing["wins"]
+                "driver": pred['driver'],
+                "team": pred['team'],
+                "probability": pred['probability'],
+                "predicted_position": idx + 1,
+                "confidence": "High" if pred['probability'] > 70 else "Medium",
+                "odds": f"{round(100/max(pred['probability'], 1), 1)}:1",
+                "score": pred.get('score', 0)
             })
+        
+        # Add remaining drivers from standings
+        standings = driver_data['standings']
+        added_drivers = {pred['driver'] for pred in top_3_predictions}
+        
+        for i, standing in enumerate(standings):
+            if standing['driver'] not in added_drivers and len(predictions) < 10:
+                # Calculate probability based on championship position
+                points = standing["points"]
+                max_points = standings[0]["points"] if standings else 400
+                probability = min(50, max(5, (points / max_points) * 50))
+                
+                predictions.append({
+                    "driver": standing["driver"],
+                    "team": standing["team"],
+                    "probability": round(probability, 1),
+                    "predicted_position": len(predictions) + 1,
+                    "confidence": "Medium" if probability > 20 else "Low",
+                    "odds": f"{round(100/max(probability, 1), 1)}:1",
+                    "current_points": standing["points"],
+                    "wins": standing["wins"]
+                })
         
         return jsonify({
             "predictions": predictions,
+            "winner_prediction": {
+                "driver": winner_prediction['predicted_winner'],
+                "confidence": winner_prediction['confidence'],
+                "reasoning": winner_prediction['reasoning'],
+                "breakdown": winner_prediction.get('breakdown', {})
+            },
+            "next_race": next_race_data.get('race', {}),
             "last_updated": driver_data['last_updated'],
-            "model_type": "ML",
+            "model_type": "Advanced ML Multi-Factor",
             "source": driver_data['source'],
             "season": driver_data['season'],
             "round": driver_data['round']
@@ -226,6 +268,27 @@ def api_predictions():
         return jsonify({
             "error": "Failed to generate predictions",
             "message": str(e)
+        }), 500
+
+@app.route("/api/predictions/all-races")
+def api_predictions_all_races():
+    """REAL-TIME: Predictions for ALL upcoming races (adapts to each circuit)"""
+    try:
+        all_predictions = advanced_predictor.predict_all_upcoming_races()
+        
+        return jsonify({
+            "predictions": all_predictions,
+            "total_races": len(all_predictions),
+            "last_updated": datetime.now().isoformat(),
+            "model_type": "Advanced ML Multi-Factor (Circuit-Adaptive)",
+            "note": "Predictions adapt to each circuit's unique characteristics"
+        })
+    except Exception as e:
+        logger.error(f"Error in api_predictions_all_races: {e}")
+        return jsonify({
+            "error": "Failed to generate all race predictions",
+            "message": str(e)
+        }), 500
         }), 500
 
 @app.route("/api/race-schedule")
