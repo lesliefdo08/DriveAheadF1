@@ -12,6 +12,9 @@ from f1_data_fetcher import f1_fetcher
 # Import the advanced ML predictor
 from advanced_predictor import advanced_predictor
 
+# Import prediction history tracker
+from prediction_history import prediction_tracker
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -289,6 +292,43 @@ def api_predictions_all_races():
             "error": "Failed to generate all race predictions",
             "message": str(e)
         }), 500
+
+@app.route("/api/predictions/history")
+def api_prediction_history():
+    """REAL-TIME: Get prediction accuracy history (auto-updates)"""
+    try:
+        history = prediction_tracker.get_prediction_history(num_races=5)
+        
+        return jsonify({
+            "history": history,
+            "total_races_checked": len(history),
+            "last_updated": datetime.now().isoformat(),
+            "source": "jolpica_api",
+            "note": "Automatically fetched from real race results"
+        })
+    except Exception as e:
+        logger.error(f"Error in api_prediction_history: {e}")
+        return jsonify({
+            "error": "Failed to fetch prediction history",
+            "message": str(e)
+        }), 500
+
+@app.route("/api/predictions/accuracy")
+def api_prediction_accuracy():
+    """REAL-TIME: Get overall prediction accuracy stats"""
+    try:
+        stats = prediction_tracker.get_accuracy_stats()
+        
+        return jsonify({
+            "stats": stats,
+            "last_updated": datetime.now().isoformat(),
+            "source": "jolpica_api"
+        })
+    except Exception as e:
+        logger.error(f"Error in api_prediction_accuracy: {e}")
+        return jsonify({
+            "error": "Failed to calculate accuracy",
+            "message": str(e)
         }), 500
 
 @app.route("/api/race-schedule")
