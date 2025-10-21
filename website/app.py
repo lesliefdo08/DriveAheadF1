@@ -15,6 +15,9 @@ from advanced_predictor import advanced_predictor
 # Import prediction history tracker
 from prediction_history import prediction_tracker
 
+# Import advanced telemetry engine
+from telemetry_engine import telemetry_engine
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -373,6 +376,77 @@ def api_last_race():
         logger.error(f"Error in api_last_race: {e}")
         return jsonify({
             "error": "Failed to fetch last race results",
+            "message": str(e)
+        }), 500
+
+# ==================== TELEMETRY API ENDPOINTS ====================
+
+@app.route("/api/telemetry/track-data")
+def api_telemetry_track_data():
+    """Get comprehensive track visualization data"""
+    try:
+        # Get next race to determine circuit
+        next_race = f1_fetcher.get_next_race()
+        circuit_name = next_race.get('circuit_name', 'Melbourne') if next_race else 'Melbourne'
+        
+        track_data = telemetry_engine.get_track_visualization_data(circuit_name)
+        return jsonify(track_data)
+    except Exception as e:
+        logger.error(f"Error in api_telemetry_track_data: {e}")
+        return jsonify({
+            "error": "Failed to fetch track data",
+            "message": str(e)
+        }), 500
+
+@app.route("/api/telemetry/driver/<int:driver_number>")
+def api_telemetry_driver(driver_number):
+    """Get detailed telemetry for specific driver"""
+    try:
+        driver_data = telemetry_engine.get_driver_telemetry(driver_number)
+        return jsonify(driver_data)
+    except Exception as e:
+        logger.error(f"Error in api_telemetry_driver: {e}")
+        return jsonify({
+            "error": "Failed to fetch driver telemetry",
+            "message": str(e)
+        }), 500
+
+@app.route("/api/telemetry/sectors")
+def api_telemetry_sectors():
+    """Get sector timing data for all drivers"""
+    try:
+        sector_data = telemetry_engine.get_sector_times()
+        return jsonify({
+            "sectors": sector_data,
+            "timestamp": datetime.now().isoformat()
+        })
+    except Exception as e:
+        logger.error(f"Error in api_telemetry_sectors: {e}")
+        return jsonify({
+            "error": "Failed to fetch sector data",
+            "message": str(e)
+        }), 500
+
+@app.route("/api/telemetry/live-positions")
+def api_telemetry_live_positions():
+    """Get live driver positions on track"""
+    try:
+        next_race = f1_fetcher.get_next_race()
+        circuit_name = next_race.get('circuit_name', 'Melbourne') if next_race else 'Melbourne'
+        
+        # Generate realistic positions
+        lap_progress = (datetime.now().timestamp() % 120) / 120
+        positions = telemetry_engine.generate_realistic_track_positions(20, lap_progress)
+        
+        return jsonify({
+            "positions": positions,
+            "circuit": circuit_name,
+            "timestamp": datetime.now().isoformat()
+        })
+    except Exception as e:
+        logger.error(f"Error in api_telemetry_live_positions: {e}")
+        return jsonify({
+            "error": "Failed to fetch live positions",
             "message": str(e)
         }), 500
 
