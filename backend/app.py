@@ -1,4 +1,4 @@
-﻿from flask import Flask, render_template, jsonify
+﻿from flask import Flask, jsonify
 from flask_cors import CORS
 from datetime import datetime
 import logging
@@ -23,34 +23,25 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 app.secret_key = "driveahead-f1-analytics-2025"
-CORS(app)
-
-@app.route("/favicon.ico")
-def favicon():
-    from flask import send_from_directory
-    import os
-    return send_from_directory(os.path.join(app.root_path, 'static', 'images'),
-                             'logo.png', mimetype='image/png')
+# Enable CORS for frontend at localhost:3000
+CORS(app, resources={r"/api/*": {"origins": ["http://localhost:3000", "http://localhost:5000"]}})
 
 @app.route("/")
 def index():
-    return render_template("index.html")
-
-@app.route("/telemetry")
-def telemetry():
-    return render_template("telemetry.html")
-
-@app.route("/standings")
-def standings():
-    return render_template("standings.html")
-
-@app.route("/dashboard")
-def dashboard():
-    return render_template("dashboard.html")
-
-@app.route("/predictions")
-def predictions():
-    return render_template("predictions.html")
+    return jsonify({
+        "message": "DriveAhead F1 Analytics API",
+        "version": "2.0.0",
+        "status": "operational",
+        "endpoints": {
+            "status": "/api/status",
+            "standings": "/api/standings",
+            "predictions": "/api/predictions",
+            "telemetry": "/api/telemetry",
+            "next_race": "/api/next-race",
+            "last_race": "/api/last-race",
+            "schedule": "/api/race-schedule"
+        }
+    })
 
 @app.route("/api/status")
 def api_status():

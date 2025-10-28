@@ -1,0 +1,78 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --background: 0 0% 3.9%;
+      --foreground: 0 0% 98%;
+    }
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .glass-panel {
+    @apply bg-black/70 backdrop-blur-md border border-white/10;
+  }
+
+  .f1-gradient-text {
+    background: linear-gradient(45deg, #ff1e1e, #ffffff, #0090ff);
+    background-size: 200% 200%;
+    animation: gradientShift 3s ease infinite;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .countdown-segment {
+    @apply text-center bg-gradient-to-br from-red-600/15 to-red-500/10 border-2 border-red-600/40 rounded-2xl p-6 min-w-[100px] relative overflow-hidden transition-all duration-300 hover:border-red-600/60 hover:-translate-y-0.5 hover:shadow-glow;
+  }
+
+  .countdown-number {
+    @apply font-f1 text-4xl font-black text-red-500 block leading-none;
+    text-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+  }
+
+  .countdown-label {
+    @apply text-xs text-gray-400 font-semibold uppercase tracking-wider mt-2;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #dc143c;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #ff4757;
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Loading states */
+.skeleton {
+  @apply animate-pulse bg-gray-800 rounded;
+}
+

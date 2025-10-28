@@ -136,4 +136,7 @@ Thumbs.db
 
 # Project specific
 *.pdf
-config.json
+config.json# Cache files (too large for GitHub)
+backend/cache/fastf1_cache/
+backend/cache/*.sqlite
+backend/cache/*.db
