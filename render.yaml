@@ -1,9 +1,10 @@
 services:
+  # Backend API Service
   - type: web
-    name: driveahead-f1-analytics
+    name: driveahead-backend-api
     env: python
     plan: free
-    rootDir: website
+    rootDir: backend
     buildCommand: pip install --upgrade pip && pip install --only-binary=all -r requirements.txt || pip install -r requirements.txt
     startCommand: python -m gunicorn --bind 0.0.0.0:$PORT app:app
     envVars:
@@ -14,6 +15,10 @@ services:
         value: production
       - key: SECRET_KEY
         value: driveahead-f1-2025-production-secret-change-this-random-key-abc123
+      
+      # CORS Configuration
+      - key: FRONTEND_URL
+        sync: false
       
       # API Configuration
       - key: JOLPICA_API_BASE
@@ -58,3 +63,17 @@ services:
         value: true
       - key: PYTHONUNBUFFERED
         value: 1
+
+  # Frontend Service
+  - type: web
+    name: driveahead-frontend
+    env: node
+    plan: free
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        sync: false
+      - key: NODE_ENV
+        value: production

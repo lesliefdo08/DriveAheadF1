@@ -22,9 +22,16 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
-app.secret_key = "driveahead-f1-analytics-2025"
-# Enable CORS for frontend at localhost:3000
-CORS(app, resources={r"/api/*": {"origins": ["http://localhost:3000", "http://localhost:5000"]}})
+app.secret_key = os.environ.get("SECRET_KEY", "driveahead-f1-analytics-2025")
+
+# Enable CORS for frontend (development and production)
+frontend_url = os.environ.get("FRONTEND_URL", "http://localhost:3000")
+allowed_origins = [
+    "http://localhost:3000",
+    "http://localhost:5000",
+    frontend_url
+]
+CORS(app, resources={r"/api/*": {"origins": allowed_origins}})
 
 @app.route("/")
 def index():
