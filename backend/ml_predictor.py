@@ -21,8 +21,8 @@ logger = logging.getLogger(__name__)
 # ============================================================================
 # CONFIGURATION - SET THESE TO USE YOUR TRAINED MODELS
 # ============================================================================
-ML_PREDICTOR_ENABLED = False  # Set to True after training models
-MODEL_TIMESTAMP = None  # Set to your model timestamp (e.g., '20251030_120000')
+ML_PREDICTOR_ENABLED = True  # Set to True after training models
+MODEL_TIMESTAMP = '20251030_222041'  # Set to your model timestamp (e.g., '20251030_120000')
 
 # If no timestamp set, try to auto-detect latest model
 if MODEL_TIMESTAMP is None:

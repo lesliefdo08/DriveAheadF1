@@ -103,7 +103,7 @@ class F1ModelTrainer:
         for _ in range(n_samples):
             # Random race scenario
             circuit = np.random.choice(circuits)
-            circuit_type = circuit_types[circuit]
+            circuit_type = circuit_types.get(circuit, 'mixed')  # Default to 'mixed' if not found
             
             # Random driver
             driver = np.random.choice(drivers)
@@ -117,13 +117,13 @@ class F1ModelTrainer:
             skill = driver_skill[driver]
             
             # Circuit specialists (some drivers perform better on certain tracks)
-            if circuit == 'Monaco' and driver in ['Max Verstappen', 'Charles Leclerc']:
+            if 'Monaco' in circuit and driver in ['Max Verstappen', 'Charles Leclerc']:
                 skill += 5
-            elif circuit in ['Silverstone', 'Spa'] and driver in ['Lewis Hamilton', 'Max Verstappen']:
+            elif ('Silverstone' in circuit or 'Spa' in circuit) and driver in ['Lewis Hamilton', 'Max Verstappen']:
                 skill += 5
-            elif circuit == 'Singapore' and driver in ['George Russell', 'Lando Norris']:
+            elif 'Singapore' in circuit and driver in ['George Russell', 'Lando Norris']:
                 skill += 4
-            elif circuit == 'Suzuka' and driver == 'Fernando Alonso':
+            elif 'Suzuka' in circuit and driver == 'Fernando Alonso':
                 skill += 6
             
             # Qualifying position (influenced by skill + team + randomness)

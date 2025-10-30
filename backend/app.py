@@ -5,6 +5,7 @@ import logging
 import random
 import time
 import math
+import os
 
 # Import the real-time F1 data fetcher
 from f1_data_fetcher import f1_fetcher
